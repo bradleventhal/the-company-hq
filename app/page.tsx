@@ -1598,12 +1598,19 @@ export default function HomePage() {
 
   // Celebrate new accomplishments
   useEffect(() => {
+    // On first load, just record the high-water mark — don't celebrate old ones
+    if (lastAccomplishmentCheck.current === 0 && accomplishments.length > 0) {
+      const maxTs = Math.max(...accomplishments.map(a => a.timestamp || 0));
+      lastAccomplishmentCheck.current = maxTs;
+      return;
+    }
+
     let playedSound = false;
     accomplishments.forEach(acc => {
       if (acc.timestamp > lastAccomplishmentCheck.current) {
         // New accomplishment! Trigger celebration
         if (!playedSound) {
-          sfx.play('achievement', 500);
+          sfx.play('achievement', 2000);
           playedSound = true;
         }
         const agent = agents.find(a => a.name === acc.who);
@@ -1623,11 +1630,11 @@ export default function HomePage() {
       }
     });
     
-    // Update last check time
+    // Update high-water mark to the max timestamp seen
     if (accomplishments.length > 0) {
-      const latest = accomplishments[accomplishments.length - 1];
-      if (latest.timestamp > lastAccomplishmentCheck.current) {
-        lastAccomplishmentCheck.current = latest.timestamp;
+      const maxTs = Math.max(...accomplishments.map(a => a.timestamp || 0));
+      if (maxTs > lastAccomplishmentCheck.current) {
+        lastAccomplishmentCheck.current = maxTs;
       }
     }
   }, [accomplishments, agents]);
