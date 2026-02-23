@@ -66,6 +66,13 @@
 
 ## 🎯 What to Do Next
 
+**🚨 URGENT:** If you're ready to launch RIGHT NOW, skip everything and read:
+👉 **[LAUNCH-IN-5-MINUTES.md](./LAUNCH-IN-5-MINUTES.md)** 👈
+
+Literal 5-minute timer with exact copy/paste steps. No thinking, just doing.
+
+---
+
 ### Option 1: Launch Today (Recommended)
 1. Open `LAUNCH-CHECKLIST.md`
 2. Check off any remaining infra tasks (domain, install script)
