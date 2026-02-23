@@ -5,6 +5,7 @@ import { useDemoMode } from '../hooks/useDemoMode';
 import { TemplateGallery } from '../components/TemplateGallery';
 import { DemoBanner } from '../components/DemoBanner';
 import { ShareModal } from '../components/ShareModal';
+import { Celebration } from '../components/Celebration';
 
 type AgentStatus = 'working' | 'idle';
 type Mood = 'great' | 'good' | 'okay' | 'stressed';
@@ -274,12 +275,13 @@ function CooldownTimer({ targetMs }: { targetMs: number }) {
   );
 }
 
-function NPC({ agent, size = 1, onClick, forceThought, flipped }: {
+function NPC({ agent, size = 1, onClick, forceThought, flipped, hasCelebration }: {
   agent: Agent;
   size?: number;
   onClick?: () => void;
   forceThought?: string | null;
   flipped?: boolean;
+  hasCelebration?: boolean;
 }) {
   const s = 4 * size;
   const displayThought = forceThought || agent.thought;
@@ -334,6 +336,7 @@ function NPC({ agent, size = 1, onClick, forceThought, flipped }: {
           {displayThought}
         </div>
       )}
+      {hasCelebration && <Celebration />}
       <Plumbob mood={agent.mood} agent={agent} />
       <div style={{
         width: s * 8,
@@ -1423,6 +1426,8 @@ export default function HomePage() {
   const [groupSent, setGroupSent] = useState(false);
   const [showTemplateGallery, setShowTemplateGallery] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [celebrations, setCelebrations] = useState<{ agentId: string; timestamp: number }[]>([]);
+  const lastAccomplishmentCheck = useRef(0);
   const [showCallMeeting, setShowCallMeeting] = useState(false);
   const [meetingTopic, setMeetingTopic] = useState('');
   const [meeting, setMeeting] = useState<{
@@ -1587,6 +1592,37 @@ export default function HomePage() {
     const i = setInterval(fetchActions, 5000);
     return () => clearInterval(i);
   }, []);
+
+  // Celebrate new accomplishments
+  useEffect(() => {
+    accomplishments.forEach(acc => {
+      if (acc.timestamp > lastAccomplishmentCheck.current) {
+        // New accomplishment! Trigger celebration
+        const agent = agents.find(a => a.name === acc.who);
+        if (agent) {
+          setCelebrations(prev => [...prev, {
+            agentId: agent.id,
+            timestamp: Date.now(),
+          }]);
+          
+          // Auto-remove after 1.5 seconds
+          setTimeout(() => {
+            setCelebrations(prev => 
+              prev.filter(c => c.agentId !== agent.id || Date.now() - c.timestamp > 1500)
+            );
+          }, 1500);
+        }
+      }
+    });
+    
+    // Update last check time
+    if (accomplishments.length > 0) {
+      const latest = accomplishments[accomplishments.length - 1];
+      if (latest.timestamp > lastAccomplishmentCheck.current) {
+        lastAccomplishmentCheck.current = latest.timestamp;
+      }
+    }
+  }, [accomplishments, agents]);
 
   const loadArchive = async (reset = false) => {
     setArchiveLoading(true);
