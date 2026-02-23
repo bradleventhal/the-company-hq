@@ -454,10 +454,10 @@ function formatInterval(ms: number): string {
   return `${(ms / 3600000).toFixed(1)}h`;
 }
 
-function AgentPanel({ agent, onClose, onCooldownUpdate }: { agent: Agent; onClose: () => void; onCooldownUpdate?: (agentId: string, patch: { intervalMs?: number; enabled?: boolean; nextRunAt?: number }) => void }) {
-  const [cooldownSaving, setCooldownSaving] = useState(false);
-  const [cooldownEnabled, setCooldownEnabled] = useState(agent.cooldown?.enabled ?? false);
-  const [cooldownMs, setCooldownMs] = useState(agent.cooldown?.intervalMs ?? 600000);
+function AgentPanel({ agent, onClose, autowork, onAutoworkUpdate }: { agent: Agent; onClose: () => void; autowork?: { enabled: boolean; intervalMs: number; prompt: string; lastSentAt: number }; onAutoworkUpdate?: (agentId: string, patch: Partial<{ enabled: boolean; intervalMs: number; prompt: string }>) => void }) {
+  const [awSaving, setAwSaving] = useState(false);
+  const [awEnabled, setAwEnabled] = useState(autowork?.enabled ?? false);
+  const [awIntervalMs, setAwIntervalMs] = useState(autowork?.intervalMs ?? 600_000);
   const [dmMessage, setDmMessage] = useState('');
   const [sending, setSending] = useState(false);
   const [sentConfirm, setSentConfirm] = useState(false);
@@ -644,7 +644,7 @@ function AgentPanel({ agent, onClose, onCooldownUpdate }: { agent: Agent; onClos
         </div>
       )}
 
-      {/* Auto-Work Cooldown */}
+      {/* Auto-Work */}
       {agent.id !== '_owner' && (
         <div style={{
           background: '#1e293b', borderRadius: 8, padding: 12, marginBottom: 16,
@@ -654,97 +654,106 @@ function AgentPanel({ agent, onClose, onCooldownUpdate }: { agent: Agent; onClos
             <div style={{ fontSize: 9, color: '#64748b', textTransform: 'uppercase' as const, fontFamily: '"Press Start 2P", monospace' }}>
               ⏰ Auto-Work
             </div>
-            {agent.cooldown?.jobId ? (
+            <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
               <button
                 onClick={async () => {
-                  setCooldownSaving(true);
+                  setAwSaving(true);
                   try {
-                    const res = await fetch('/api/office/cooldown', {
+                    const res = await fetch('/api/office/autowork', {
+                      method: 'PUT',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ agentId: agent.id }),
+                    });
+                    if (res.ok) setAwEnabled(prev => prev);
+                  } catch {}
+                  setAwSaving(false);
+                }}
+                disabled={awSaving}
+                style={{
+                  background: '#0f172a', border: '1px solid #334155',
+                  borderRadius: 6, padding: '3px 8px',
+                  color: '#94a3b8', fontSize: 8, cursor: 'pointer',
+                  fontFamily: '"Press Start 2P", monospace',
+                  opacity: awSaving ? 0.5 : 1,
+                }}
+                title="Send work prompt now"
+              >
+                ▶ NOW
+              </button>
+              <button
+                onClick={async () => {
+                  setAwSaving(true);
+                  const newEnabled = !awEnabled;
+                  try {
+                    const res = await fetch('/api/office/autowork', {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ jobId: agent.cooldown!.jobId, enabled: !cooldownEnabled }),
+                      body: JSON.stringify({ agentId: agent.id, enabled: newEnabled }),
                     });
                     if (res.ok) {
-                      const data = await res.json();
-                      const newEnabled = !cooldownEnabled;
-                      setCooldownEnabled(newEnabled);
-                      const nextRun = data.job?.state?.nextRunAtMs ?? (newEnabled ? Date.now() + cooldownMs : undefined);
-                      onCooldownUpdate?.(agent.id, { enabled: newEnabled, nextRunAt: nextRun });
+                      setAwEnabled(newEnabled);
+                      onAutoworkUpdate?.(agent.id, { enabled: newEnabled });
                     }
                   } catch {}
-                  setCooldownSaving(false);
+                  setAwSaving(false);
                 }}
-                disabled={cooldownSaving}
+                disabled={awSaving}
                 style={{
-                  background: cooldownEnabled ? '#10b981' : '#475569',
+                  background: awEnabled ? '#10b981' : '#475569',
                   border: 'none', borderRadius: 12, padding: '3px 10px',
                   color: '#fff', fontSize: 9, cursor: 'pointer',
                   fontFamily: '"Press Start 2P", monospace',
-                  opacity: cooldownSaving ? 0.5 : 1,
+                  opacity: awSaving ? 0.5 : 1,
                   transition: 'background 0.2s',
                 }}
               >
-                {cooldownEnabled ? 'ON' : 'OFF'}
+                {awEnabled ? 'ON' : 'OFF'}
               </button>
-            ) : (
-              <span style={{ fontSize: 8, color: '#475569', fontStyle: 'italic' }}>no cron job</span>
-            )}
+            </div>
           </div>
 
           <div style={{ fontSize: 10, color: '#94a3b8', lineHeight: 1.5, marginBottom: 10 }}>
-            When enabled, {agent.name} automatically gets sent to work on a recurring timer.
-            {cooldownEnabled
-              ? ` Currently running every ${formatInterval(cooldownMs)}.`
-              : ` Currently paused — ${agent.name} will idle until manually tasked.`}
+            {awEnabled
+              ? `${agent.name} gets sent to work every ${formatInterval(awIntervalMs)}.`
+              : `Paused — ${agent.name} will idle until manually tasked or enabled.`}
           </div>
 
-          {agent.cooldown?.jobId && (
-            <>
-              <div style={{ fontSize: 8, color: '#64748b', marginBottom: 6, textTransform: 'uppercase' as const }}>Interval</div>
-              <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-                {COOLDOWN_PRESETS.map(p => (
-                  <button
-                    key={p.ms}
-                    onClick={async () => {
-                      setCooldownSaving(true);
-                      try {
-                        const res = await fetch('/api/office/cooldown', {
-                          method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({ jobId: agent.cooldown!.jobId, intervalMs: p.ms }),
-                        });
-                        if (res.ok) {
-                          const data = await res.json();
-                          setCooldownMs(p.ms);
-                          const nextRun = data.job?.state?.nextRunAtMs ?? (Date.now() + p.ms);
-                          onCooldownUpdate?.(agent.id, { intervalMs: p.ms, nextRunAt: nextRun });
-                        }
-                      } catch {}
-                      setCooldownSaving(false);
-                    }}
-                    disabled={cooldownSaving || !cooldownEnabled}
-                    style={{
-                      background: cooldownMs === p.ms ? '#6366f1' : '#0f172a',
-                      border: `1px solid ${cooldownMs === p.ms ? '#6366f1' : '#334155'}`,
-                      borderRadius: 6, padding: '4px 8px',
-                      color: cooldownMs === p.ms ? '#fff' : (cooldownEnabled ? '#94a3b8' : '#475569'),
-                      fontSize: 9, cursor: cooldownEnabled ? 'pointer' : 'default',
-                      fontFamily: '"Press Start 2P", monospace',
-                      opacity: cooldownSaving ? 0.5 : 1,
-                      transition: 'all 0.15s',
-                    }}
-                  >
-                    {p.label}
-                  </button>
-                ))}
-              </div>
-              {agent.cooldown.jobName && (
-                <div style={{ fontSize: 8, color: '#475569', marginTop: 8, fontStyle: 'italic' }}>
-                  Job: {agent.cooldown.jobName}
-                </div>
-              )}
-            </>
-          )}
+          <div style={{ fontSize: 8, color: '#64748b', marginBottom: 6, textTransform: 'uppercase' as const }}>Interval</div>
+          <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+            {COOLDOWN_PRESETS.map(p => (
+              <button
+                key={p.ms}
+                onClick={async () => {
+                  setAwSaving(true);
+                  try {
+                    const res = await fetch('/api/office/autowork', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ agentId: agent.id, intervalMs: p.ms }),
+                    });
+                    if (res.ok) {
+                      setAwIntervalMs(p.ms);
+                      onAutoworkUpdate?.(agent.id, { intervalMs: p.ms });
+                    }
+                  } catch {}
+                  setAwSaving(false);
+                }}
+                disabled={awSaving}
+                style={{
+                  background: awIntervalMs === p.ms ? '#6366f1' : '#0f172a',
+                  border: `1px solid ${awIntervalMs === p.ms ? '#6366f1' : '#334155'}`,
+                  borderRadius: 6, padding: '4px 8px',
+                  color: awIntervalMs === p.ms ? '#fff' : (awEnabled ? '#94a3b8' : '#475569'),
+                  fontSize: 9, cursor: 'pointer',
+                  fontFamily: '"Press Start 2P", monospace',
+                  opacity: awSaving ? 0.5 : 1,
+                  transition: 'all 0.15s',
+                }}
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
         </div>
       )}
 
@@ -898,6 +907,7 @@ export default function HomePage() {
     lastMessage?: string;
   }>({ active: false });
   const [config, setConfig] = useState<any>({});
+  const [autoworkPolicies, setAutoworkPolicies] = useState<Record<string, { enabled: boolean; intervalMs: number; prompt: string; lastSentAt: number }>>({});
   const [screenSize, setScreenSize] = useState<'mobile' | 'tablet' | 'desktop'>('desktop');
 
   useEffect(() => {
@@ -931,6 +941,44 @@ export default function HomePage() {
     };
     fetchConfig();
   }, []);
+
+  // Load autowork policies and tick every 15s
+  useEffect(() => {
+    const fetchAutowork = async () => {
+      try {
+        const res = await fetch('/api/office/autowork');
+        if (res.ok) setAutoworkPolicies(await res.json());
+      } catch {}
+    };
+    fetchAutowork();
+    const i = setInterval(fetchAutowork, 15_000);
+    return () => clearInterval(i);
+  }, []);
+
+  // Auto-work tick: trigger sends for agents whose timer has elapsed
+  useEffect(() => {
+    const tick = async () => {
+      const hasEnabled = Object.values(autoworkPolicies).some(p => p.enabled);
+      if (!hasEnabled) return;
+      try {
+        const res = await fetch('/api/office/autowork', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({}),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.sent?.length > 0) {
+            // Refresh policies to get updated lastSentAt
+            const polRes = await fetch('/api/office/autowork');
+            if (polRes.ok) setAutoworkPolicies(await polRes.json());
+          }
+        }
+      } catch {}
+    };
+    const i = setInterval(tick, 15_000);
+    return () => clearInterval(i);
+  }, [autoworkPolicies]);
 
   // Poll API for live status every 3s
   useEffect(() => {
@@ -2343,32 +2391,17 @@ export default function HomePage() {
       )}
       {selectedAgent && (
         <>
-          <AgentPanel agent={selectedAgent} onClose={() => setSelectedAgent(null)} onCooldownUpdate={(agentId, patch) => {
-            setAgents(prev => prev.map(a => {
-              if (a.id !== agentId) return a;
-              return {
-                ...a,
-                nextTaskAt: patch.nextRunAt ?? a.nextTaskAt,
-                cooldown: a.cooldown ? {
-                  ...a.cooldown,
-                  intervalMs: patch.intervalMs ?? a.cooldown.intervalMs,
-                  enabled: patch.enabled ?? a.cooldown.enabled,
-                  nextRunAt: patch.nextRunAt ?? a.cooldown.nextRunAt,
-                } : a.cooldown,
-              };
-            }));
-            // Also update selectedAgent so panel reflects change
-            setSelectedAgent(prev => prev && prev.id === agentId ? {
-              ...prev,
-              nextTaskAt: patch.nextRunAt ?? prev.nextTaskAt,
-              cooldown: prev.cooldown ? {
-                ...prev.cooldown,
-                intervalMs: patch.intervalMs ?? prev.cooldown.intervalMs,
-                enabled: patch.enabled ?? prev.cooldown.enabled,
-                nextRunAt: patch.nextRunAt ?? prev.cooldown.nextRunAt,
-              } : prev.cooldown,
-            } : prev);
-          }} />
+          <AgentPanel
+            agent={selectedAgent}
+            onClose={() => setSelectedAgent(null)}
+            autowork={autoworkPolicies[selectedAgent.id]}
+            onAutoworkUpdate={(agentId, patch) => {
+              setAutoworkPolicies(prev => ({
+                ...prev,
+                [agentId]: { ...(prev[agentId] || { enabled: false, intervalMs: 600_000, prompt: '', lastSentAt: 0 }), ...patch },
+              }));
+            }}
+          />
           <div
             onClick={() => setSelectedAgent(null)}
             style={{
