@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useDemoMode } from '../hooks/useDemoMode';
+import { useRetroSFX } from '../hooks/useRetroSFX';
 import { TemplateGallery } from '../components/TemplateGallery';
 import { DemoBanner } from '../components/DemoBanner';
 import { ShareModal } from '../components/ShareModal';
@@ -1401,6 +1402,7 @@ function SettingsPanel({ config, onConfigChange, onClose }: {
 
 export default function HomePage() {
   const { isDemoMode, getApiPath } = useDemoMode();
+  const sfx = useRetroSFX();
   const [agents, setAgents] = useState<Agent[]>([]);
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
   const [time, setTime] = useState(new Date());
@@ -1443,6 +1445,7 @@ export default function HomePage() {
   const [autoworkPolicies, setAutoworkPolicies] = useState<Record<string, { enabled: boolean; intervalMs: number; directive: string; lastSentAt: number }>>({});
   const [pendingAutowork, setPendingAutowork] = useState<Record<string, Partial<{ enabled: boolean; intervalMs: number; directive: string }>>>({});
   const [showSettings, setShowSettings] = useState(false);
+  const [sfxEnabled, setSfxEnabled] = useState(() => typeof window !== 'undefined' ? localStorage.getItem('openclawfice-sfx') !== 'off' : true);
   const [screenSize, setScreenSize] = useState<'mobile' | 'tablet' | 'desktop'>('desktop');
 
   useEffect(() => {
@@ -1595,9 +1598,14 @@ export default function HomePage() {
 
   // Celebrate new accomplishments
   useEffect(() => {
+    let playedSound = false;
     accomplishments.forEach(acc => {
       if (acc.timestamp > lastAccomplishmentCheck.current) {
         // New accomplishment! Trigger celebration
+        if (!playedSound) {
+          sfx.play('achievement', 500);
+          playedSound = true;
+        }
         const agent = agents.find(a => a.name === acc.who);
         if (agent) {
           setCelebrations(prev => [...prev, {
@@ -1679,6 +1687,7 @@ export default function HomePage() {
   // Track new chat messages and sync thought bubbles
   useEffect(() => {
     if (chatLog.length > lastSeenChatCount) {
+      if (lastSeenChatCount > 0) sfx.play('message', 5000); // Don't play on initial load, debounce 5s
       setLastSeenChatCount(chatLog.length);
       const lastMsg = chatLog[chatLog.length - 1];
       if (lastMsg) {
@@ -1785,7 +1794,7 @@ export default function HomePage() {
 
   const sendGroupMessage = async () => {
     if (!groupMessage.trim() || sendingGroup) return;
-    
+    sfx.play('send');
     setSendingGroup(true);
     try {
       const ownerName = agents.find(a => a.id === '_owner')?.name || 'You';
@@ -1965,7 +1974,7 @@ export default function HomePage() {
             })}
           </div>
           <button
-            onClick={() => setShowCallMeeting(true)}
+            onClick={() => { sfx.play('meetingStart'); setShowCallMeeting(true); }}
             style={{
               background: 'none',
               border: 'none',
@@ -1993,7 +2002,7 @@ export default function HomePage() {
             📸
           </button>
           <button
-            onClick={() => setShowSettings(true)}
+            onClick={() => { sfx.play('open'); setShowSettings(true); }}
             style={{
               background: 'none',
               border: 'none',
@@ -2005,6 +2014,26 @@ export default function HomePage() {
             title="Settings"
           >
             ⚙️
+          </button>
+          <button
+            onClick={() => {
+              const next = !sfxEnabled;
+              setSfxEnabled(next);
+              sfx.setEnabled(next);
+              if (next) sfx.play('click');
+            }}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: sfxEnabled ? '#475569' : '#1e293b',
+              cursor: 'pointer',
+              fontSize: 14,
+              padding: '2px 4px',
+              opacity: sfxEnabled ? 1 : 0.5,
+            }}
+            title={sfxEnabled ? 'Mute SFX' : 'Unmute SFX'}
+          >
+            {sfxEnabled ? '🔊' : '🔇'}
           </button>
         </div>
       </div>
@@ -2186,7 +2215,7 @@ export default function HomePage() {
                     <NPC
                       agent={a}
                       size={npcSize}
-                      onClick={() => setSelectedAgent(a)}
+                      onClick={() => { sfx.play('click'); setSelectedAgent(a); }}
                       forceThought={activeThought && activeThought.agentId === a.id ? activeThought.text : null}
                       hasCelebration={celebrations.some(c => c.agentId === a.id)}
                     />
@@ -2289,7 +2318,7 @@ export default function HomePage() {
                           <NPC
                             agent={participant1}
                             size={npcSize * 0.85}
-                            onClick={() => setSelectedAgent(participant1)}
+                            onClick={() => { sfx.play('click'); setSelectedAgent(participant1); }}
                             hasCelebration={celebrations.some(c => c.agentId === participant1.id)}
                           />
                         )}
@@ -2298,7 +2327,7 @@ export default function HomePage() {
                           <NPC
                             agent={participant2}
                             size={npcSize * 0.85}
-                            onClick={() => setSelectedAgent(participant2)}
+                            onClick={() => { sfx.play('click'); setSelectedAgent(participant2); }}
                             flipped
                             hasCelebration={celebrations.some(c => c.agentId === participant2.id)}
                           />
@@ -2372,7 +2401,7 @@ export default function HomePage() {
                       <NPC
                         agent={a}
                         size={npcSize}
-                        onClick={() => setSelectedAgent(a)}
+                        onClick={() => { sfx.play('click'); setSelectedAgent(a); }}
                         forceThought={activeThought && activeThought.agentId === a.id ? activeThought.text : null}
                         hasCelebration={celebrations.some(c => c.agentId === a.id)}
                       />
@@ -2423,7 +2452,7 @@ export default function HomePage() {
                     return (
                       <div
                         key={action.id}
-                        onClick={() => setExpandedAction(action.id)}
+                        onClick={() => { sfx.play('open'); setExpandedAction(action.id); }}
                         style={{
                           background: priorityGlow[action.priority],
                           border: `1px solid ${priorityColors[action.priority]}44`,
@@ -2634,7 +2663,7 @@ export default function HomePage() {
                   return (
                     <div
                       key={a.id || i}
-                      onClick={() => setSelectedAccomplishment(a)}
+                      onClick={() => { sfx.play('click'); setSelectedAccomplishment(a); }}
                       style={{
                         display: 'flex',
                         alignItems: 'center',
@@ -3255,7 +3284,7 @@ export default function HomePage() {
         <>
           <AgentPanel
             agent={selectedAgent}
-            onClose={() => setSelectedAgent(null)}
+            onClose={() => { sfx.play('close'); setSelectedAgent(null); }}
             autowork={autoworkPolicies[selectedAgent.id]}
             pendingChanges={pendingAutowork[selectedAgent.id]}
             onAutoworkUpdate={(agentId, patch) => {
