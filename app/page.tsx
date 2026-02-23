@@ -805,7 +805,7 @@ function AgentPanel({ agent, onClose, autowork, onAutoworkUpdate, onStop }: { ag
             <textarea
               value={awDirective}
               onChange={(e) => { setAwDirective(e.target.value); setDirectiveDirty(true); }}
-              placeholder={`e.g. Find new high-CVR creators in the US dating niche`}
+              placeholder={`e.g. Focus on the highest priority task from the current sprint`}
               rows={3}
               style={{
                 width: '100%',
