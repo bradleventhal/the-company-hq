@@ -143,11 +143,15 @@ You are. Demo works. Docs are complete. Copy is ready. Launch.
 
 ## ✅ Launch Checklist
 
+**Quick version:**
 - [ ] Demo works: https://openclawfice.com/?demo=true
 - [ ] Install works: `npx openclawfice` (test locally)
 - [ ] Copy ready: Chosen from VIRAL-LAUNCH-COPY.md
 - [ ] Time is right: 9 AM - 5 PM weekday
 - [ ] Playbook skimmed: FIRST-24-HOURS-PLAYBOOK.md
+
+**Thorough version (recommended):**
+- [ ] Run PRE-FLIGHT-CHECKLIST.md (2 minutes, catches broken links/bad timing)
 
 **All checked? Launch now.**
 
