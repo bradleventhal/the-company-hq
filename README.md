@@ -265,7 +265,7 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
 
 ## 📄 License
 
-MIT © [OpenClaw Community](https://openclaw.ai)
+AGPL-3.0 © [Tyler Henkel](https://openclaw.ai)
 
 ---
 
