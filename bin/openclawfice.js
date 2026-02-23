@@ -93,7 +93,55 @@ if (!fs.existsSync(firstRunMarker)) {
   console.log('  🎉 Setup complete!\n');
 }
 
-// ─── Launch ─────────────────────────────────────────────────────────
+// ─── Command Router ─────────────────────────────────────────────────
+
+const command = process.argv[2];
+
+// Handle subcommands
+if (command === 'sync-cooldowns') {
+  console.log('🔄 Running cooldown sync...\n');
+  const syncScript = join(__dirname, 'sync-cooldowns.ts');
+  
+  // Run via tsx (TypeScript executor)
+  const child = spawn('npx', ['tsx', syncScript], {
+    cwd: packageRoot,
+    stdio: 'inherit',
+    shell: true,
+  });
+  
+  child.on('exit', (code) => {
+    process.exit(code || 0);
+  });
+  
+  return;
+}
+
+if (command === 'help' || command === '--help' || command === '-h') {
+  console.log(`
+🏢 OpenClawfice — Virtual Office Dashboard for OpenClaw
+
+Usage:
+  openclawfice [command] [options]
+
+Commands:
+  (default)         Start the office dashboard server
+  sync-cooldowns    Sync cooldown config to OpenClaw cron jobs
+  help              Show this help
+
+Options:
+  --port=<port>     Server port (default: 3333)
+
+Examples:
+  openclawfice                    # Start server on port 3333
+  openclawfice --port=8080        # Start server on port 8080
+  openclawfice sync-cooldowns     # Sync cooldown timers
+
+Visit: https://docs.openclaw.ai/openclawfice
+  `);
+  process.exit(0);
+}
+
+// ─── Launch Server ──────────────────────────────────────────────────
 
 console.log('🏢 Starting OpenClawfice...\n');
 

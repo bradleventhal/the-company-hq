@@ -748,6 +748,7 @@ export default function HomePage() {
   const [pendingActions, setPendingActions] = useState<PendingAction[]>([]);
   const [accomplishments, setAccomplishments] = useState<Accomplishment[]>([]);
   const [expandedAction, setExpandedAction] = useState<string | null>(null);
+  const [expandedTask, setExpandedTask] = useState<string | null>(null);
   const [chatLog, setChatLog] = useState<ChatMessage[]>([]);
   const [activityLog, setActivityLog] = useState<any[]>([]);
   const [activeThought, setActiveThought] = useState<{ agentId: string; text: string } | null>(null);
@@ -1122,18 +1123,25 @@ export default function HomePage() {
                     }}
                   >
                     {a.task && (
-                      <div style={{
+                      <div onClick={(e) => { e.stopPropagation(); setExpandedTask(expandedTask === a.id ? null : a.id); }} style={{
                         background: 'rgba(16,185,129,0.12)',
                         border: '1px solid rgba(16,185,129,0.25)',
                         borderRadius: 4,
                         padding: '2px 8px',
                         fontSize: 9,
                         color: '#6ee7b7',
-                        maxWidth: 160,
+                        maxWidth: expandedTask === a.id ? 400 : 220,
                         textAlign: 'center',
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
+                        whiteSpace: expandedTask === a.id ? 'normal' : 'nowrap',
+                        overflow: expandedTask === a.id ? 'visible' : 'hidden',
+                        textOverflow: expandedTask === a.id ? 'unset' : 'ellipsis',
+                        wordBreak: 'break-word',
+                        lineHeight: 1.3,
+                        cursor: 'pointer',
+                        transition: 'max-width 0.2s ease',
+                        zIndex: expandedTask === a.id ? 50 : 1,
+                        position: 'relative',
+                        boxShadow: expandedTask === a.id ? '0 4px 20px rgba(0,0,0,0.5)' : 'none',
                       }}>
                         {a.task}
                       </div>

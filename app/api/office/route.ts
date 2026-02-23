@@ -254,18 +254,11 @@ function inferTask(agentId: string, sessionId: string): string {
       const msg = entry.type === 'message' ? entry.message : entry;
       if (!msg?.role) continue;
 
-      // Look for assistant messages with tool calls or meaningful text
+      // Look for assistant messages — prefer text over tool names
       if (msg.role === 'assistant' && msg.content) {
         const parts = Array.isArray(msg.content) ? msg.content : [];
         
-        // Prefer tool calls
-        const toolCall = parts.find((c: any) => c.type === 'toolCall');
-        if (toolCall) {
-          const name = toolCall.name || toolCall.toolName || 'a tool';
-          return `Using ${name}...`;
-        }
-        
-        // Otherwise use text content
+        // Prefer text content — it's more descriptive than tool names
         const textPart = parts.find((c: any) => c.type === 'text');
         if (textPart?.text && textPart.text.length > 10) {
           let task = textPart.text
@@ -275,12 +268,28 @@ function inferTask(agentId: string, sessionId: string): string {
               l.length > 10 && 
               !l.startsWith('#') && 
               !l.startsWith('---') &&
+              !l.startsWith('```') &&
               !l.includes('HEARTBEAT')
             ) || '';
           
-          task = task.replace(/^\*+\s*/, '').replace(/\*+$/, '').trim();
+          task = task.replace(/^\*+\s*/, '').replace(/\*+$/, '').replace(/^[-•]\s*/, '').trim();
           if (task.length > 80) task = task.slice(0, 77) + '...';
           if (task) return task;
+        }
+        // If only tool calls and no text, keep scanning for user message below
+      }
+
+      // Fallback: use the most recent user message as the task description
+      if (msg.role === 'user') {
+        const c = msg.content;
+        const text = typeof c === 'string' ? c
+          : Array.isArray(c) ? (c.find((x: any) => x.type === 'text')?.text || '') : '';
+        if (text.length > 10 && !text.includes('HEARTBEAT') && !text.includes('Read HEARTBEAT.md')
+            && !text.includes('Agent-to-agent') && !text.includes('announce step')
+            && !text.includes('Pre-compaction memory flush')) {
+          let task = text.replace(/^\[.*?\]\s*/, '').replace(/\n/g, ' ').trim();
+          if (task.length > 80) task = task.slice(0, 77) + '...';
+          return task;
         }
       }
     } catch {}
