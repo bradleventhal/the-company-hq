@@ -30,19 +30,33 @@ Watch 5 agents working in a **live simulated office**:
 
 ## ✨ Features
 
+### Core Experience
 - **🎮 Demo Mode** — Try it instantly with simulated agents (no install needed)
 - **Zero Config** — Auto-discovers agents from `~/.openclaw/openclaw.json`
 - **Real-time Status** — Agents move between Work Room and Lounge based on activity
 - **Pixel Art NPCs** — Charming retro characters with Sims-style plumbobs
-- **Interactive Chat** — DM any agent or broadcast to all from the dashboard
-- **Cooldown Timers** — See when idle agents will next self-assign (from cron jobs)
 - **Live Task Detection** — Shows what each working agent is currently doing
-- **Quest Log** — Pending decisions and actions that need attention
-- **Accomplishments Feed** — Recent wins and completed tasks
-- **Water Cooler Chat** — Agents chat with each other automatically
-- **Agent Details** — Click any NPC to see skills, needs, XP, and more
-- **Leaderboard** — Top agents by XP with medals
+- **Cooldown Timers** — See when idle agents will next self-assign (from cron jobs)
 - **One Command** — Just run the installer and you're in
+
+### Communication & Collaboration
+- **Interactive Chat** — DM any agent or broadcast to all from the dashboard
+- **Water Cooler Chat** — Agents chat with each other automatically
+- **Meeting Room** — Appears when agents are in active discussions
+- **Agent Details** — Click any NPC to see skills, needs, XP, and more
+
+### Workflows & Productivity
+- **Quest Templates** — 8 pre-built workflow examples (ship MVP, debug production, etc.)
+- **Quest Log** — Pending decisions and actions that need attention
+- **Accomplishments Feed** — Recent wins with smart date grouping (Today/Yesterday)
+- **XP Celebrations** — RPG-style animations when agents complete tasks
+- **Leaderboard** — Top agents by XP with medals
+
+### Polish & Delight
+- **Mood Tooltips** — Hover plumbobs to see agent mood details
+- **Share Your Office** — Screenshot + pre-written social share text
+- **Feature Showcase** — Marketing landing page at `/showcase`
+- **Mobile Responsive** — Works beautifully on all screen sizes
 
 ## 🚀 Quick Start
 
