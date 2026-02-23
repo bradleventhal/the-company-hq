@@ -9,42 +9,47 @@
 ### Minute 1: Test Demo Mode
 
 ```bash
-# Open demo in browser
-open "http://localhost:3333/?demo=true"
+# Open LIVE demo (already deployed on Vercel)
+open "https://openclawfice.com/?demo=true"
 ```
 
 **Verify:**
-- ✅ 5 agents appear
+- ✅ 5 agents appear (Nova, Forge, Pixel, Cipher, Lens)
 - ✅ Quest log shows review request
-- ✅ Accomplishments feed has 4 items
-- ✅ Water cooler has chat
+- ✅ Accomplishments feed has items
+- ✅ Water cooler has chat messages
 - ✅ Meeting room shows active discussion
 
-**If it works, continue. If not, fix first.**
+**If it works, continue. If not, check Vercel deployment status.**
 
 ---
 
 ### Minute 2: Copy Discord Post
 
-**Open:** `LAUNCH-CHECKLIST.md` (line 47)
+**Open:** `VIRAL-LAUNCH-COPY.md` (Discord Version 1)
 
-**Copy this exactly:**
+**Copy this (or customize):**
 
 ```
-Hey team! 👋
+I turned my OpenClaw agents into Sims 🎮
 
-I built a thing for visualizing OpenClaw agents:
+Watch them work in real-time:
+- Pixel art NPCs walking around an office
+- Plumbobs showing their mood
+- Meeting rooms when they collaborate
+- Quest log + accomplishments feed
+- Water cooler chat
 
-🎮 Try the demo (10 seconds, no install):
-http://localhost:3333/?demo=true
+Try the demo (10 seconds, no install):
+https://openclawfice.com/?demo=true
 
-If you like it, install with:
-curl -fsSL https://openclawfice.com/install.sh | bash
+Install if you like it:
+npx openclawfice
 
-Would love feedback! 🙏
+Built it this weekend. Would love feedback! 🙏
 ```
 
-**Change `localhost:3333` to `openclawfice.com` if deployed.**
+**Note:** See `VIRAL-LAUNCH-COPY.md` for 3 versions + Twitter/HN/Reddit copy.
 
 ---
 
@@ -60,25 +65,29 @@ Would love feedback! 🙏
 
 ### Minute 4: Tweet It
 
-**Open Twitter, tweet this:**
+**Open Twitter, tweet this (see VIRAL-LAUNCH-COPY.md for more versions):**
 
 ```
-Built a retro office for AI agents 🎮
+I turned my AI agents into Sims 🎮
 
-Your OpenClaw agents → pixel art NPCs in a Sims-style dashboard
+OpenClawfice = your OpenClaw agents as pixel art NPCs in a retro office
 
-✨ Zero config
-⚡ Real-time status  
-📋 Quest log
-💬 Water cooler chat
+Watch them:
+• Walk around & work
+• Hold meetings
+• Post accomplishments
+• Chat at the water cooler
 
-Try the demo (10 seconds, no install):
-http://openclawfice.com/?demo=true
+Try the demo (10 sec, no install):
+https://openclawfice.com/?demo=true
 
-[Attach screenshot from public/screenshot.png]
+Open source, MIT license
+→ https://github.com/openclawfice/openclawfice
+
+[Attach: GIF or screenshot from public/screenshot.png]
 ```
 
-**If you have a GIF, use that instead of screenshot.**
+**Pro tip:** GIF gets 3x more engagement than static images. If you have one, use it!
 
 ---
 
