@@ -1421,6 +1421,8 @@ export default function HomePage() {
   const [groupSent, setGroupSent] = useState(false);
   const [showTemplateGallery, setShowTemplateGallery] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [showCallMeeting, setShowCallMeeting] = useState(false);
+  const [meetingTopic, setMeetingTopic] = useState('');
   const [meeting, setMeeting] = useState<{
     active: boolean;
     topic?: string;
@@ -1907,6 +1909,20 @@ export default function HomePage() {
               timeZone: 'America/New_York',
             })}
           </div>
+          <button
+            onClick={() => setShowCallMeeting(true)}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#475569',
+              cursor: 'pointer',
+              fontSize: 14,
+              padding: '2px 4px',
+            }}
+            title="Call Meeting"
+          >
+            📞
+          </button>
           <button
             onClick={() => setShowShareModal(true)}
             style={{
@@ -3364,6 +3380,117 @@ export default function HomePage() {
           onSelectTemplate={handleTemplateSelect}
           onClose={() => setShowTemplateGallery(false)}
         />
+      )}
+
+      {/* Call Meeting Modal */}
+      {showCallMeeting && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0, 0, 0, 0.7)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+          }}
+          onClick={() => setShowCallMeeting(false)}
+        >
+          <div
+            style={{
+              background: '#0f172a',
+              border: '2px solid #1e293b',
+              borderRadius: 12,
+              padding: 24,
+              maxWidth: 500,
+              width: '90%',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 style={{
+              margin: '0 0 16px 0',
+              fontFamily: '"Press Start 2P", monospace',
+              fontSize: 14,
+              color: '#fff',
+            }}>
+              📞 Call Meeting
+            </h2>
+            <p style={{ color: '#94a3b8', fontSize: 13, marginBottom: 16, lineHeight: 1.6 }}>
+              Start a discussion between all your agents. They'll gather in the Meeting Room to discuss the topic you provide.
+            </p>
+            <input
+              type="text"
+              placeholder="What should they discuss? (e.g., 'Should we refactor the API?')"
+              value={meetingTopic}
+              onChange={(e) => setMeetingTopic(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '12px',
+                background: '#1e293b',
+                border: '1px solid #334155',
+                borderRadius: 8,
+                color: '#e2e8f0',
+                fontSize: 13,
+                marginBottom: 16,
+              }}
+              autoFocus
+            />
+            <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
+              <button
+                onClick={() => setShowCallMeeting(false)}
+                style={{
+                  padding: '8px 16px',
+                  background: '#1e293b',
+                  border: '1px solid #334155',
+                  borderRadius: 6,
+                  color: '#94a3b8',
+                  cursor: 'pointer',
+                  fontSize: 12,
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={async () => {
+                  if (!meetingTopic.trim()) return;
+                  try {
+                    const res = await fetch('/api/office/meeting/start', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ topic: meetingTopic }),
+                    });
+                    if (res.ok) {
+                      setShowCallMeeting(false);
+                      setMeetingTopic('');
+                      // Refresh meeting status
+                      const meetRes = await fetch(getApiPath('/api/office/meeting'));
+                      const meetData = await meetRes.json();
+                      setMeeting(meetData);
+                    }
+                  } catch (err) {
+                    console.error('Failed to start meeting:', err);
+                  }
+                }}
+                disabled={!meetingTopic.trim()}
+                style={{
+                  padding: '8px 16px',
+                  background: meetingTopic.trim() ? '#8b5cf6' : '#334155',
+                  border: 'none',
+                  borderRadius: 6,
+                  color: '#fff',
+                  cursor: meetingTopic.trim() ? 'pointer' : 'not-allowed',
+                  fontSize: 12,
+                  fontWeight: 600,
+                }}
+              >
+                Start Meeting
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Share Modal */}
