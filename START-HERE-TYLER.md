@@ -183,12 +183,21 @@ That's it. You're overthinking this.
 
 ## 💬 After You Launch
 
+**First 24 hours:**
 Follow **FIRST-24-HOURS-PLAYBOOK.md** for:
 - How to respond to feedback
 - When to post to other channels
 - What bugs to fix first
 - How to capture testimonials
 - Energy management tips
+
+**First 7 days:**
+Follow **WEEK-1-GROWTH-PLAYBOOK.md** for:
+- Day-by-day action plan
+- What to ship each day
+- When to expand to HN/Reddit/PH
+- Metrics to track
+- Success criteria
 
 ---
 
