@@ -1431,11 +1431,10 @@ export default function HomePage() {
   useEffect(() => {
     const waterCoolerConfig = config.waterCooler || {};
     
-    // Check if water cooler is enabled
     if (waterCoolerConfig.enabled === false) return;
     
-    const idleAgents = agents.filter(a => a.status === 'idle');
-    if (idleAgents.length < 2) return;
+    const npcAgents = agents.filter(a => a.id !== '_owner');
+    if (npcAgents.length < 2) return;
     
     // Check quiet hours
     if (waterCoolerConfig.quiet?.enabled) {
@@ -1445,16 +1444,12 @@ export default function HomePage() {
       const quietStart = parseInt(waterCoolerConfig.quiet.start?.split(':')[0] || '23');
       const quietEnd = parseInt(waterCoolerConfig.quiet.end?.split(':')[0] || '8');
       
-      // Check if current hour is in quiet window
-      if (hour >= quietStart || hour < quietEnd) {
-        return; // Skip chat generation during quiet hours
-      }
+      if (hour >= quietStart || hour < quietEnd) return;
     }
     
-    // Parse frequency interval
     const parseInterval = (str: string): number => {
       const match = str.match(/^(\d+)(s|m|h|d)$/);
-      if (!match) return 45000; // default 45s
+      if (!match) return 45000;
       const [, num, unit] = match;
       const n = parseInt(num, 10);
       const multipliers: Record<string, number> = { s: 1000, m: 60000, h: 3600000, d: 86400000 };
@@ -1462,21 +1457,24 @@ export default function HomePage() {
     };
     
     const baseFreq = parseInterval(waterCoolerConfig.frequency || '45s');
-    // Add jitter: ±25%
     const delay = baseFreq + (Math.random() - 0.5) * baseFreq * 0.5;
     
     const timer = setTimeout(async () => {
       try {
-        // Pass agent contexts so water cooler messages reference real work
         const contexts: Record<string, { task?: string; status?: string }> = {};
-        for (const a of agents) {
-          if (a.id === '_owner') continue;
+        const allAgents: { name: string; status: string; task?: string }[] = [];
+        for (const a of npcAgents) {
           contexts[a.name] = { task: a.task, status: a.status };
+          allAgents.push({ name: a.name, status: a.status, task: a.task });
         }
         await fetch('/api/office/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ agentNames: idleAgents.map(a => a.name), contexts }),
+          body: JSON.stringify({
+            agentNames: npcAgents.map(a => a.name),
+            allAgents,
+            contexts,
+          }),
         });
       } catch {}
     }, delay);

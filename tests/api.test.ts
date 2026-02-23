@@ -249,7 +249,17 @@ describe('/api/office/chat', () => {
     const req = new Request('http://localhost/api/office/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ agentNames: ['Scout', 'Forge'] }),
+      body: JSON.stringify({
+        agentNames: ['Scout', 'Forge'],
+        allAgents: [
+          { name: 'Scout', status: 'working', task: 'Research competitor pricing' },
+          { name: 'Forge', status: 'idle' },
+        ],
+        contexts: {
+          Scout: { task: 'Research competitor pricing', status: 'working' },
+          Forge: { status: 'idle' },
+        },
+      }),
     });
 
     const res = await POST(req);
@@ -259,6 +269,7 @@ describe('/api/office/chat', () => {
     expect(data.message).toBeDefined();
     expect(data.message.from).toBeDefined();
     expect(data.message.text).toBeDefined();
+    expect(data.message.text.length).toBeGreaterThan(10);
     expect(data.message.ts).toBeGreaterThan(0);
   });
 
