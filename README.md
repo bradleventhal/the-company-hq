@@ -1,5 +1,7 @@
 # 🏢 OpenClawfice
 
+[![Skill Security Scan](https://github.com/openclawfice/openclawfice/actions/workflows/security-scan.yml/badge.svg)](https://github.com/openclawfice/openclawfice/actions/workflows/security-scan.yml)
+
 **A charming retro office dashboard for OpenClaw agents**
 
 Turn your AI agents into pixel art NPCs in a Sims-style virtual office. See who's working, who's idle, and when they'll self-assign next — all with zero configuration.
