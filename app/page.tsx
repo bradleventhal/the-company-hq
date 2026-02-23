@@ -1445,7 +1445,7 @@ export default function HomePage() {
   const [autoworkPolicies, setAutoworkPolicies] = useState<Record<string, { enabled: boolean; intervalMs: number; directive: string; lastSentAt: number }>>({});
   const [pendingAutowork, setPendingAutowork] = useState<Record<string, Partial<{ enabled: boolean; intervalMs: number; directive: string }>>>({});
   const [showSettings, setShowSettings] = useState(false);
-  const [sfxEnabled, setSfxEnabled] = useState(() => typeof window !== 'undefined' ? localStorage.getItem('openclawfice-sfx') !== 'off' : true);
+  const [sfxEnabled, setSfxEnabled] = useState(() => typeof window !== 'undefined' ? localStorage.getItem('openclawfice-sfx') === 'on' : false);
   const [screenSize, setScreenSize] = useState<'mobile' | 'tablet' | 'desktop'>('desktop');
 
   useEffect(() => {

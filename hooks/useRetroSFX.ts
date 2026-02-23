@@ -177,7 +177,7 @@ const SFX_PLAYERS: Record<SFXType, (ctx: AudioContext) => void> = {
 
 export function useRetroSFX() {
   const ctxRef = useRef<AudioContext | null>(null);
-  const enabledRef = useRef(typeof window !== 'undefined' ? localStorage.getItem('openclawfice-sfx') !== 'off' : true);
+  const enabledRef = useRef(typeof window !== 'undefined' ? localStorage.getItem('openclawfice-sfx') === 'on' : false);
   const lastPlayRef = useRef<Record<string, number>>({});
 
   const ensureContext = useCallback(() => {
