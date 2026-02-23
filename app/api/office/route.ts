@@ -503,6 +503,16 @@ export async function GET() {
   const nextCronRuns = getNextCronRuns();
   const agentCooldowns = getAgentCooldowns();
 
+  // Read autowork policies to get next auto-task times
+  let autoworkPolicies: Record<string, { enabled: boolean; intervalMs: number; lastSentAt: number }> = {};
+  try {
+    const awFile = join(STATUS_DIR, 'autowork.json');
+    if (existsSync(awFile)) {
+      const raw = JSON.parse(readFileSync(awFile, 'utf-8'));
+      autoworkPolicies = raw.policies || {};
+    }
+  } catch {}
+
   // Build agent statuses
   const agents = agentConfigs.map(cfg => {
     const agentDirId = cfg.id === '_owner' ? 'main' : cfg.id;
@@ -597,7 +607,15 @@ export async function GET() {
       lastActive: status === 'idle' 
         ? (hasEverRun ? formatTime(updatedAt) : 'Not yet active') 
         : undefined,
-      nextTaskAt: status === 'idle' && nextCronRuns[cfg.id] ? nextCronRuns[cfg.id] : undefined,
+      nextTaskAt: (() => {
+        if (status !== 'idle') return undefined;
+        const cronNext = nextCronRuns[cfg.id] || 0;
+        const aw = autoworkPolicies[cfg.id];
+        const awNext = (aw?.enabled && aw.lastSentAt && aw.intervalMs)
+          ? aw.lastSentAt + aw.intervalMs : 0;
+        const candidates = [cronNext, awNext].filter(t => t > 0);
+        return candidates.length > 0 ? Math.min(...candidates) : undefined;
+      })(),
       cooldown: agentCooldowns[cfg.id] || undefined,
       isNew: !hasEverRun,
       hasIdentity: cfg.hasIdentity !== false,

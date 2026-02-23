@@ -1570,12 +1570,14 @@ export default function HomePage() {
       setLastSeenChatCount(chatLog.length);
       const lastMsg = chatLog[chatLog.length - 1];
       if (lastMsg) {
-        const agentId = lastMsg.from.toLowerCase();
-        setActiveThought({ agentId, text: `💭 ${lastMsg.text}` });
-        setTimeout(() => setActiveThought(null), 8000);
+        const match = agents.find(a => a.name.toLowerCase() === lastMsg.from.toLowerCase());
+        if (match) {
+          setActiveThought({ agentId: match.id, text: `💭 ${lastMsg.text}` });
+          setTimeout(() => setActiveThought(null), 8000);
+        }
       }
     }
-  }, [chatLog, lastSeenChatCount]);
+  }, [chatLog, lastSeenChatCount, agents]);
 
   // Schedule next chat message — only reschedule when chatLog length changes (new message arrived)
   const chatLogLen = chatLog.length;
