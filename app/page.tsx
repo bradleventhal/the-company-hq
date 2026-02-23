@@ -46,12 +46,17 @@ interface Agent {
   role: string;
   emoji: string;
   color: string;
+  skinColor?: string;
+  shirtColor?: string;
+  hairColor?: string;
   status: AgentStatus;
   mood: Mood;
   task?: string;
   thought?: string;
   lastActive?: string;
   nextTaskAt?: number;
+  isNew?: boolean;
+  hasIdentity?: boolean;
   needs: Needs;
   skills: Skill[];
   xp: number;
@@ -1000,6 +1005,51 @@ export default function HomePage() {
         </div>
       </div>
 
+      {/* Onboarding Banner — shown when all agents are new (never ran) */}
+      {agents.length > 0 && agents.every(a => a.isNew) && (
+        <div style={{
+          background: 'linear-gradient(90deg, rgba(99,102,241,0.1), rgba(236,72,153,0.1))',
+          border: '1px solid rgba(99,102,241,0.3)',
+          borderRadius: 8,
+          padding: '10px 16px',
+          margin: '8px 12px 0',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 10,
+          animation: 'fadeSlideIn 0.5s ease-out',
+        }}>
+          <span style={{ fontSize: 20 }}>👋</span>
+          <div>
+            <div style={{ fontSize: 11, color: '#e2e8f0', fontWeight: 600 }}>Welcome to your office!</div>
+            <div style={{ fontSize: 10, color: '#94a3b8', marginTop: 2 }}>
+              Your agents will appear here once they start working. Send a message in OpenClaw to wake them up!
+              {agents.some(a => !a.hasIdentity) && (
+                <span style={{ color: '#a78bfa' }}> 💡 Add <code style={{ background: '#1e293b', padding: '1px 4px', borderRadius: 3 }}>IDENTITY.md</code> to your agent workspaces to customize their names.</span>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Identity tip — shown when some agents lack IDENTITY.md but aren't all new */}
+      {agents.length > 0 && !agents.every(a => a.isNew) && agents.some(a => !a.hasIdentity) && (
+        <div style={{
+          background: 'rgba(167,139,250,0.08)',
+          border: '1px solid rgba(167,139,250,0.2)',
+          borderRadius: 8,
+          padding: '6px 12px',
+          margin: '8px 12px 0',
+          fontSize: 10,
+          color: '#a78bfa',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6,
+        }}>
+          <span>💡</span>
+          <span>Some agents are using default names. Add <code style={{ background: '#1e293b', padding: '1px 4px', borderRadius: 3 }}>IDENTITY.md</code> to their workspaces to customize!</span>
+        </div>
+      )}
+
       {/* Office Floor */}
       <div style={{
         padding: '8px 12px',
@@ -1111,7 +1161,18 @@ export default function HomePage() {
                         gap: 4,
                       }}
                     >
-                      {a.nextTaskAt && <CooldownTimer targetMs={a.nextTaskAt} />}
+                      {a.isNew && (
+                        <div style={{
+                          background: 'rgba(34,197,94,0.15)',
+                          border: '1px solid rgba(34,197,94,0.4)',
+                          borderRadius: 6,
+                          padding: '2px 8px',
+                          fontSize: 8,
+                          color: '#4ade80',
+                          fontFamily: '"Press Start 2P", monospace',
+                        }}>🆕 NEW</div>
+                      )}
+                      {a.nextTaskAt && !a.isNew && <CooldownTimer targetMs={a.nextTaskAt} />}
                       <NPC
                         agent={a}
                         size={0.9}

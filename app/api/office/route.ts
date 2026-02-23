@@ -27,6 +27,7 @@ interface AgentConfig {
   hairColor?: string;
   sessionKey?: string;
   workingThresholdMin?: number;
+  hasIdentity?: boolean;
 }
 
 /**
@@ -102,9 +103,14 @@ function discoverAgents(): AgentConfig[] {
       const identity = parseIdentityMd(join(workspace, 'IDENTITY.md'));
       
       // Priority: config override > IDENTITY.md > openclaw.json > defaults
-      const name = override.name || identity.name || agent.name || agent.id;
+      // Capitalize raw IDs: "main" → "Main", "my-agent" → "My Agent"
+      const fallbackName = (agent.name || agent.id)
+        .replace(/[-_]/g, ' ')
+        .replace(/\b\w/g, (c: string) => c.toUpperCase());
+      const name = override.name || identity.name || fallbackName;
       const role = override.role || identity.role || identity.creature || 'Agent';
       const emoji = override.emoji || identity.emoji || '🤖';
+      const hasIdentity = !!identity.name;
       
       return {
         id: agent.id,
@@ -117,10 +123,12 @@ function discoverAgents(): AgentConfig[] {
         hairColor: override.hairColor,
         sessionKey: agent.sessionKey || `agent:${agent.id}:main`,
         workingThresholdMin: override.workingThresholdMin || agent.workingThresholdMin || 5,
+        hasIdentity,
       };
     });
 
     // Add owner: check USER.md in the main agent's workspace for name
+    // Only show owner if USER.md exists or owner is configured
     const mainAgent = agentsList.find((a: any) => a.id === 'main');
     const mainWorkspace = mainAgent?.workspace || defaultWorkspace || '';
     let ownerName = ownerConfig.name || '';
@@ -420,6 +428,9 @@ export async function GET() {
       }
     }
 
+    // Detect if agent has ever run
+    const hasEverRun = updatedAt > 0;
+
     return {
       id: cfg.id,
       name: cfg.name,
@@ -432,8 +443,12 @@ export async function GET() {
       status,
       task: status === 'working' ? task : undefined,
       mood,
-      lastActive: status === 'idle' ? (updatedAt ? formatTime(updatedAt) : 'Unknown') : undefined,
+      lastActive: status === 'idle' 
+        ? (hasEverRun ? formatTime(updatedAt) : 'Not yet active') 
+        : undefined,
       nextTaskAt: status === 'idle' && nextCronRuns[cfg.id] ? nextCronRuns[cfg.id] : undefined,
+      isNew: !hasEverRun,
+      hasIdentity: cfg.hasIdentity !== false,
     };
   });
 
