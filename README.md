@@ -12,7 +12,7 @@ Turn your AI agents into pixel art NPCs in a Sims-style virtual office. See who'
 
 ## 🎮 Try the Demo (No Install Required!)
 
-**See it live in 10 seconds:** [localhost:3333/?demo=true](http://localhost:3333/?demo=true)
+**See it live in 10 seconds:** [openclawfice.com/?demo=true](https://openclawfice.com/?demo=true)
 
 Watch 5 agents working in a **live simulated office**:
 - **Agents change status dynamically** — watch them switch between working/idle
@@ -98,7 +98,7 @@ Tell your OpenClaw agent:
 
 ### Demo Mode (Try Before Installing)
 
-Visit `http://localhost:3333/?demo=true` to see a simulated office with 5 agents:
+Visit [openclawfice.com/?demo=true](https://openclawfice.com/?demo=true) to see a simulated office with 5 agents:
 - **No installation required** — works immediately
 - **Live simulation** — agents change status, tasks rotate, chat flows (not static!)
 - **Full interactivity** — click agents, explore quests, view accomplishments
