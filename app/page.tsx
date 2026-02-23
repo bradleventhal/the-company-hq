@@ -465,6 +465,33 @@ function AgentPanel({ agent, onClose, autowork, onAutoworkUpdate, onStop }: { ag
   const [sending, setSending] = useState(false);
   const [sentConfirm, setSentConfirm] = useState(false);
   const [lastSent, setLastSent] = useState('');
+  const [logEntries, setLogEntries] = useState<{ ts: string; role: string; type: string; summary: string }[]>([]);
+  const [logLoading, setLogLoading] = useState(true);
+  const [showWatercooler, setShowWatercooler] = useState(false);
+  const logRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    const fetchLogs = async () => {
+      try {
+        const res = await fetch(`/api/office/logs?agentId=${encodeURIComponent(agent.id)}&limit=50`);
+        if (!res.ok || cancelled) return;
+        const data = await res.json();
+        if (!cancelled) {
+          setLogEntries(data.entries || []);
+          setLogLoading(false);
+          setTimeout(() => {
+            if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight;
+          }, 50);
+        }
+      } catch {
+        if (!cancelled) setLogLoading(false);
+      }
+    };
+    fetchLogs();
+    const interval = setInterval(fetchLogs, 5000);
+    return () => { cancelled = true; clearInterval(interval); };
+  }, [agent.id]);
 
   const sendDM = async () => {
     if (!dmMessage.trim() || sending) return;
@@ -685,6 +712,81 @@ function AgentPanel({ agent, onClose, autowork, onAutoworkUpdate, onStop }: { ag
           </div>
         </div>
       )}
+
+      {/* Activity Log */}
+      <div style={{
+        background: '#1e293b',
+        borderRadius: 8,
+        padding: 12,
+        marginBottom: 16,
+        border: '1px solid #334155',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+          <div style={{ fontSize: 9, color: '#64748b', textTransform: 'uppercase' as const, fontFamily: '"Press Start 2P", monospace' }}>
+            📋 Activity Log
+          </div>
+          <button
+            onClick={() => setShowWatercooler(!showWatercooler)}
+            style={{
+              background: showWatercooler ? 'rgba(99,102,241,0.2)' : 'transparent',
+              border: '1px solid #334155',
+              borderRadius: 4,
+              color: '#64748b',
+              fontSize: 7,
+              padding: '2px 5px',
+              cursor: 'pointer',
+              fontFamily: 'inherit',
+            }}
+          >
+            {showWatercooler ? 'Hide chat' : 'Show chat'}
+          </button>
+        </div>
+        <div
+          ref={logRef}
+          style={{
+            maxHeight: 260,
+            overflowY: 'auto',
+            fontSize: 10,
+            lineHeight: '18px',
+          }}
+        >
+          {logLoading ? (
+            <div style={{ color: '#475569', fontStyle: 'italic', padding: '8px 0' }}>Loading...</div>
+          ) : logEntries.length === 0 ? (
+            <div style={{ color: '#475569', fontStyle: 'italic', padding: '8px 0' }}>No activity yet</div>
+          ) : (
+            logEntries
+              .filter(e => showWatercooler || e.type !== 'watercooler')
+              .map((e, i) => {
+                const icon = e.role === 'assistant'
+                  ? (e.type === 'tool_use' ? '🔧' : '🤖')
+                  : e.role === 'user'
+                    ? (e.type === 'watercooler' ? '💬' : '👤')
+                    : (e.summary.startsWith('⚠️') ? '⚠️' : '✓');
+                const color = e.role === 'assistant'
+                  ? (e.type === 'tool_use' ? '#a78bfa' : '#93c5fd')
+                  : e.role === 'user'
+                    ? (e.type === 'watercooler' ? '#64748b' : '#fbbf24')
+                    : (e.summary.startsWith('⚠️') ? '#f87171' : '#475569');
+                const ts = e.ts ? new Date(e.ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+                return (
+                  <div key={i} style={{
+                    padding: '3px 0',
+                    borderBottom: '1px solid rgba(51,65,85,0.4)',
+                    display: 'flex',
+                    gap: 6,
+                    alignItems: 'flex-start',
+                    opacity: e.type === 'watercooler' ? 0.5 : (e.role === 'tool' ? 0.6 : 1),
+                  }}>
+                    <span style={{ flexShrink: 0, width: 16, textAlign: 'center' }}>{icon}</span>
+                    <span style={{ color, flex: 1, wordBreak: 'break-word' }}>{e.summary}</span>
+                    {ts && <span style={{ color: '#334155', fontSize: 8, flexShrink: 0 }}>{ts}</span>}
+                  </div>
+                );
+              })
+          )}
+        </div>
+      </div>
 
       {/* Auto-Work */}
       {agent.id !== '_owner' && (
