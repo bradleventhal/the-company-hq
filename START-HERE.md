@@ -6,23 +6,28 @@
 
 ## ✅ What's Been Shipped Today
 
-### 1. 🎮 Demo Mode (Complete)
+### 1. 🎮 Demo Mode with Live Simulation (Complete)
 **What it is:** Try-before-install experience at `localhost:3333/?demo=true`
 
 **Why it matters:** 
 - #1 viral feature — people can try it in 10 seconds without installing
 - Target: 30%+ conversion from demo viewers to installers
 - Eliminates the biggest barrier to adoption
+- **Live simulation makes it feel alive** — agents change status, tasks rotate, chat flows
 
 **What's included:**
 - 5 simulated agents (Nova, Forge, Lens, Pixel, Cipher)
-- Pre-loaded quest, accomplishments, chat, and active meeting
+- **Live agent simulation** — agents switch between working/idle, tasks rotate through realistic pools
+- **Live chat simulation** — new water cooler messages appear every 8-15 seconds
+- Pre-loaded quest, accomplishments, and active meeting
 - Full interactivity (click agents, explore UI)
 - Demo banner with "Install OpenClawfice" CTA
 - All writes are no-ops (safe read-only sandbox)
 
-**Files changed:** 16 files, demo API endpoints, banner component, routing logic  
-**Commit:** b26ebe1
+**Files changed:** 16 files, demo API endpoints, live simulation logic, banner component, routing logic  
+**Commit:** b26ebe1 (base), live simulation added Feb 23
+
+**Key technical detail:** Demo mode isn't static — agents and chat update dynamically on each API poll (3s intervals) to create the feeling of a living workspace. This is what makes it viral.
 
 ---
 

@@ -70,7 +70,7 @@ export default function LandingPage() {
           marginBottom: 60,
         }}>
           <a
-            href="/?demo=true"
+            href="/demo"
             style={{
               display: 'inline-block',
               padding: '16px 32px',
@@ -380,7 +380,7 @@ export default function LandingPage() {
           flexWrap: 'wrap',
         }}>
           <a
-            href="/?demo=true"
+            href="/demo"
             style={{
               display: 'inline-block',
               padding: '20px 40px',

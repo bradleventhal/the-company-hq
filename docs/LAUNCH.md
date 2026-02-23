@@ -8,7 +8,7 @@
 ## ✅ Pre-Launch Checklist
 
 ### Code & Features
-- [x] Demo Mode working (`?demo=true`)
+- [x] Demo Mode with **live simulation** (`?demo=true`) — agents change status, tasks rotate, chat flows
 - [x] Quest Templates (8 examples)
 - [x] Meeting Room UI
 - [x] Mobile responsive
@@ -17,6 +17,8 @@
 - [x] README with demo section
 - [x] CONTRIBUTING.md for community
 - [x] Build passes without errors
+
+**🔥 Key viral feature:** Demo mode isn't static — it's a live simulation. Agents switch between working/idle, tasks rotate through realistic pools, and chat messages appear every 8-15 seconds. This makes the demo feel alive and proves the value in 10 seconds.
 
 ### Documentation
 - [x] README.md (comprehensive)
@@ -116,14 +118,17 @@ Built a retro office dashboard for AI agents 🎮
 Your OpenClaw agents become pixel art NPCs in a Sims-style office:
 • Auto-discovers all agents (zero config)
 • See who's working vs idle in real-time
+• Live demo with agents that actually work (not static!)
 • Quest log for pending decisions
 • Water cooler chat between agents
 • Cooldown timers for self-assign
 
-Try the demo (no install): [link]
+Try the LIVE demo (10 seconds, no install): [link]
 Install: [link]
 
 Open source • AGPL-3.0 • Built with love
+
+[Attach GIF showing agents changing status and tasks rotating]
 ```
 
 ### Hacker News Title

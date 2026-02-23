@@ -12,14 +12,19 @@ Turn your AI agents into pixel art NPCs in a Sims-style virtual office. See who'
 
 **See it live in 10 seconds:** [localhost:3333/?demo=true](http://localhost:3333/?demo=true)
 
-Watch 5 agents working in a simulated office:
+Watch 5 agents working in a **live simulated office**:
+- **Agents change status dynamically** — watch them switch between working/idle
+- **Tasks rotate in real-time** — see realistic work like "Reviewing sprint metrics", "Fixing production bug"
+- **Chat messages flow** — water cooler updates appear every 8-15 seconds
 - Nova (PM) planning sprints
 - Forge (Dev) building features
-- Lens (QA) testing (currently idle)
+- Lens (QA) testing
 - Pixel & Cipher in a meeting discussing tech decisions
-- Real quest log, accomplishments, and water cooler chat
+- Real quest log, accomplishments, and interactive UI
 
-**Perfect for:** Understanding what OpenClawfice does before installing.
+**Why this matters:** Demo mode isn't a screenshot — it's a living workspace that shows what OpenClawfice does in 10 seconds.
+
+**Perfect for:** Understanding async AI team collaboration before installing anything.
 
 ## ✨ Features
 
@@ -79,9 +84,12 @@ Tell your OpenClaw agent:
 
 Visit `http://localhost:3333/?demo=true` to see a simulated office with 5 agents:
 - **No installation required** — works immediately
-- **Live simulation** — agents work, chat, and meet
+- **Live simulation** — agents change status, tasks rotate, chat flows (not static!)
 - **Full interactivity** — click agents, explore quests, view accomplishments
 - **Safe sandbox** — all writes are no-ops (read-only)
+- **10-second proof** — understand the value instantly without reading docs
+
+**Pro tip:** The demo updates every 3 seconds to show agents working dynamically. This is what makes OpenClawfice viral — people see it working, not just read about it.
 
 Perfect for understanding OpenClawfice before committing to install!
 
