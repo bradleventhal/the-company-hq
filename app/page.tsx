@@ -756,6 +756,15 @@ export default function HomePage() {
   const [groupMessage, setGroupMessage] = useState('');
   const [sendingGroup, setSendingGroup] = useState(false);
   const [groupSent, setGroupSent] = useState(false);
+  const [meeting, setMeeting] = useState<{
+    active: boolean;
+    topic?: string;
+    participants?: string[];
+    currentRound?: number;
+    maxRounds?: number;
+    startedAt?: number;
+    lastMessage?: string;
+  }>({ active: false });
 
   useEffect(() => {
     const i = setInterval(() => setTime(new Date()), 1000);
@@ -796,6 +805,22 @@ export default function HomePage() {
     };
     fetchStatus();
     const i = setInterval(fetchStatus, 3000);
+    return () => clearInterval(i);
+  }, []);
+
+  // Poll meeting status every 3s
+  useEffect(() => {
+    const fetchMeeting = async () => {
+      try {
+        const res = await fetch('/api/office/meeting');
+        const data = await res.json();
+        setMeeting(data);
+      } catch (err) {
+        console.error('Failed to fetch meeting status:', err);
+      }
+    };
+    fetchMeeting();
+    const i = setInterval(fetchMeeting, 3000);
     return () => clearInterval(i);
   }, []);
 
@@ -1133,6 +1158,138 @@ export default function HomePage() {
               )}
             </div>
           </Room>
+
+          {/* MEETING ROOM — only appears when meeting.active = true */}
+          {meeting.active && (
+            <Room
+              title="Meeting Room"
+              icon="🤝"
+              color="#1a0a2e"
+              borderColor="#7c3aed"
+              style={{
+                flex: '0 0 auto',
+                animation: 'fadeSlideIn 0.5s ease-out',
+              }}
+            >
+              <div style={{
+                padding: '16px 8px 8px',
+                minHeight: 120,
+              }}>
+                {/* Topic */}
+                <div style={{
+                  textAlign: 'center',
+                  marginBottom: 12,
+                  fontSize: 11,
+                  color: '#c4b5fd',
+                  fontWeight: 600,
+                }}>
+                  {meeting.topic || 'Discussion in progress...'}
+                </div>
+
+                {/* Progress indicators */}
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  gap: 12,
+                  marginBottom: 16,
+                }}>
+                  <div style={{
+                    background: 'rgba(124,58,237,0.15)',
+                    border: '1px solid rgba(124,58,237,0.4)',
+                    borderRadius: 6,
+                    padding: '3px 8px',
+                    fontSize: 9,
+                    color: '#a78bfa',
+                    fontFamily: '"Press Start 2P", monospace',
+                  }}>
+                    Round {meeting.currentRound}/{meeting.maxRounds}
+                  </div>
+                  <div style={{
+                    background: 'rgba(124,58,237,0.15)',
+                    border: '1px solid rgba(124,58,237,0.4)',
+                    borderRadius: 6,
+                    padding: '3px 8px',
+                    fontSize: 9,
+                    color: '#a78bfa',
+                    fontFamily: '"Press Start 2P", monospace',
+                  }}>
+                    {(() => {
+                      const elapsed = Date.now() - (meeting.startedAt || Date.now());
+                      const mins = Math.floor(elapsed / 60000);
+                      const secs = Math.floor((elapsed % 60000) / 1000);
+                      return `${mins}:${secs.toString().padStart(2, '0')} elapsed`;
+                    })()}
+                  </div>
+                </div>
+
+                {/* Participants facing each other */}
+                <div style={{
+                  position: 'relative',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  gap: 40,
+                }}>
+                  {meeting.participants && meeting.participants.length >= 2 && (() => {
+                    const participant1 = agents.find(a => a.id === meeting.participants![0]);
+                    const participant2 = agents.find(a => a.id === meeting.participants![1]);
+                    
+                    return (
+                      <>
+                        {participant1 && (
+                          <div style={{ position: 'relative' }}>
+                            <NPC
+                              agent={participant1}
+                              size={0.85}
+                              onClick={() => setSelectedAgent(participant1)}
+                            />
+                          </div>
+                        )}
+                        
+                        {/* Thought bubble with lastMessage between participants */}
+                        {meeting.lastMessage && (
+                          <div style={{
+                            position: 'absolute',
+                            top: -10,
+                            left: '50%',
+                            transform: 'translateX(-50%)',
+                            background: 'rgba(255,255,255,0.95)',
+                            color: '#1a1a2e',
+                            padding: '6px 12px',
+                            borderRadius: 10,
+                            fontSize: 10,
+                            maxWidth: 300,
+                            textAlign: 'center',
+                            boxShadow: '0 2px 12px rgba(0,0,0,0.3)',
+                            lineHeight: 1.3,
+                            animation: 'fadeSlideIn 0.3s ease-out',
+                            zIndex: 10,
+                          }}>
+                            {meeting.lastMessage.length > 100 
+                              ? meeting.lastMessage.slice(0, 97) + '...' 
+                              : meeting.lastMessage}
+                          </div>
+                        )}
+
+                        {participant2 && (
+                          <div style={{
+                            position: 'relative',
+                            transform: 'scaleX(-1)',
+                          }}>
+                            <NPC
+                              agent={participant2}
+                              size={0.85}
+                              onClick={() => setSelectedAgent(participant2)}
+                            />
+                          </div>
+                        )}
+                      </>
+                    );
+                  })()}
+                </div>
+              </div>
+            </Room>
+          )}
 
           {/* LOUNGE + QUEST LOG */}
           <div style={{
