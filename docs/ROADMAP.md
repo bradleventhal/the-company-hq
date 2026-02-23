@@ -72,6 +72,13 @@ _No active development tasks at the moment. All P0/P1 features shipped!_
   - Includes demo link + GitHub link
   - Encourages Twitter/Reddit/Discord/HN sharing
   - **Impact:** Frictionless viral sharing loop
+- [x] **Feature Showcase Page** (4213b41) — Marketing landing page
+  - `/showcase` route with 8 feature cards
+  - Interactive hover effects and colors
+  - Screenshot section + install CTAs
+  - Perfect for social sharing and paid ads
+  - Professional marketing aesthetic
+  - **Impact:** Visual content for viral campaigns
 - [ ] Agent detail panel config (customize skills/XP/needs via config)
 - [ ] Dark/light theme toggle
 - [ ] Custom agent avatars (upload images)
