@@ -1201,6 +1201,10 @@ export default function HomePage() {
   const [pendingActions, setPendingActions] = useState<PendingAction[]>([]);
   const [accomplishments, setAccomplishments] = useState<Accomplishment[]>([]);
   const [selectedAccomplishment, setSelectedAccomplishment] = useState<Accomplishment | null>(null);
+  const [archivedAccomplishments, setArchivedAccomplishments] = useState<Accomplishment[]>([]);
+  const [archiveTotal, setArchiveTotal] = useState(0);
+  const [archiveLoading, setArchiveLoading] = useState(false);
+  const [showArchive, setShowArchive] = useState(false);
   const [expandedAction, setExpandedAction] = useState<string | null>(null);
   const [expandedTask, setExpandedTask] = useState<string | null>(null);
   const [chatLog, setChatLog] = useState<ChatMessage[]>([]);
@@ -1362,11 +1366,30 @@ export default function HomePage() {
         if (data.actions) setPendingActions(data.actions);
         if (data.accomplishments) setAccomplishments(data.accomplishments);
       } catch {}
+      try {
+        const ar = await fetch('/api/office/actions?archiveOffset=0&limit=0');
+        const ad = await ar.json();
+        if (typeof ad.archiveTotal === 'number') setArchiveTotal(ad.archiveTotal);
+      } catch {}
     };
     fetchActions();
     const i = setInterval(fetchActions, 5000);
     return () => clearInterval(i);
   }, []);
+
+  const loadArchive = async (reset = false) => {
+    setArchiveLoading(true);
+    try {
+      const offset = reset ? 0 : archivedAccomplishments.length;
+      const res = await fetch(`/api/office/actions?archiveOffset=${offset}&limit=50`);
+      const data = await res.json();
+      if (data.archive) {
+        setArchivedAccomplishments(prev => reset ? data.archive : [...prev, ...data.archive]);
+        setArchiveTotal(data.archiveTotal || 0);
+      }
+    } catch {}
+    setArchiveLoading(false);
+  };
 
   // Poll chat from main office API (included in data.chatLog)
   useEffect(() => {
@@ -2154,8 +2177,28 @@ export default function HomePage() {
                 fontSize: 8,
                 color: '#475569',
                 marginLeft: 'auto',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
               }}>
-                {accomplishments.length} total
+                {accomplishments.length} recent
+                {archiveTotal > 0 && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); if (!showArchive) loadArchive(true); setShowArchive(!showArchive); }}
+                    style={{
+                      background: showArchive ? 'rgba(99,102,241,0.2)' : 'rgba(99,102,241,0.08)',
+                      border: '1px solid rgba(99,102,241,0.2)',
+                      borderRadius: 4,
+                      color: '#818cf8',
+                      fontSize: 7,
+                      padding: '2px 5px',
+                      cursor: 'pointer',
+                      fontFamily: 'inherit',
+                    }}
+                  >
+                    {showArchive ? 'Hide History' : `${archiveTotal} archived`}
+                  </button>
+                )}
               </span>
             </div>
             <div style={{
@@ -2252,6 +2295,63 @@ export default function HomePage() {
                       Auto-detected from agent activity ✨
                     </span>
                   </div>
+                </div>
+              )}
+              {showArchive && (
+                <div style={{ marginTop: 8, borderTop: '1px solid rgba(99,102,241,0.15)', paddingTop: 8 }}>
+                  <div style={{ fontSize: 8, color: '#818cf8', fontWeight: 700, textTransform: 'uppercase' as const, marginBottom: 6, fontFamily: '"Press Start 2P", monospace' }}>
+                    History ({archiveTotal} archived)
+                  </div>
+                  {archivedAccomplishments.map((a, i) => {
+                    const dateStr = new Date(a.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+                    return (
+                      <div
+                        key={`arch-${a.id || i}`}
+                        onClick={() => setSelectedAccomplishment(a)}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 8,
+                          padding: '4px 8px',
+                          background: 'rgba(99,102,241,0.03)',
+                          border: '1px solid rgba(99,102,241,0.08)',
+                          borderRadius: 6,
+                          cursor: 'pointer',
+                          marginBottom: 3,
+                          opacity: 0.8,
+                        }}
+                      >
+                        <span style={{ fontSize: 14, flexShrink: 0 }}>{a.icon}</span>
+                        <div style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          <span style={{ fontSize: 9, fontWeight: 600, color: '#cbd5e1' }}>{a.title}</span>
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 1, flexShrink: 0 }}>
+                          <span style={{ fontSize: 7, fontWeight: 600, color: '#6366f1' }}>{a.who}</span>
+                          <span style={{ fontSize: 7, color: '#475569' }}>{dateStr}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                  {archivedAccomplishments.length < archiveTotal && (
+                    <button
+                      onClick={() => loadArchive()}
+                      disabled={archiveLoading}
+                      style={{
+                        width: '100%',
+                        marginTop: 4,
+                        padding: '5px 0',
+                        background: 'rgba(99,102,241,0.08)',
+                        border: '1px solid rgba(99,102,241,0.15)',
+                        borderRadius: 6,
+                        color: '#818cf8',
+                        fontSize: 8,
+                        cursor: archiveLoading ? 'wait' : 'pointer',
+                        fontFamily: 'inherit',
+                      }}
+                    >
+                      {archiveLoading ? 'Loading...' : `Load more (${archiveTotal - archivedAccomplishments.length} remaining)`}
+                    </button>
+                  )}
                 </div>
               )}
             </div>

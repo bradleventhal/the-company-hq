@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { readFileSync, existsSync, writeFileSync } from 'fs';
+import { readFileSync, existsSync, writeFileSync, appendFileSync } from 'fs';
 import { join } from 'path';
 import { homedir } from 'os';
 
@@ -7,6 +7,7 @@ const OPENCLAW_DIR = join(homedir(), '.openclaw');
 const STATUS_DIR = join(OPENCLAW_DIR, '.status');
 const ACTIONS_FILE = join(STATUS_DIR, 'actions.json');
 const ACCOMPLISHMENTS_FILE = join(STATUS_DIR, 'accomplishments.json');
+const ACCOMPLISHMENTS_ARCHIVE = join(STATUS_DIR, 'accomplishments-archive.jsonl');
 const RESPONSES_FILE = join(STATUS_DIR, 'responses.json');
 
 const CONFIG_PATHS = [
@@ -60,12 +61,50 @@ function writeJson(path: string, data: any[]) {
 const MAX_ACCOMPLISHMENTS = 200;
 
 function trimAccomplishments(list: any[]): any[] {
-  return list.length > MAX_ACCOMPLISHMENTS
-    ? list.slice(list.length - MAX_ACCOMPLISHMENTS)
-    : list;
+  if (list.length <= MAX_ACCOMPLISHMENTS) return list;
+
+  const overflow = list.slice(0, list.length - MAX_ACCOMPLISHMENTS);
+  try {
+    ensureStatusDir();
+    const lines = overflow.map(a => JSON.stringify(a)).join('\n') + '\n';
+    appendFileSync(ACCOMPLISHMENTS_ARCHIVE, lines);
+  } catch {}
+
+  return list.slice(list.length - MAX_ACCOMPLISHMENTS);
 }
 
-export async function GET() {
+function readArchive(offset: number, limit: number): { items: any[]; total: number } {
+  try {
+    if (!existsSync(ACCOMPLISHMENTS_ARCHIVE)) return { items: [], total: 0 };
+    const raw = readFileSync(ACCOMPLISHMENTS_ARCHIVE, 'utf-8').trim();
+    if (!raw) return { items: [], total: 0 };
+    const lines = raw.split('\n');
+    const total = lines.length;
+    // Reverse so newest archived items come first
+    const reversed = lines.reverse();
+    const sliced = reversed.slice(offset, offset + limit);
+    const items = sliced.map(l => { try { return JSON.parse(l); } catch { return null; } }).filter(Boolean);
+    return { items, total };
+  } catch {
+    return { items: [], total: 0 };
+  }
+}
+
+export async function GET(request: Request) {
+  const url = new URL(request.url);
+  const archiveOffset = parseInt(url.searchParams.get('archiveOffset') || '', 10);
+
+  if (!isNaN(archiveOffset)) {
+    const limit = Math.min(parseInt(url.searchParams.get('limit') || '50', 10), 200);
+    const archive = readArchive(archiveOffset, limit);
+    return NextResponse.json({
+      archive: archive.items,
+      archiveTotal: archive.total,
+      offset: archiveOffset,
+      limit,
+    });
+  }
+
   return NextResponse.json({
     actions: readJson(ACTIONS_FILE),
     accomplishments: readJson(ACCOMPLISHMENTS_FILE),

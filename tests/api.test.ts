@@ -72,12 +72,25 @@ describe('/api/office/config', () => {
 describe('/api/office/actions', () => {
   it('GET returns valid structure', async () => {
     const { GET } = await import('../app/api/office/actions/route');
-    const res = await GET();
+    const req = new Request('http://localhost/api/office/actions');
+    const res = await GET(req);
     const data = await res.json();
 
     expect(Array.isArray(data.actions)).toBe(true);
     expect(Array.isArray(data.accomplishments)).toBe(true);
     expect(data.timestamp).toBeDefined();
+  });
+
+  it('GET with archiveOffset returns archive structure', async () => {
+    const { GET } = await import('../app/api/office/actions/route');
+    const req = new Request('http://localhost/api/office/actions?archiveOffset=0&limit=10');
+    const res = await GET(req);
+    const data = await res.json();
+
+    expect(Array.isArray(data.archive)).toBe(true);
+    expect(typeof data.archiveTotal).toBe('number');
+    expect(data.offset).toBe(0);
+    expect(data.limit).toBe(10);
   });
 
   it('POST add_action creates a quest', async () => {
