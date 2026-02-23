@@ -400,7 +400,7 @@ export default function InstallPage() {
           paddingBottom: 20,
         }}>
           <p style={{ fontSize: 12, color: '#64748b', marginBottom: 12 }}>
-            Open source • MIT licensed
+            Open source • AGPL-3.0 licensed
           </p>
           <div style={{ display: 'flex', gap: 16, justifyContent: 'center', fontSize: 13 }}>
             <a href="https://github.com/openclawfice/openclawfice" style={{ color: '#6366f1', textDecoration: 'none' }}>

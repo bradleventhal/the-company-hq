@@ -255,7 +255,7 @@ See [STATUS-FILES.md](./STATUS-FILES.md) for complete documentation.
 
 ## 🤝 Contributing
 
-Contributions welcome! This is an open source project (MIT license).
+Contributions welcome! This is an open source project (AGPL-3.0 license).
 
 1. Fork the repo
 2. Create a feature branch
