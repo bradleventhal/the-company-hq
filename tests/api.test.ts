@@ -8,7 +8,7 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync } from 'fs';
 import { join } from 'path';
-import { tmpdir } from 'os';
+import { tmpdir, homedir } from 'os';
 
 // Create an isolated temp directory for each test run so we don't touch real files
 const TEST_DIR = join(tmpdir(), `openclawfice-test-${Date.now()}`);
@@ -245,20 +245,31 @@ describe('/api/office/chat', () => {
   });
 
   it('POST user_message adds to chat log', async () => {
-    const { POST } = await import('../app/api/office/chat/route');
-    const req = new Request('http://localhost/api/office/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        type: 'user_message',
-        from: 'Tyler',
-        text: 'Hey team, how is everyone doing?',
-      }),
-    });
+    const chatFile = join(homedir(), '.openclaw', '.status', 'chat.json');
+    let chatBefore: string | null = null;
+    try { chatBefore = readFileSync(chatFile, 'utf-8'); } catch {}
 
-    const res = await POST(req);
-    const data = await res.json();
-    expect(data.success).toBe(true);
+    try {
+      const { POST } = await import('../app/api/office/chat/route');
+      const req = new Request('http://localhost/api/office/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'user_message',
+          from: '__test__',
+          text: '__test_message__',
+        }),
+      });
+
+      const res = await POST(req);
+      const data = await res.json();
+      expect(data.success).toBe(true);
+    } finally {
+      // Restore chat file so test messages don't pollute the live chat
+      if (chatBefore !== null) {
+        writeFileSync(chatFile, chatBefore);
+      }
+    }
   });
 
   it('POST with empty agents returns error', async () => {
