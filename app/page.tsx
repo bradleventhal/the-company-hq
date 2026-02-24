@@ -3495,6 +3495,56 @@ export default function HomePage() {
                   </div>
                 </div>
               )}
+
+              {/* Fallback — any quest type without specific handler or options gets approve/dismiss + notes */}
+              {!action.data?.options
+                && action.type !== 'approve_email' && action.type !== 'approve_send'
+                && action.type !== 'input_needed' && action.type !== 'decision'
+                && action.type !== 'review_data' && action.type !== 'review'
+                && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                    <button onClick={() => respondAction('approved')} style={{
+                      background: '#166534', border: '1px solid #22c55e', borderRadius: 6,
+                      padding: '8px 20px', color: '#4ade80', cursor: 'pointer',
+                      fontWeight: 700, fontFamily: '"Press Start 2P", monospace', fontSize: 9,
+                    }}>✅ APPROVE</button>
+                    <button onClick={() => respondAction('dismissed')} style={{
+                      background: '#1e293b', border: '1px solid #334155', borderRadius: 6,
+                      padding: '8px 20px', color: '#94a3b8', cursor: 'pointer',
+                      fontFamily: '"Press Start 2P", monospace', fontSize: 9,
+                    }}>🗑️ DISMISS</button>
+                  </div>
+                  <div style={{ display: 'flex', gap: 6 }}>
+                    <input
+                      type="text"
+                      autoFocus
+                      placeholder="Or respond with notes..."
+                      id={`quest-input-${action.id}`}
+                      style={{
+                        flex: 1, background: '#1e293b', border: '1px solid #334155',
+                        borderRadius: 6, padding: '8px 12px', color: '#e2e8f0',
+                        fontSize: 12, outline: 'none',
+                      }}
+                      onKeyDown={async (e) => {
+                        if (e.key === 'Enter') {
+                          const val = (e.target as HTMLInputElement).value.trim();
+                          if (val) respondAction(val);
+                        }
+                      }}
+                    />
+                    <button onClick={() => {
+                      const input = document.getElementById(`quest-input-${action.id}`) as HTMLInputElement;
+                      const val = input?.value.trim();
+                      if (val) respondAction(val);
+                    }} style={{
+                      background: '#4f46e5', border: 'none', borderRadius: 6,
+                      padding: '8px 16px', color: '#fff', cursor: 'pointer',
+                      fontFamily: '"Press Start 2P", monospace', fontSize: 9,
+                    }}>SEND</button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         );

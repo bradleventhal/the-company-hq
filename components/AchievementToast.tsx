@@ -27,8 +27,8 @@ function AchievementToastItem({ toast, onDismiss }: AchievementToastProps) {
   const [exiting, setExiting] = useState(false);
 
   useEffect(() => {
-    const exitTimer = setTimeout(() => setExiting(true), 3500);
-    const removeTimer = setTimeout(() => onDismiss(toast.id), 4200);
+    const exitTimer = setTimeout(() => setExiting(true), 2800);
+    const removeTimer = setTimeout(() => onDismiss(toast.id), 3300);
     return () => {
       clearTimeout(exitTimer);
       clearTimeout(removeTimer);
@@ -53,12 +53,12 @@ function AchievementToastItem({ toast, onDismiss }: AchievementToastProps) {
         cursor: 'pointer',
         animation: exiting ? 'toastSlideOut 0.3s ease-in forwards' : 'toastSlideIn 0.4s ease-out forwards',
         boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 0 15px rgba(99,102,241,0.15)',
-        maxWidth: 360,
+        maxWidth: '100%',
         backdropFilter: 'blur(8px)',
       }}
     >
       {/* Icon */}
-      <span style={{ fontSize: 20 }}>{toast.icon || '⭐'}</span>
+      <span style={{ fontSize: 16 }}>{toast.icon || '⭐'}</span>
 
       {/* Content */}
       <div style={{ flex: 1, minWidth: 0 }}>
@@ -131,18 +131,18 @@ export function AchievementToastContainer({ toasts, onDismiss }: AchievementToas
   if (toasts.length === 0) return null;
 
   return (
-    <div style={{
+    <div className="achievement-toast-container" style={{
       position: 'fixed',
       bottom: 20,
-      left: '50%',
-      transform: 'translateX(-50%)',
+      right: 20,
       zIndex: 9999,
       display: 'flex',
       flexDirection: 'column-reverse',
-      gap: 8,
+      gap: 6,
       pointerEvents: 'none',
+      maxWidth: 'min(360px, calc(100vw - 40px))',
     }}>
-      {toasts.slice(-3).map(toast => (
+      {toasts.slice(-2).map(toast => (
         <div key={toast.id} style={{ pointerEvents: 'auto' }}>
           <AchievementToastItem toast={toast} onDismiss={onDismiss} />
         </div>
