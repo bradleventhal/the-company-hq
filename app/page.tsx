@@ -1836,37 +1836,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Leaderboard */}
-          <div style={{
-            background: '#0f172a',
-            border: '2px solid #1e293b',
-            borderRadius: 8,
-            padding: '6px 10px',
-            flexShrink: 0,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-          }}>
-            <span style={{ fontSize: 10 }}>🏆</span>
-            {[...agents]
-              .sort((a, b) => b.xp - a.xp)
-              .slice(0, 3)
-              .map((a, i) => (
-                <div
-                  key={a.id}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 4,
-                    fontSize: 9,
-                  }}
-                >
-                  <span>{i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉'}</span>
-                  <span style={{ fontWeight: 600, color: a.color }}>{a.name}</span>
-                  <span style={{ color: '#6366f1' }}>{a.xp.toLocaleString()}</span>
-                </div>
-              ))}
-          </div>
+          {/* Leaderboard removed — XP visible in agent panel */}
         </div>
       </div>
       )}
