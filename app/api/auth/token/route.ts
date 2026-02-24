@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { getOrCreateToken } from '../../../../lib/auth';
 
+// Must use Node.js runtime for fs access
+export const runtime = 'nodejs';
+
 /**
  * Public endpoint to retrieve the auth token.
  * 
