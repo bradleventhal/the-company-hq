@@ -234,49 +234,231 @@ export function NPC({ agent, size = 1, onClick, forceThought, flipped, hasCelebr
         }} />
         {/* Accessory */}
         <NpcAccessory accessory={traits.accessory} s={s} shirtColor={shirtColor} />
-        {/* Eyes */}
-        <div style={{
-          position: 'absolute',
-          top: s * 2.5,
-          left: s * 2,
-          width: s * 0.8,
-          height: s * 0.8,
-          background: '#1a1a2e',
-          borderRadius: '50%',
-          animation: 'npcBlink 4s ease-in-out infinite',
-        }} />
-        <div style={{
-          position: 'absolute',
-          top: s * 2.5,
-          left: s * 5.2,
-          width: s * 0.8,
-          height: s * 0.8,
-          background: '#1a1a2e',
-          borderRadius: '50%',
-          animation: 'npcBlink 4s ease-in-out infinite',
-        }} />
-        {/* Smile/Frown */}
-        {agent.mood === 'stressed' ? (
-          <div style={{
-            position: 'absolute',
-            top: s * 3.5,
-            left: s * 2.5,
-            width: s * 3,
-            height: s * 0.5,
-            borderTop: `${s * 0.4}px solid #1a1a2e`,
-            borderRadius: '0 0 50% 50%',
-          }} />
-        ) : (
-          <div style={{
-            position: 'absolute',
-            top: s * 3.3,
-            left: s * 2.5,
-            width: s * 3,
-            height: s * 0.8,
-            borderBottom: `${s * 0.4}px solid #1a1a2e`,
-            borderRadius: '0 0 50% 50%',
-          }} />
-        )}
+        {/* Eyes - Dynamic based on status/mood */}
+        {(() => {
+          // Determine expression based on status and mood
+          const isHappy = agent.status === 'working' && agent.mood === 'great';
+          const isFocused = agent.status === 'working' && agent.mood !== 'stressed';
+          const isStressed = agent.mood === 'stressed';
+          const isChill = agent.status !== 'working';
+
+          // Happy eyes: Wide and bright (^_^)
+          if (isHappy) {
+            return (<>
+              <div style={{
+                position: 'absolute',
+                top: s * 2.7,
+                left: s * 1.8,
+                width: s * 1.2,
+                height: s * 0.3,
+                background: '#1a1a2e',
+                borderRadius: '50%',
+                transform: 'rotate(-15deg)',
+              }} />
+              <div style={{
+                position: 'absolute',
+                top: s * 2.7,
+                left: s * 5,
+                width: s * 1.2,
+                height: s * 0.3,
+                background: '#1a1a2e',
+                borderRadius: '50%',
+                transform: 'rotate(15deg)',
+              }} />
+            </>);
+          }
+
+          // Focused eyes: Narrowed and determined (o_o)
+          if (isFocused) {
+            return (<>
+              <div style={{
+                position: 'absolute',
+                top: s * 2.5,
+                left: s * 2,
+                width: s * 0.8,
+                height: s * 0.6,
+                background: '#1a1a2e',
+                borderRadius: s * 0.3,
+              }} />
+              <div style={{
+                position: 'absolute',
+                top: s * 2.5,
+                left: s * 5.2,
+                width: s * 0.8,
+                height: s * 0.6,
+                background: '#1a1a2e',
+                borderRadius: s * 0.3,
+              }} />
+            </>);
+          }
+
+          // Stressed eyes: Wide and worried (O_O)
+          if (isStressed) {
+            return (<>
+              <div style={{
+                position: 'absolute',
+                top: s * 2.3,
+                left: s * 2,
+                width: s * 1,
+                height: s * 1,
+                background: '#1a1a2e',
+                borderRadius: '50%',
+              }} />
+              <div style={{
+                position: 'absolute',
+                top: s * 2.3,
+                left: s * 5,
+                width: s * 1,
+                height: s * 1,
+                background: '#1a1a2e',
+                borderRadius: '50%',
+              }} />
+              {/* Stress sweat drops */}
+              <div style={{
+                position: 'absolute',
+                top: s * 3,
+                left: s * 1.5,
+                width: s * 0.4,
+                height: s * 0.6,
+                background: '#3b82f6',
+                borderRadius: '50% 50% 50% 0',
+                transform: 'rotate(45deg)',
+                opacity: 0.7,
+              }} />
+            </>);
+          }
+
+          // Chill eyes: Half-closed and relaxed (-_-)
+          if (isChill) {
+            return (<>
+              <div style={{
+                position: 'absolute',
+                top: s * 2.6,
+                left: s * 2,
+                width: s * 0.8,
+                height: s * 0.4,
+                background: '#1a1a2e',
+                borderRadius: s * 0.2,
+                animation: 'npcBlink 4s ease-in-out infinite',
+              }} />
+              <div style={{
+                position: 'absolute',
+                top: s * 2.6,
+                left: s * 5.2,
+                width: s * 0.8,
+                height: s * 0.4,
+                background: '#1a1a2e',
+                borderRadius: s * 0.2,
+                animation: 'npcBlink 4s ease-in-out infinite',
+              }} />
+            </>);
+          }
+
+          // Default: Normal round eyes
+          return (<>
+            <div style={{
+              position: 'absolute',
+              top: s * 2.5,
+              left: s * 2,
+              width: s * 0.8,
+              height: s * 0.8,
+              background: '#1a1a2e',
+              borderRadius: '50%',
+              animation: 'npcBlink 4s ease-in-out infinite',
+            }} />
+            <div style={{
+              position: 'absolute',
+              top: s * 2.5,
+              left: s * 5.2,
+              width: s * 0.8,
+              height: s * 0.8,
+              background: '#1a1a2e',
+              borderRadius: '50%',
+              animation: 'npcBlink 4s ease-in-out infinite',
+            }} />
+          </>);
+        })()}
+
+        {/* Mouth - Dynamic based on status/mood */}
+        {(() => {
+          const isHappy = agent.status === 'working' && agent.mood === 'great';
+          const isFocused = agent.status === 'working' && agent.mood !== 'stressed';
+          const isStressed = agent.mood === 'stressed';
+          const isChill = agent.status !== 'working';
+
+          // Happy: Big smile
+          if (isHappy) {
+            return (
+              <div style={{
+                position: 'absolute',
+                top: s * 3.2,
+                left: s * 2,
+                width: s * 4,
+                height: s * 1.2,
+                borderBottom: `${s * 0.5}px solid #1a1a2e`,
+                borderRadius: '0 0 60% 60%',
+              }} />
+            );
+          }
+
+          // Focused: Determined line
+          if (isFocused) {
+            return (
+              <div style={{
+                position: 'absolute',
+                top: s * 3.5,
+                left: s * 2.5,
+                width: s * 3,
+                height: s * 0.4,
+                background: '#1a1a2e',
+                borderRadius: s * 0.2,
+              }} />
+            );
+          }
+
+          // Stressed: Worried frown
+          if (isStressed) {
+            return (
+              <div style={{
+                position: 'absolute',
+                top: s * 3.8,
+                left: s * 2.5,
+                width: s * 3,
+                height: s * 0.6,
+                borderTop: `${s * 0.5}px solid #1a1a2e`,
+                borderRadius: '50% 50% 0 0',
+              }} />
+            );
+          }
+
+          // Chill: Content smile
+          if (isChill) {
+            return (
+              <div style={{
+                position: 'absolute',
+                top: s * 3.4,
+                left: s * 2.5,
+                width: s * 3,
+                height: s * 0.6,
+                borderBottom: `${s * 0.4}px solid #1a1a2e`,
+                borderRadius: '0 0 40% 40%',
+              }} />
+            );
+          }
+
+          // Default: Neutral smile
+          return (
+            <div style={{
+              position: 'absolute',
+              top: s * 3.3,
+              left: s * 2.5,
+              width: s * 3,
+              height: s * 0.8,
+              borderBottom: `${s * 0.4}px solid #1a1a2e`,
+              borderRadius: '0 0 50% 50%',
+            }} />
+          );
+        })()}
         {/* Body */}
         <div style={{
           position: 'absolute',
