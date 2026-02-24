@@ -70,7 +70,7 @@ Now:
 2. Fix any bugs people report
 3. Ship quick wins based on feedback
 
-Want more post ideas? See SOCIAL-MEDIA-TEMPLATES.md for 20+ ready-to-use posts.
+See FIRST-24-HOURS-PLAYBOOK.md for what to do next.
 
 ═══════════════════════════════════════════════════════════════════════════
 STATUS: OpenClawfice v0.1.0
