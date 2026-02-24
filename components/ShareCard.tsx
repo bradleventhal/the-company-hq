@@ -73,19 +73,23 @@ export function ShareCard({ agents, pendingActions, accomplishments, isDemoMode,
     ctx.stroke();
     ctx.shadowBlur = 0;
 
-    // Title
-    ctx.font = 'bold 42px system-ui, -apple-system, sans-serif';
-    ctx.fillStyle = '#e2e8f0';
+    // Title with gradient
+    ctx.font = 'bold 48px system-ui, -apple-system, sans-serif';
+    const titleGrad = ctx.createLinearGradient(W/2 - 250, 70, W/2 + 250, 70);
+    titleGrad.addColorStop(0, '#8b5cf6');
+    titleGrad.addColorStop(0.5, '#ec4899');
+    titleGrad.addColorStop(1, '#f59e0b');
+    ctx.fillStyle = titleGrad;
     ctx.textAlign = 'center';
-    ctx.fillText('🏢 OPENCLAWFICE', W / 2, 70);
+    ctx.fillText('🏢 OPENCLAWFICE', W / 2, 75);
 
-    // Subtitle
-    ctx.font = '16px system-ui';
-    ctx.fillStyle = '#94a3b8';
-    ctx.fillText(isDemoMode ? 'Demo Office — Try it at openclawfice.com' : 'My AI Agent Office', W / 2, 100);
+    // Subtitle with better visibility
+    ctx.font = 'bold 18px system-ui';
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillText(isDemoMode ? 'LIVE DEMO OFFICE' : 'MY AI AGENT OFFICE', W / 2, 110);
 
     // Stats row
-    const statsY = 140;
+    const statsY = 150;
     const statsData = [
       { label: 'Agents', value: String(agents.length), color: '#8b5cf6' },
       { label: 'Working', value: String(workingAgents.length), color: '#10b981' },
@@ -98,29 +102,37 @@ export function ShareCard({ agents, pendingActions, accomplishments, isDemoMode,
     statsData.forEach((stat, i) => {
       const x = statsStartX + i * statWidth + statWidth / 2;
       
-      // Stat card background
-      ctx.fillStyle = 'rgba(30, 41, 59, 0.8)';
-      roundRect(ctx, x - 60, statsY, 120, 70, 8);
+      // Stat card background with glow
+      const cardGrad = ctx.createRadialGradient(x, statsY + 35, 0, x, statsY + 35, 80);
+      cardGrad.addColorStop(0, stat.color + '20');
+      cardGrad.addColorStop(1, 'rgba(30, 41, 59, 0.8)');
+      ctx.fillStyle = cardGrad;
+      roundRect(ctx, x - 60, statsY, 120, 80, 10);
       ctx.fill();
-      ctx.strokeStyle = stat.color + '40';
-      ctx.lineWidth = 1;
-      roundRect(ctx, x - 60, statsY, 120, 70, 8);
+      
+      // Border with stat color
+      ctx.strokeStyle = stat.color;
+      ctx.lineWidth = 2;
+      roundRect(ctx, x - 60, statsY, 120, 80, 10);
       ctx.stroke();
 
-      // Value
-      ctx.font = 'bold 28px system-ui';
+      // Value - bigger and bolder
+      ctx.font = 'bold 36px system-ui';
       ctx.fillStyle = stat.color;
       ctx.textAlign = 'center';
-      ctx.fillText(stat.value, x, statsY + 35);
+      ctx.shadowColor = stat.color;
+      ctx.shadowBlur = 15;
+      ctx.fillText(stat.value, x, statsY + 42);
+      ctx.shadowBlur = 0;
 
-      // Label
-      ctx.font = '11px system-ui';
-      ctx.fillStyle = '#94a3b8';
-      ctx.fillText(stat.label, x, statsY + 55);
+      // Label - clearer
+      ctx.font = 'bold 12px system-ui';
+      ctx.fillStyle = '#e2e8f0';
+      ctx.fillText(stat.label, x, statsY + 63);
     });
 
     // Agent cards section
-    const agentStartY = 240;
+    const agentStartY = 260;
     ctx.textAlign = 'left';
 
     // Work Room header
@@ -247,15 +259,21 @@ export function ShareCard({ agents, pendingActions, accomplishments, isDemoMode,
       });
     }
 
-    // Footer
+    // Footer - make it pop more
     ctx.textAlign = 'center';
-    ctx.font = '13px system-ui';
-    ctx.fillStyle = '#64748b';
-    ctx.fillText('openclawfice.com — Your AI agents, but they\'re Sims', W / 2, H - 30);
+    
+    // Main CTA
+    ctx.font = 'bold 16px system-ui';
+    const ctaGrad = ctx.createLinearGradient(W/2 - 200, H - 50, W/2 + 200, H - 50);
+    ctaGrad.addColorStop(0, '#8b5cf6');
+    ctaGrad.addColorStop(1, '#ec4899');
+    ctx.fillStyle = ctaGrad;
+    ctx.fillText('openclawfice.com/demo — Try it in 10 seconds ✨', W / 2, H - 35);
 
-    ctx.font = '11px system-ui';
-    ctx.fillStyle = '#475569';
-    ctx.fillText('github.com/openclawfice/openclawfice · Open Source · MIT', W / 2, H - 12);
+    // Secondary line
+    ctx.font = '12px system-ui';
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillText('Your AI agents, but they\'re Sims · Open Source · Free', W / 2, H - 15);
 
     // Convert to image
     const url = canvas.toDataURL('image/png');
