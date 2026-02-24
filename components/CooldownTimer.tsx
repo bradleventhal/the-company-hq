@@ -46,7 +46,7 @@ export function CooldownTimer({ targetMs }: { targetMs: number }) {
 }
 
 // Linkify file references in text
-export function linkifyFiles(text: string): (string | React.ReactElement)[] {
+export function linkifyFiles(text: string, fetchFn: typeof fetch = fetch): (string | React.ReactElement)[] {
   const FILE_PATTERN = /(?:File:\s*)([A-Za-z0-9_\-\.]+\.[a-z]{1,10})|(?<![\/\w])([A-Z][A-Z0-9_\-]+\.[a-z]{1,10})(?![\/\w])/g;
   const parts: (string | React.ReactElement)[] = [];
   let lastIndex = 0;
@@ -67,7 +67,7 @@ export function linkifyFiles(text: string): (string | React.ReactElement)[] {
             e.preventDefault();
             e.stopPropagation();
             try {
-              const res = await fetch(`/api/office/open-file`, {
+              const res = await fetchFn(`/api/office/open-file`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name: filename }),

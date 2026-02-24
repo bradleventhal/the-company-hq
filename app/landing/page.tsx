@@ -131,7 +131,7 @@ export default function LandingPage() {
               ⭐ {stars} stars on GitHub
             </a>
             {' · '}
-            Open source · MIT license
+            Open source · AGPL-3.0 license
           </div>
         )}
 
@@ -310,7 +310,6 @@ export default function LandingPage() {
               { icon: '🤖', label: 'Snyk Agent Scan', desc: 'AI security - prompt injections & skill poisoning', highlight: true },
               { icon: '🔍', label: 'CodeQL Analysis', desc: 'Automated security pattern detection' },
               { icon: '📦', label: 'Dependabot', desc: 'Real-time dependency vulnerability monitoring' },
-              { icon: '✅', label: 'Zero CVEs', desc: 'No known security vulnerabilities' },
             ].map((item, i) => (
               <div key={i} style={{
                 background: item.highlight ? 'rgba(16,185,129,0.12)' : 'rgba(16,185,129,0.08)',
@@ -585,6 +584,15 @@ export default function LandingPage() {
           marginBottom: 12,
         }}>
           Open Source • AGPL-3.0 • Made with 💜 by the OpenClaw community
+        </p>
+        <p style={{
+          fontSize: 10,
+          color: '#475569',
+          maxWidth: 600,
+          margin: '0 auto 12px',
+          lineHeight: 1.6,
+        }}>
+          This software is provided &quot;as is&quot;, without warranty of any kind. Use at your own risk. The authors are not liable for any damages, data loss, or security incidents arising from the use of this software. You are responsible for reviewing the code and understanding its behavior before running it on your machine.
         </p>
         <div style={{
           display: 'flex',

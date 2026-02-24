@@ -3,6 +3,7 @@ import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { join } from 'path';
 import { homedir } from 'os';
 import { gatewayRpc } from '@/lib/gateway-rpc';
+import { requireAuth } from '../../../../lib/auth';
 
 const STATUS_DIR = join(homedir(), '.openclaw', '.status');
 const AUTOWORK_FILE = join(STATUS_DIR, 'autowork.json');
@@ -16,6 +17,9 @@ const AUTOWORK_FILE = join(STATUS_DIR, 'autowork.json');
  * Body: { agentId, pauseAutowork?: boolean }
  */
 export async function POST(request: Request) {
+  const authError = requireAuth(request);
+  if (authError) return authError;
+
   try {
     const { agentId, pauseAutowork = true } = await request.json();
 

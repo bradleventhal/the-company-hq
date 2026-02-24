@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useAuthenticatedFetch } from '../hooks/useAuthenticatedFetch';
 
 const CHAT_FREQ_PRESETS = [
   { label: '5s', value: '5s' },
@@ -17,6 +18,7 @@ export function SettingsPanel({ config, onConfigChange, onClose }: {
   onConfigChange: (c: any) => void;
   onClose: () => void;
 }) {
+  const secureFetch = useAuthenticatedFetch();
   const wc = config.waterCooler || {};
   const mission = config.mission || {};
   const [saving, setSaving] = useState(false);
@@ -46,7 +48,7 @@ export function SettingsPanel({ config, onConfigChange, onClose }: {
       },
     };
     try {
-      const res = await fetch('/api/office/config', {
+      const res = await secureFetch('/api/office/config', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(patch),

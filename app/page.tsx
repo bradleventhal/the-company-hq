@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useDemoMode } from '../hooks/useDemoMode';
 import { useRetroSFX } from '../hooks/useRetroSFX';
 import { useAuthenticatedFetch } from '../hooks/useAuthenticatedFetch';
@@ -24,13 +24,10 @@ export default function HomePage() {
   const sfx = useRetroSFX();
   const authenticatedFetch = useAuthenticatedFetch();
   
-  // Wrapper for POST requests that adds auth in non-demo mode
-  const secureFetch = async (url: string, options: RequestInit = {}) => {
-    if (isDemoMode || options.method !== 'POST') {
-      return fetch(url, options);
-    }
+  const secureFetch = useCallback(async (url: string, options: RequestInit = {}) => {
+    if (isDemoMode) return fetch(url, options);
     return authenticatedFetch(url, options);
-  };
+  }, [isDemoMode, authenticatedFetch]);
   const [agents, setAgents] = useState<Agent[]>([]);
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
   const [time, setTime] = useState(new Date());
@@ -110,7 +107,7 @@ export default function HomePage() {
   useEffect(() => {
     const fetchConfig = async () => {
       try {
-        const res = await fetch(getApiPath('/api/office/config'));
+        const res = await secureFetch(getApiPath('/api/office/config'));
         const data = await res.json();
         setConfig(data);
       } catch (err) {
@@ -191,7 +188,7 @@ export default function HomePage() {
   useEffect(() => {
     const fetchAutowork = async () => {
       try {
-        const res = await fetch(getApiPath('/api/office/autowork'));
+        const res = await secureFetch(getApiPath('/api/office/autowork'));
         if (res.ok) {
           const data = await res.json();
           setAutoworkPolicies(data.policies || {});
@@ -209,7 +206,7 @@ export default function HomePage() {
       const hasEnabled = Object.values(autoworkPolicies).some(p => p.enabled);
       if (!hasEnabled) return;
       try {
-        const res = await fetch('/api/office/autowork', {
+        const res = await secureFetch('/api/office/autowork', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({}),
@@ -217,7 +214,7 @@ export default function HomePage() {
         if (res.ok) {
           const data = await res.json();
           if (data.sent?.length > 0) {
-            const polRes = await fetch(getApiPath('/api/office/autowork'));
+            const polRes = await secureFetch(getApiPath('/api/office/autowork'));
             if (polRes.ok) {
               const polData = await polRes.json();
               setAutoworkPolicies(polData.policies || {});
@@ -234,7 +231,7 @@ export default function HomePage() {
   useEffect(() => {
     const fetchStatus = async () => {
       try {
-        const res = await fetch(getApiPath('/api/office'));
+        const res = await secureFetch(getApiPath('/api/office'));
         const data = await res.json();
         if (data.agents) {
           setAgents(prev => {
@@ -271,7 +268,7 @@ export default function HomePage() {
   useEffect(() => {
     const fetchMeeting = async () => {
       try {
-        const res = await fetch(getApiPath('/api/office/meeting'));
+        const res = await secureFetch(getApiPath('/api/office/meeting'));
         const data = await res.json();
         setMeeting(data);
       } catch (err) {
@@ -287,13 +284,13 @@ export default function HomePage() {
   useEffect(() => {
     const fetchActions = async () => {
       try {
-        const res = await fetch(getApiPath('/api/office/actions'));
+        const res = await secureFetch(getApiPath('/api/office/actions'));
         const data = await res.json();
         if (data.actions) setPendingActions(data.actions);
         if (data.accomplishments) setAccomplishments(data.accomplishments);
       } catch {}
       try {
-        const ar = await fetch(getApiPath('/api/office/actions') + '?archiveOffset=0&limit=0');
+        const ar = await secureFetch(getApiPath('/api/office/actions') + '?archiveOffset=0&limit=0');
         const ad = await ar.json();
         if (typeof ad.archiveTotal === 'number') setArchiveTotal(ad.archiveTotal);
       } catch {}
@@ -439,7 +436,7 @@ export default function HomePage() {
     setArchiveLoading(true);
     try {
       const offset = reset ? 0 : archivedAccomplishments.length;
-      const res = await fetch(`/api/office/actions?archiveOffset=${offset}&limit=50`);
+      const res = await secureFetch(`/api/office/actions?archiveOffset=${offset}&limit=50`);
       const data = await res.json();
       if (data.archive) {
         setArchivedAccomplishments(prev => reset ? data.archive : [...prev, ...data.archive]);
@@ -454,7 +451,7 @@ export default function HomePage() {
     const fetchChat = async () => {
       try {
         if (isDemoMode) {
-          const res = await fetch(getApiPath('/api/office/chat'));
+          const res = await secureFetch(getApiPath('/api/office/chat'));
           const data = await res.json();
           if (data.messages && Array.isArray(data.messages)) {
             setChatLog(prev => {
@@ -467,7 +464,7 @@ export default function HomePage() {
             });
           }
         } else {
-          const res = await fetch('/api/office');
+          const res = await secureFetch('/api/office');
           const data = await res.json();
           if (data.chatLog && Array.isArray(data.chatLog)) {
             setChatLog(prev => {
@@ -548,7 +545,7 @@ export default function HomePage() {
         const allAgentData = agents
           .filter(a => a.id !== '_owner')
           .map(a => ({ id: a.id, name: a.name, role: a.role, status: a.status, task: a.task }));
-        const res = await fetch('/api/office/chat', {
+        const res = await secureFetch('/api/office/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -559,7 +556,7 @@ export default function HomePage() {
         // Immediately fetch updated chat so we don't wait for the next poll cycle
         if (res.ok) {
           try {
-            const chatRes = await fetch('/api/office/chat');
+            const chatRes = await secureFetch('/api/office/chat');
             const msgs = await chatRes.json();
             if (Array.isArray(msgs)) {
               setChatLog(msgs);
@@ -662,7 +659,7 @@ export default function HomePage() {
       
       if (res.ok) {
         // Refresh actions
-        const actionsRes = await fetch(getApiPath('/api/office/actions'));
+        const actionsRes = await secureFetch(getApiPath('/api/office/actions'));
         const data = await actionsRes.json();
         if (data.actions) setPendingActions(data.actions);
       }
@@ -1410,7 +1407,7 @@ export default function HomePage() {
                   <button
                     onClick={async () => {
                       try {
-                        const res = await fetch(getApiPath('/api/office/meeting'), {
+                        const res = await secureFetch(getApiPath('/api/office/meeting'), {
                           method: 'DELETE',
                         });
                         if (res.ok) {
@@ -2178,7 +2175,7 @@ export default function HomePage() {
               </div>
 
               {/* Description */}
-              <div style={{ fontSize: 12, color: '#94a3b8', lineHeight: 1.6, marginBottom: 12 }}>{linkifyFiles(action.description)}</div>
+              <div style={{ fontSize: 12, color: '#94a3b8', lineHeight: 1.6, marginBottom: 12 }}>{linkifyFiles(action.description, secureFetch as typeof fetch)}</div>
 
               {/* Structured file attachment */}
               {action.data?.file && (
@@ -2188,7 +2185,7 @@ export default function HomePage() {
                     e.preventDefault();
                     e.stopPropagation();
                     try {
-                      const res = await fetch('/api/office/open-file', {
+                      const res = await secureFetch('/api/office/open-file', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ name: action.data!.file }),
@@ -2430,7 +2427,7 @@ export default function HomePage() {
             </div>
             {selectedAccomplishment.detail && (
               <div style={{ fontSize: 13, color: '#94a3b8', lineHeight: 1.6, marginBottom: 16 }}>
-                {linkifyFiles(selectedAccomplishment.detail)}
+                {linkifyFiles(selectedAccomplishment.detail, secureFetch as typeof fetch)}
               </div>
             )}
             {/* File link — prominent when available */}
@@ -2441,7 +2438,7 @@ export default function HomePage() {
                   e.preventDefault();
                   e.stopPropagation();
                   try {
-                    const res = await fetch('/api/office/open-file', {
+                    const res = await secureFetch('/api/office/open-file', {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
                       body: JSON.stringify({ name: selectedAccomplishment.file!.split('/').pop() }),
@@ -2625,7 +2622,7 @@ export default function HomePage() {
               const entries = Object.entries(pendingAutowork);
               try {
                 for (const [agentId, changes] of entries) {
-                  await fetch('/api/office/autowork', {
+                  await secureFetch('/api/office/autowork', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ agentId, ...changes }),
@@ -2925,7 +2922,7 @@ export default function HomePage() {
                 onClick={async () => {
                   if (!meetingTopic.trim() || selectedParticipants.length < 2) return;
                   try {
-                    const res = await fetch(getApiPath('/api/office/meeting/start'), {
+                    const res = await secureFetch(getApiPath('/api/office/meeting/start'), {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
                       body: JSON.stringify({ 
@@ -2939,7 +2936,7 @@ export default function HomePage() {
                       setMeetingTopic('');
                       setSelectedParticipants([]);
                       // Refresh meeting status
-                      const meetRes = await fetch(getApiPath('/api/office/meeting'));
+                      const meetRes = await secureFetch(getApiPath('/api/office/meeting'));
                       const meetData = await meetRes.json();
                       setMeeting(meetData);
                     }

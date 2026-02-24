@@ -39,7 +39,7 @@ afterEach(() => {
 describe('/api/office/config', () => {
   it('GET returns config with expected structure', async () => {
     const { GET } = await import('../app/api/office/config/route');
-    const res = await GET();
+    const res = await GET(new Request('http://localhost:3333/api/test'));
     const data = await res.json();
 
     expect(data).toBeDefined();
@@ -157,7 +157,7 @@ describe('/api/office/actions', () => {
 describe('/api/office/autowork', () => {
   it('GET returns empty policies when no file exists', async () => {
     const { GET } = await import('../app/api/office/autowork/route');
-    const res = await GET();
+    const res = await GET(new Request('http://localhost:3333/api/test'));
     const data = await res.json();
 
     expect(data.policies).toBeDefined();
@@ -238,7 +238,7 @@ describe('/api/office/autowork', () => {
 describe('/api/office/chat', () => {
   it('GET returns empty array when no chat file exists', async () => {
     const { GET } = await import('../app/api/office/chat/route');
-    const res = await GET();
+    const res = await GET(new Request('http://localhost:3333/api/test'));
     const data = await res.json();
 
     expect(Array.isArray(data)).toBe(true);

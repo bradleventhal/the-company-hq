@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import { homedir } from 'os';
+import { requireAuth } from '../../../../lib/auth';
 
 const CONFIG_PATHS = [
   join(process.cwd(), 'openclawfice.config.json'),
@@ -37,7 +38,10 @@ function readConfig(): any {
   return { ...DEFAULTS };
 }
 
-export async function GET() {
+export async function GET(request: Request) {
+  const authError = requireAuth(request);
+  if (authError) return authError;
+
   return NextResponse.json(readConfig());
 }
 
@@ -45,6 +49,9 @@ export async function GET() {
  * POST — update config fields (deep-merged into existing config)
  */
 export async function POST(request: Request) {
+  const authError = requireAuth(request);
+  if (authError) return authError;
+
   try {
     const patch = await request.json();
     const config = readConfig();

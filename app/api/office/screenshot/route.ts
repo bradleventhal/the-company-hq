@@ -3,10 +3,14 @@ import { existsSync, statSync, createReadStream } from 'fs';
 import { join, extname } from 'path';
 import { homedir } from 'os';
 import { validateFilename } from '@/lib/input-validation';
+import { requireAuth } from '@/lib/auth';
 
 const STATUS_DIR = join(homedir(), '.openclaw', '.status', 'screenshots');
 
 export async function GET(req: Request) {
+  const authError = requireAuth(req);
+  if (authError) return authError;
+
   const { searchParams } = new URL(req.url);
   const file = searchParams.get('file');
 

@@ -4,6 +4,7 @@ import { join } from 'path';
 import { homedir } from 'os';
 import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { sanitizeMessage, validateAgentId, validateAgentIdArray } from '@/lib/input-validation';
+import { requireAuth } from '../../../../lib/auth';
 
 // Find openclaw binary: check PATH first, then common install locations
 function findOpenclawBin(): string {
@@ -71,6 +72,9 @@ function addToChatLog(from: string, text: string): void {
  * POST endpoint to send messages to agents
  */
 export async function POST(request: Request) {
+  const authError = requireAuth(request);
+  if (authError) return authError;
+
   try {
     const body = await request.json();
     const { agentId, message, broadcast, agentIds } = body;

@@ -3,6 +3,7 @@ import { readFileSync, existsSync, writeFileSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import { homedir } from 'os';
 import { execSync } from 'child_process';
+import { requireAuth } from '../../../../lib/auth';
 
 const STATUS_DIR = join(homedir(), '.openclaw', '.status');
 const CHAT_FILE = join(STATUS_DIR, 'chat.json');
@@ -207,11 +208,17 @@ function getAgentReply(agentId: string, prompt: string): string | null {
   return null;
 }
 
-export async function GET() {
+export async function GET(request: Request) {
+  const authError = requireAuth(request);
+  if (authError) return authError;
+
   return NextResponse.json(readChat());
 }
 
 export async function POST(request: Request) {
+  const authError = requireAuth(request);
+  if (authError) return authError;
+
   ensureStatusDir();
 
   try {

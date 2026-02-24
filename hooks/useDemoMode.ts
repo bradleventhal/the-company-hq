@@ -1,4 +1,5 @@
 import { useSearchParams, usePathname } from 'next/navigation';
+import { useCallback } from 'react';
 
 /**
  * Demo Mode Hook - Detects demo mode and returns appropriate API paths
@@ -15,10 +16,9 @@ export function useDemoMode() {
   }
   const isDemoMode = searchParams?.get('demo') === 'true' || pathname === '/demo';
 
-  const getApiPath = (path: string) => {
+  const getApiPath = useCallback((path: string) => {
     if (!isDemoMode) return path;
     
-    // Map real API paths to demo API paths
     const demoMap: Record<string, string> = {
       '/api/office': '/api/demo',
       '/api/office/actions': '/api/demo/actions',
@@ -32,7 +32,7 @@ export function useDemoMode() {
     };
     
     return demoMap[path] || path;
-  };
+  }, [isDemoMode]);
 
   return {
     isDemoMode,

@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import type { Agent, Skill } from './types';
 import { formatInterval } from './utils';
+import { useAuthenticatedFetch } from '../hooks/useAuthenticatedFetch';
 
 const COOLDOWN_PRESETS = [
   { label: '1m', ms: 60000 },
@@ -57,6 +58,7 @@ export function AgentPanel({ agent, onClose, autowork, onAutoworkUpdate, onStop,
   onStop?: (agentId: string) => void;
   pendingChanges?: Partial<{ enabled: boolean; intervalMs: number; directive: string }>;
 }) {
+  const secureFetch = useAuthenticatedFetch();
   const [awSaving, setAwSaving] = useState(false);
   const merged = { ...(autowork || { enabled: false, intervalMs: 600_000, directive: '', lastSentAt: 0 }), ...pendingChanges };
   const [awEnabled, setAwEnabled] = useState(merged.enabled ?? false);
@@ -78,7 +80,7 @@ export function AgentPanel({ agent, onClose, autowork, onAutoworkUpdate, onStop,
     let cancelled = false;
     const fetchLogs = async () => {
       try {
-        const res = await fetch(`/api/office/logs?agentId=${encodeURIComponent(agent.id)}&limit=80`);
+        const res = await secureFetch(`/api/office/logs?agentId=${encodeURIComponent(agent.id)}&limit=80`);
         if (!res.ok || cancelled) return;
         const data = await res.json();
         if (!cancelled) {
@@ -102,7 +104,7 @@ export function AgentPanel({ agent, onClose, autowork, onAutoworkUpdate, onStop,
     setSending(true);
     const messageText = dmMessage;
     try {
-      const res = await fetch('/api/office/message', {
+      const res = await secureFetch('/api/office/message', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ agentId: agent.id, message: messageText }),
@@ -179,7 +181,7 @@ export function AgentPanel({ agent, onClose, autowork, onAutoworkUpdate, onStop,
           onClick={async () => {
             setStopping(true);
             try {
-              const res = await fetch('/api/office/stop', {
+              const res = await secureFetch('/api/office/stop', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ agentId: agent.id }),
@@ -442,7 +444,7 @@ export function AgentPanel({ agent, onClose, autowork, onAutoworkUpdate, onStop,
                 onClick={async () => {
                   setAwSaving(true);
                   try {
-                    const res = await fetch('/api/office/autowork', {
+                    const res = await secureFetch('/api/office/autowork', {
                       method: 'PUT',
                       headers: { 'Content-Type': 'application/json' },
                       body: JSON.stringify({ agentId: agent.id }),

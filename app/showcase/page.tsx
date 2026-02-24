@@ -351,7 +351,7 @@ export default function ShowcasePage() {
         <p>
           Made with 💜 by the OpenClaw community
           <br />
-          MIT License • Open Source Forever
+          AGPL-3.0 License • Open Source Forever
         </p>
       </div>
     </div>

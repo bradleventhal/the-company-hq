@@ -12,9 +12,12 @@ interface BootSequenceProps {
  * Sets the tone: this is a FUN tool, not boring enterprise software.
  */
 export function BootSequence({ onComplete }: BootSequenceProps) {
+  const [mounted, setMounted] = useState(false);
   const [progress, setProgress] = useState(0);
   const [currentMessage, setCurrentMessage] = useState('');
   const [visible, setVisible] = useState(true);
+
+  useEffect(() => { setMounted(true); }, []);
 
   const bootMessages = [
     { progress: 0, message: 'INITIALIZING OPENCLAWFICE v0.1.0', delay: 0 },
@@ -57,7 +60,7 @@ export function BootSequence({ onComplete }: BootSequenceProps) {
     }, 1400);
   }, [onComplete]);
 
-  if (!visible && progress === 100) {
+  if (!mounted || (!visible && progress === 100)) {
     return null;
   }
 

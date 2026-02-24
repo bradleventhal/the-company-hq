@@ -2,11 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { useDemoMode } from '../../hooks/useDemoMode';
+import { useAuthenticatedFetch } from '../../hooks/useAuthenticatedFetch';
 import Link from 'next/link';
 import type { Agent } from '../../components/types';
 
 export default function LeaderboardPage() {
   const { isDemoMode, getApiPath } = useDemoMode();
+  const authenticatedFetch = useAuthenticatedFetch();
+  const secureFetch = isDemoMode ? fetch : authenticatedFetch;
   const [agents, setAgents] = useState<Agent[]>([]);
   const [timeframe, setTimeframe] = useState<'all-time' | 'weekly'>('all-time');
   const [loading, setLoading] = useState(true);
@@ -15,7 +18,7 @@ export default function LeaderboardPage() {
     const fetchAgents = async () => {
       try {
         setLoading(true);
-        const res = await fetch(getApiPath('/api/office'));
+        const res = await secureFetch(getApiPath('/api/office'));
         const data = await res.json();
         if (data.agents) {
           setAgents(data.agents.filter((a: Agent) => a.id !== '_owner'));

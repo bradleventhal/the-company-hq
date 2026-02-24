@@ -3,6 +3,7 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import { homedir } from 'os';
 import { spawn } from 'child_process';
+import { requireAuth } from '../../../../lib/auth';
 
 const OPENCLAW_DIR = join(homedir(), '.openclaw');
 const STATUS_DIR = join(OPENCLAW_DIR, '.status');
@@ -282,7 +283,10 @@ function sendToAgent(agentId: string, message: string): void {
 /**
  * GET — return all auto-work policies, config, and current mission
  */
-export async function GET() {
+export async function GET(request: Request) {
+  const authError = requireAuth(request);
+  if (authError) return authError;
+
   const config = readConfig();
   const mission = readMission();
   return NextResponse.json({
@@ -297,6 +301,9 @@ export async function GET() {
  * Body: { agentId, enabled?, intervalMs?, directive?, maxSendsPerTick? }
  */
 export async function POST(request: Request) {
+  const authError = requireAuth(request);
+  if (authError) return authError;
+
   try {
     const { agentId, enabled, intervalMs, directive, maxSendsPerTick } = await request.json();
 
@@ -337,6 +344,9 @@ export async function POST(request: Request) {
  * Pass { agentId } to force-send to one agent immediately (bypasses limit).
  */
 export async function PUT(request: Request) {
+  const authError = requireAuth(request);
+  if (authError) return authError;
+
   try {
     let forceAgent: string | undefined;
     try {

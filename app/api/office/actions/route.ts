@@ -248,6 +248,9 @@ function readArchive(offset: number, limit: number): { items: any[]; total: numb
 }
 
 export async function GET(request: Request) {
+  const authError = requireAuth(request);
+  if (authError) return authError;
+
   const url = new URL(request.url);
   const archiveOffset = parseInt(url.searchParams.get('archiveOffset') || '', 10);
 

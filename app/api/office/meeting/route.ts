@@ -2,11 +2,15 @@ import { NextResponse } from 'next/server';
 import { readFileSync, writeFileSync, existsSync, mkdirSync, unlinkSync } from 'fs';
 import { join } from 'path';
 import { homedir } from 'os';
+import { requireAuth } from '../../../../lib/auth';
 
 const STATUS_DIR = join(homedir(), '.openclaw', '.status');
 const MEETING_FILE = join(STATUS_DIR, 'meeting.json');
 
-export async function GET() {
+export async function GET(request: Request) {
+  const authError = requireAuth(request);
+  if (authError) return authError;
+
   try {
     if (!existsSync(MEETING_FILE)) {
       return NextResponse.json({ active: false });
@@ -36,6 +40,9 @@ export async function GET() {
  * Body: { agent: string, message: string, round?: number }
  */
 export async function POST(req: Request) {
+  const authError = requireAuth(req);
+  if (authError) return authError;
+
   try {
     const { agent, message, round } = await req.json();
 
@@ -91,7 +98,10 @@ export async function POST(req: Request) {
 /**
  * DELETE — End the active meeting
  */
-export async function DELETE() {
+export async function DELETE(request: Request) {
+  const authError = requireAuth(request);
+  if (authError) return authError;
+
   try {
     if (existsSync(MEETING_FILE)) {
       unlinkSync(MEETING_FILE);

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { readFileSync, existsSync } from 'fs';
 import { join } from 'path';
 import { homedir } from 'os';
+import { requireAuth } from '../../../lib/auth';
 
 const OPENCLAW_DIR = join(homedir(), '.openclaw');
 const OPENCLAW_CONFIG = join(OPENCLAW_DIR, 'openclaw.json');
@@ -556,7 +557,10 @@ function calculateAgentProgression(agentName: string): { xp: number; level: numb
 /**
  * Main API handler
  */
-export async function GET() {
+export async function GET(request: Request) {
+  const authError = requireAuth(request);
+  if (authError) return authError;
+
   const now = Date.now();
 
   // Read watercooler markers — agents that were recently chatting, not working

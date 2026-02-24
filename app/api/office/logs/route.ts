@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { readFileSync, existsSync, openSync, fstatSync, readSync, closeSync } from 'fs';
 import { join } from 'path';
 import { homedir } from 'os';
+import { requireAuth } from '@/lib/auth';
 
 const AGENTS_DIR = join(homedir(), '.openclaw', 'agents');
 
@@ -97,6 +98,9 @@ function parseTranscriptEntries(lines: string[]): LogEntry[] {
 }
 
 export async function GET(req: Request) {
+  const authError = requireAuth(req);
+  if (authError) return authError;
+
   const { searchParams } = new URL(req.url);
   const agentId = searchParams.get('agentId');
   const limit = Math.min(parseInt(searchParams.get('limit') || '80'), 500);

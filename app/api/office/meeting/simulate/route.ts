@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import { homedir } from 'os';
+import { requireAuth } from '../../../../../lib/auth';
 
 const STATUS_DIR = join(homedir(), '.openclaw', '.status');
 const MEETING_FILE = join(STATUS_DIR, 'meeting.json');
@@ -147,7 +148,10 @@ function generateMessage(topic: string, agentName: string, position: number, tot
   return `Clear action items from everyone. Let's execute and check in tomorrow. Good meeting 👍`;
 }
 
-export async function POST() {
+export async function POST(request: Request) {
+  const authError = requireAuth(request);
+  if (authError) return authError;
+
   try {
     if (!existsSync(MEETING_FILE)) {
       return NextResponse.json({ active: false });
