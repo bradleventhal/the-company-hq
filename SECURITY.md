@@ -28,7 +28,7 @@ OpenClawfice is automatically scanned for security vulnerabilities and malware:
 
 ### How to Report
 
-**Email:** security@openclaw.ai  
+**Email:** tyhenkel+security@gmail.com  
 **Subject:** [SECURITY] Brief description
 
 **Please include:**
@@ -55,37 +55,6 @@ OpenClawfice is automatically scanned for security vulnerabilities and malware:
 We don't currently offer monetary rewards, but we will:
 - Credit you in release notes
 - Add you to our security researchers hall of fame
-- Send you OpenClaw swag (if you want it)
-
----
-
-## Security Best Practices
-
-### For Self-Hosting
-
-**Recommended:**
-- Run behind a firewall (only expose localhost:3333 locally)
-- Use HTTPS if exposing to internet (via reverse proxy)
-- Keep dependencies updated (`npm audit`)
-- Review `~/.openclaw/openclaw.json` permissions
-
-**Not Recommended:**
-- Exposing directly to internet without auth
-- Running as root
-- Using on untrusted networks
-
-### For Development
-
-**Safe:**
-- Fork the repo and review code before running
-- Check `package.json` for dependencies
-- Use `npm audit` before install
-- Run in isolated environment first
-
-**Risky:**
-- Running without reviewing code
-- Installing untrusted dependencies
-- Disabling security warnings
 
 ---
 
