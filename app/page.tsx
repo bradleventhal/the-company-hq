@@ -1746,24 +1746,53 @@ export default function HomePage() {
               )}
               {chatLog.slice(-12).map((m, i) => {
                 const isOwner = agents.find(a => a.id === '_owner' && a.name === m.from);
+                const agentColor = isOwner ? '#f59e0b' : (agents.find(a => a.name === m.from)?.color || '#94a3b8');
                 return (
                   <div
                     key={`${i}-${m.text}`}
                     style={{
-                      fontSize: 11,
-                      padding: '4px 0',
+                      display: 'flex',
+                      gap: 8,
+                      padding: '5px 6px',
+                      marginBottom: 2,
+                      borderRadius: 6,
                       animation: 'fadeSlideIn 0.3s ease-out',
-                      ...(isOwner ? { background: 'rgba(245,158,11,0.06)', borderRadius: 4, padding: '4px 6px', margin: '2px -6px' } : {}),
+                      background: isOwner ? 'rgba(245,158,11,0.06)' : (i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.015)'),
+                      transition: 'background 0.15s',
                     }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = isOwner ? 'rgba(245,158,11,0.06)' : (i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.015)'); }}
                   >
-                    <span style={{
-                      fontWeight: 700,
-                      color: isOwner ? '#f59e0b' : (agents.find(a => a.name === m.from)?.color || '#94a3b8'),
-                      fontSize: 10,
-                    }}>
-                      {isOwner ? `${m.from} (you)` : m.from}
-                    </span>{' '}
-                    <span style={{ color: isOwner ? '#fbbf24' : '#a1a1aa' }}>{m.text}</span>
+                    {/* Agent color pip */}
+                    <div style={{
+                      width: 3,
+                      borderRadius: 2,
+                      background: agentColor,
+                      flexShrink: 0,
+                      marginTop: 2,
+                      marginBottom: 2,
+                      opacity: 0.7,
+                    }} />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <span style={{
+                        fontWeight: 700,
+                        color: agentColor,
+                        fontSize: 9,
+                        fontFamily: '"Press Start 2P", monospace',
+                        letterSpacing: 0.5,
+                      }}>
+                        {isOwner ? `${m.from} ★` : m.from}
+                      </span>
+                      <div style={{
+                        color: isOwner ? '#fbbf24' : '#b4b4bf',
+                        fontSize: 11,
+                        lineHeight: 1.45,
+                        marginTop: 1,
+                        wordBreak: 'break-word',
+                      }}>
+                        {m.text}
+                      </div>
+                    </div>
                   </div>
                 );
               })}
