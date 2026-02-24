@@ -280,6 +280,102 @@ if (command === 'sync-cooldowns') {
   return;
 }
 
+if (command === 'update' || command === '--update') {
+  console.log('\n🔄 Upgrading your office...\n');
+  
+  const { execSync } = require('child_process');
+  
+  try {
+    // Git pull latest changes
+    console.log('  📥 Pulling latest changes...');
+    execSync('git pull origin main', { cwd: packageRoot, stdio: 'inherit' });
+    
+    // Update dependencies
+    console.log('\n  📦 Updating dependencies...');
+    execSync('npm install', { cwd: packageRoot, stdio: 'inherit' });
+    
+    console.log('\n🎉 Office upgraded! +50 XP\n');
+    console.log('Restart the server to use the new version:\n');
+    console.log('  openclawfice\n');
+  } catch (err) {
+    console.error('\n❌ Upgrade failed:', err.message);
+    process.exit(1);
+  }
+  process.exit(0);
+}
+
+if (command === 'uninstall' || command === '--uninstall') {
+  console.log('\n💥 Demolishing your office...\n');
+  
+  const readline = require('readline');
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
+  
+  rl.question('⚠️  This will remove OpenClawfice completely. Continue? (y/N) ', (answer) => {
+    if (answer.toLowerCase() !== 'y') {
+      console.log('\n✋ Uninstall cancelled. Office remains standing.\n');
+      rl.close();
+      process.exit(0);
+    }
+    
+    const { execSync } = require('child_process');
+    const installDir = join(homeDir, 'openclawfice');
+    const launcherPath = join(homeDir, '.local', 'bin', 'openclawfice');
+    
+    try {
+      // Remove installation directory
+      if (fs.existsSync(installDir)) {
+        console.log('  🗑️  Removing ~/openclawfice...');
+        fs.rmSync(installDir, { recursive: true, force: true });
+      }
+      
+      // Remove launcher script
+      if (fs.existsSync(launcherPath)) {
+        console.log('  🗑️  Removing ~/.local/bin/openclawfice...');
+        fs.unlinkSync(launcherPath);
+      }
+      
+      // Check and warn about PATH
+      const shell = process.env.SHELL || '';
+      const shellName = shell.split('/').pop();
+      let rcFile = '';
+      
+      if (shellName === 'zsh') {
+        rcFile = join(homeDir, '.zshrc');
+      } else if (shellName === 'bash') {
+        rcFile = join(homeDir, '.bashrc');
+      } else if (shellName === 'fish') {
+        rcFile = join(homeDir, '.config', 'fish', 'config.fish');
+      }
+      
+      if (rcFile && fs.existsSync(rcFile)) {
+        const content = fs.readFileSync(rcFile, 'utf-8');
+        if (content.includes('.local/bin')) {
+          console.log(`\n  ⚠️  Manual step required:`);
+          console.log(`  Remove ~/.local/bin from PATH in ${rcFile}`);
+          console.log(`  (or keep it if you use other tools there)\n`);
+        }
+      }
+      
+      console.log('\n💀 Office demolished! -100 XP\n');
+      console.log('OpenClawfice has been uninstalled.\n');
+      console.log('To reinstall: curl -fsSL https://openclawfice.com/install.sh | bash\n');
+      
+    } catch (err) {
+      console.error('\n❌ Uninstall failed:', err.message);
+      rl.close();
+      process.exit(1);
+    }
+    
+    rl.close();
+    process.exit(0);
+  });
+  
+  return;
+}
+
 if (command === 'help' || command === '--help' || command === '-h') {
   console.log(`
 🏢 OpenClawfice — Virtual Office Dashboard for OpenClaw
@@ -291,6 +387,8 @@ Commands:
   (default)         Start the office dashboard server
   deploy            Deploy OFFICE.md to all agent workspaces
   sync-cooldowns    Sync cooldown config to OpenClaw cron jobs
+  update            Upgrade to the latest version (+50 XP)
+  uninstall         Remove OpenClawfice completely (-100 XP)
   help              Show this help
 
 Options:
@@ -299,6 +397,8 @@ Options:
 Examples:
   openclawfice                    # Start server on port 3333
   openclawfice --port=8080        # Start server on port 8080
+  openclawfice update             # Upgrade to latest version
+  openclawfice uninstall          # Remove OpenClawfice
   openclawfice sync-cooldowns     # Sync cooldown timers
 
 Visit: https://docs.openclaw.ai/openclawfice
