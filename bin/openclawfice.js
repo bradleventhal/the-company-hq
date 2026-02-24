@@ -85,6 +85,26 @@ if (!fs.existsSync(firstRunMarker)) {
     console.log('  ✅ Activity log ready');
   }
 
+  // Generate auth token (so agents can authenticate immediately)
+  const tokenFile = join(openclawDir, '.openclawfice-token');
+  if (!fs.existsSync(tokenFile)) {
+    const crypto = require('crypto');
+    const token = crypto.randomBytes(32).toString('hex');
+    fs.writeFileSync(tokenFile, token, { mode: 0o600 });
+    console.log('  ✅ Auth token generated');
+
+    // On macOS, also store in Keychain for enhanced security
+    if (process.platform === 'darwin') {
+      try {
+        const { execSync } = require('child_process');
+        execSync(`security add-generic-password -s "openclawfice" -a "api-token" -w "${token}"`, { stdio: 'ignore' });
+        console.log('  ✅ Token stored in macOS Keychain');
+      } catch {
+        // Non-fatal — file-based token still works
+      }
+    }
+  }
+
   // Deploy OFFICE.md to each agent's workspace
   try {
     const config = JSON.parse(fs.readFileSync(openclawConfig, 'utf-8'));
@@ -280,6 +300,133 @@ if (command === 'sync-cooldowns') {
   return;
 }
 
+if (command === 'status' || command === '--status') {
+  const https = require('https');
+  const http = require('http');
+  
+  console.log('\n🏢 OpenClawfice — Status Report');
+  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  
+  // Get auth token
+  let token = null;
+  const tokenFile = join(homeDir, '.openclaw', '.openclawfice-token');
+  if (fs.existsSync(tokenFile)) {
+    token = fs.readFileSync(tokenFile, 'utf-8').trim();
+  }
+  
+  // Try to connect to server
+  const pArg = process.argv.find(a => a.startsWith('--port='));
+  const p = pArg ? pArg.split('=')[1] : (process.env.PORT || '3333');
+  const url = `http://localhost:${p}/api/office`;
+  
+  const startTime = Date.now();
+  
+  http.get(url, (res) => {
+    let data = '';
+    res.on('data', (chunk) => { data += chunk; });
+    res.on('end', () => {
+      try {
+        const office = JSON.parse(data);
+        const responseTime = Date.now() - startTime;
+        
+        // Server status
+        console.log(`🟢 Server: Online (localhost:${p})`);
+        console.log(`⚡ Response: ${responseTime}ms`);
+        
+        // Uptime (if available in status)
+        if (office.uptime) {
+          const uptimeMs = office.uptime;
+          const hours = Math.floor(uptimeMs / 3600000);
+          const minutes = Math.floor((uptimeMs % 3600000) / 60000);
+          console.log(`⏱️  Uptime: ${hours}h ${minutes}m`);
+        }
+        
+        console.log('');
+        
+        // Party status
+        const agents = office.agents || [];
+        const working = agents.filter(a => a.status === 'working' || a.status === 'busy');
+        const idle = agents.filter(a => a.status !== 'working' && a.status !== 'busy');
+        
+        console.log('👥 Party Status:');
+        
+        if (agents.length === 0) {
+          console.log('  (No agents discovered)');
+        } else {
+          // Show working agents first
+          working.forEach(agent => {
+            const emoji = agent.emoji || '⚡';
+            const task = agent.task ? ` (${agent.task.substring(0, 40)}${agent.task.length > 40 ? '...' : ''})` : '';
+            console.log(`  ${emoji} ${agent.name || agent.id} — Working${task}`);
+          });
+          
+          // Then idle
+          idle.forEach(agent => {
+            const emoji = agent.emoji || '☕';
+            console.log(`  ${emoji} ${agent.name || agent.id} — Idle (☕ On break)`);
+          });
+        }
+        
+        console.log('');
+        
+        // Quest count
+        const quests = office.pendingActions || office.actions || [];
+        if (quests.length > 0) {
+          console.log(`📋 Quests: ${quests.length} pending`);
+        } else {
+          console.log('📋 Quests: None (all clear!)');
+        }
+        
+        // Last accomplishment
+        const accomplishments = office.accomplishments || [];
+        if (accomplishments.length > 0) {
+          const latest = accomplishments[0];
+          const timeAgo = (() => {
+            const mins = Math.floor((Date.now() - latest.timestamp) / 60000);
+            if (mins < 1) return 'just now';
+            if (mins < 60) return `${mins} min ago`;
+            const hours = Math.floor(mins / 60);
+            if (hours < 24) return `${hours}h ago`;
+            return `${Math.floor(hours / 24)}d ago`;
+          })();
+          console.log(`🏆 Last Achievement: "${latest.title}" (${timeAgo})`);
+        } else {
+          console.log('🏆 Last Achievement: None yet');
+        }
+        
+        // Top agent (highest level)
+        if (agents.length > 0) {
+          const topAgent = agents.reduce((top, agent) => {
+            const level = agent.level || 0;
+            const topLevel = top.level || 0;
+            return level > topLevel ? agent : top;
+          }, agents[0]);
+          
+          if (topAgent.level) {
+            const xp = topAgent.xp || 0;
+            console.log(`⭐ Top Agent: ${topAgent.name || topAgent.id} (Lv.${topAgent.level}, ${xp} XP)`);
+          }
+        }
+        
+        console.log('');
+        process.exit(0);
+      } catch (err) {
+        console.error('❌ Failed to parse server response:', err.message);
+        process.exit(1);
+      }
+    });
+  }).on('error', (err) => {
+    console.log(`🔴 Server: Offline`);
+    console.log('');
+    console.log('The office is closed. Start it with:');
+    console.log(`  openclawfice${pArg ? ' ' + pArg : ''}`);
+    console.log('');
+    process.exit(1);
+  });
+  
+  return;
+}
+
 if (command === 'update' || command === '--update') {
   console.log('\n🔄 Upgrading your office...\n');
   
@@ -385,6 +532,7 @@ Usage:
 
 Commands:
   (default)         Start the office dashboard server
+  status            Check office health (party status, quests, uptime)
   deploy            Deploy OFFICE.md to all agent workspaces
   sync-cooldowns    Sync cooldown config to OpenClaw cron jobs
   update            Upgrade to the latest version (+50 XP)
@@ -396,6 +544,7 @@ Options:
 
 Examples:
   openclawfice                    # Start server on port 3333
+  openclawfice status             # Check office health (RPG-style)
   openclawfice --port=8080        # Start server on port 8080
   openclawfice update             # Upgrade to latest version
   openclawfice uninstall          # Remove OpenClawfice
