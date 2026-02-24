@@ -32,7 +32,8 @@ export default function LeaderboardPage() {
     fetchAgents();
     const interval = setInterval(fetchAgents, 10000);
     return () => clearInterval(interval);
-  }, [getApiPath]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Sort agents by XP
   const sortedAgents = [...agents].sort((a, b) => b.xp - a.xp);

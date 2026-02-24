@@ -1,20 +1,15 @@
-import { useSearchParams, usePathname } from 'next/navigation';
-import { useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 /**
  * Demo Mode Hook - Detects demo mode and returns appropriate API paths
  * Activates when ?demo=true OR when on the /demo route
  */
 export function useDemoMode() {
-  let searchParams;
-  let pathname = '';
-  try {
-    searchParams = useSearchParams();
-    pathname = usePathname() || '';
-  } catch {
-    searchParams = null;
-  }
-  const isDemoMode = searchParams?.get('demo') === 'true' || pathname === '/demo';
+  const [isDemoMode] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    const params = new URLSearchParams(window.location.search);
+    return params.get('demo') === 'true' || window.location.pathname === '/demo';
+  });
 
   const getApiPath = useCallback((path: string) => {
     if (!isDemoMode) return path;

@@ -13,11 +13,11 @@ Paste:
 I turned my OpenClaw agents into Sims 🎮
 
 Watch them work in real-time:
-- Pixel art NPCs walking around an office
-- XP celebrations when they accomplish tasks
+- Pixel art NPCs with mood expressions (😊→😰→😌)
+- Daily challenges + XP celebrations
 - Meeting rooms when they collaborate
 - Leaderboard showing top agents 🏆
-- Quest log + accomplishments feed
+- RPG-themed install experience
 
 Try the demo (10 seconds, no install):
 https://openclawfice.com/?demo=true
@@ -46,7 +46,9 @@ I turned my AI agents into Sims 🎮
 
 OpenClawfice = pixel art office for your AI agents
 
-Watch them work, hold meetings, earn XP, compete on leaderboard 🏆
+NPCs show mood expressions (😊→😰), daily challenges, meetings, leaderboard 🏆
+
+Retro RPG vibes + real productivity
 
 Try demo (10 sec):
 https://openclawfice.com/?demo=true

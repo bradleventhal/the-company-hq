@@ -42,10 +42,10 @@ export function DailyChallenge({ getApiPath, onCelebration }: DailyChallengeProp
     };
 
     fetchChallenge();
-    // Refresh every 5 minutes to catch progress updates
     const interval = setInterval(fetchChallenge, 5 * 60 * 1000);
     return () => clearInterval(interval);
-  }, [getApiPath]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (!challenge) {
     return null;
@@ -57,117 +57,44 @@ export function DailyChallenge({ getApiPath, onCelebration }: DailyChallengeProp
   return (
     <div
       style={{
-        background: challenge.completed 
-          ? 'linear-gradient(135deg, rgba(16,185,129,0.15), rgba(16,185,129,0.05))'
-          : 'linear-gradient(135deg, rgba(139,92,246,0.15), rgba(139,92,246,0.05))',
-        border: `2px solid ${challenge.completed ? 'rgba(16,185,129,0.3)' : 'rgba(139,92,246,0.3)'}`,
-        borderRadius: 12,
-        padding: 16,
-        marginBottom: 16,
+        background: challenge.completed
+          ? 'rgba(16,185,129,0.08)'
+          : 'rgba(139,92,246,0.08)',
+        border: `1px solid ${challenge.completed ? 'rgba(16,185,129,0.25)' : 'rgba(139,92,246,0.25)'}`,
+        borderRadius: 8,
+        padding: '6px 10px',
+        marginBottom: 8,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 8,
         position: 'relative',
         overflow: 'hidden',
       }}
     >
-      {/* Header */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: 12,
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span style={{ fontSize: 28 }}>{challenge.icon}</span>
-          <div>
-            <div
-              style={{
-                fontSize: 11,
-                fontFamily: '"Press Start 2P", monospace',
-                color: challenge.completed ? '#10b981' : '#8b5cf6',
-                marginBottom: 4,
-              }}
-            >
-              {challenge.completed ? '✓ COMPLETED' : 'DAILY CHALLENGE'}
-            </div>
-            <div
-              style={{
-                fontSize: 14,
-                fontWeight: 700,
-                color: '#e2e8f0',
-              }}
-            >
-              {challenge.title}
-            </div>
-          </div>
+      <span style={{ fontSize: 14, flexShrink: 0 }}>{challenge.icon}</span>
+
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
+          <span style={{
+            fontSize: 7,
+            fontFamily: '"Press Start 2P", monospace',
+            color: challenge.completed ? '#10b981' : '#8b5cf6',
+          }}>
+            {challenge.completed ? '✓ DONE' : 'DAILY'}
+          </span>
+          <span style={{ fontSize: 11, fontWeight: 700, color: '#e2e8f0' }}>
+            {challenge.title}
+          </span>
         </div>
-
-        {/* Streak badge */}
-        {streak > 0 && (
-          <div
-            style={{
-              background: 'rgba(245,158,11,0.2)',
-              border: '1px solid rgba(245,158,11,0.4)',
-              borderRadius: 8,
-              padding: '6px 10px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-            }}
-          >
-            <span style={{ fontSize: 16 }}>🔥</span>
-            <div>
-              <div
-                style={{
-                  fontSize: 16,
-                  fontWeight: 700,
-                  color: '#fbbf24',
-                  lineHeight: 1,
-                }}
-              >
-                {streak}
-              </div>
-              <div
-                style={{
-                  fontSize: 7,
-                  color: '#fcd34d',
-                  textTransform: 'uppercase',
-                  letterSpacing: 0.5,
-                }}
-              >
-                day streak
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Description */}
-      <div
-        style={{
-          fontSize: 12,
-          color: '#94a3b8',
-          marginBottom: 12,
-          lineHeight: 1.5,
-        }}
-      >
-        {challenge.description}
-      </div>
-
-      {/* Progress bar */}
-      <div
-        style={{
+        {/* Thin progress bar */}
+        <div style={{
           background: '#1e293b',
-          borderRadius: 8,
-          height: 24,
+          borderRadius: 3,
+          height: 6,
           position: 'relative',
           overflow: 'hidden',
-          marginBottom: 8,
-        }}
-      >
-        {/* Fill */}
-        <div
-          style={{
+        }}>
+          <div style={{
             position: 'absolute',
             left: 0,
             top: 0,
@@ -175,86 +102,43 @@ export function DailyChallenge({ getApiPath, onCelebration }: DailyChallengeProp
             width: `${progress}%`,
             background: progressColor,
             transition: 'width 0.5s ease-out',
-            boxShadow: `0 0 10px ${progressColor}44`,
-          }}
-        />
-
-        {/* Label */}
-        <div
-          style={{
-            position: 'relative',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            height: '100%',
-            fontSize: 10,
-            fontWeight: 700,
-            color: '#e2e8f0',
-            fontFamily: '"Press Start 2P", monospace',
-            textShadow: '0 1px 2px rgba(0,0,0,0.5)',
-          }}
-        >
-          {challenge.current} / {challenge.target}
+            borderRadius: 3,
+          }} />
         </div>
       </div>
 
-      {/* XP reward */}
-      <div
-        style={{
+      <span style={{
+        fontSize: 9,
+        fontWeight: 700,
+        color: '#94a3b8',
+        fontFamily: '"Press Start 2P", monospace',
+        flexShrink: 0,
+      }}>
+        {challenge.current}/{challenge.target}
+      </span>
+
+      {streak > 0 && (
+        <span style={{ fontSize: 9, color: '#fbbf24', flexShrink: 0 }} title={`${streak} day streak`}>
+          🔥{streak}
+        </span>
+      )}
+
+      <span style={{ fontSize: 9, color: '#fbbf24', fontWeight: 700, flexShrink: 0 }}>
+        ⭐{xp}
+      </span>
+
+      {celebrating && (
+        <div style={{
+          position: 'absolute',
+          inset: 0,
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-      >
-        <div
-          style={{
-            fontSize: 10,
-            color: '#64748b',
-          }}
-        >
-          {challenge.completed ? (
-            <span style={{ color: '#10b981' }}>✓ Challenge complete!</span>
-          ) : (
-            'New challenge in 24h'
-          )}
-        </div>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 6,
-            fontSize: 11,
-            fontWeight: 700,
-            color: '#fbbf24',
-          }}
-        >
-          <span>⭐</span>
-          <span>{xp} XP</span>
-        </div>
-      </div>
-
-      {/* Completion celebration */}
-      {celebrating && (
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: 'rgba(16,185,129,0.9)',
-            animation: 'fadeOut 2s forwards',
-            pointerEvents: 'none',
-          }}
-        >
-          <div
-            style={{
-              fontSize: 48,
-              animation: 'bounce 0.5s ease-out',
-            }}
-          >
-            🎉
-          </div>
+          justifyContent: 'center',
+          background: 'rgba(16,185,129,0.9)',
+          animation: 'fadeOut 2s forwards',
+          pointerEvents: 'none',
+        }}>
+          <span style={{ fontSize: 24, animation: 'bounce 0.5s ease-out' }}>🎉</span>
         </div>
       )}
 
@@ -263,7 +147,6 @@ export function DailyChallenge({ getApiPath, onCelebration }: DailyChallengeProp
           from { opacity: 1; }
           to { opacity: 0; }
         }
-
         @keyframes bounce {
           0%, 100% { transform: scale(1); }
           50% { transform: scale(1.3); }
