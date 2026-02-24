@@ -200,7 +200,7 @@ function triggerRecording(accomplishmentId: string, title: string, who: string, 
     };
 
     if (err) {
-      console.error(`Recording failed for ${accomplishmentId}:`, err.message);
+      console.error('Recording failed for accomplishment:', String(accomplishmentId).replace(/[\r\n]/g, ''), err.message);
       updateScreenshot(undefined);
       return;
     }

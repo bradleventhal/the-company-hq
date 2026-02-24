@@ -10,6 +10,8 @@ const homeDir = os.homedir();
 const openclawDir = join(homeDir, '.openclaw');
 const openclawConfig = join(openclawDir, 'openclaw.json');
 const statusDir = join(openclawDir, '.status');
+const portArg = process.argv.find(a => a.startsWith('--port='));
+const port = portArg ? portArg.split('=')[1] : (process.env.PORT || '3333');
 
 // ─── Preflight Checks ───────────────────────────────────────────────
 
@@ -308,9 +310,7 @@ Visit: https://docs.openclaw.ai/openclawfice
 
 console.log('🏢 Starting OpenClawfice...\n');
 
-// Detect port from args or env
-const portArg = process.argv.find(a => a.startsWith('--port='));
-const port = portArg ? portArg.split('=')[1] : (process.env.PORT || '3333');
+// Port already parsed at top of file
 
 const isDev = fs.existsSync(join(packageRoot, 'app', 'page.tsx'));
 

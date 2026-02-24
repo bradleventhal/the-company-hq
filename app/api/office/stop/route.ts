@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { join } from 'path';
 import { homedir } from 'os';
 import { gatewayRpc } from '@/lib/gateway-rpc';
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
       aborted = true;
     } catch (err: any) {
       // Gateway might be down or no active run — not fatal
-      console.error(`sessions.abort failed for ${sessionKey}:`, err.message);
+      console.error('sessions.abort failed for agent:', String(agentId).replace(/[\r\n]/g, ''), err.message);
     }
 
     // Pause auto-work so the tick doesn't re-send immediately
