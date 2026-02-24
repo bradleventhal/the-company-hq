@@ -813,6 +813,22 @@ export default function HomePage() {
           >
             📞
           </button>
+          <a
+            href="/leaderboard"
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#475569',
+              cursor: 'pointer',
+              fontSize: 14,
+              padding: '2px 4px',
+              textDecoration: 'none',
+              display: 'inline-block',
+            }}
+            title="Leaderboard"
+          >
+            🏆
+          </a>
           <button
             onClick={() => setShowShareModal(true)}
             style={{
