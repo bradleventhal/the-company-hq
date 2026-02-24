@@ -501,13 +501,13 @@ function calculateAgentProgression(agentName: string): { xp: number; level: numb
 
     // Skill categories with keyword detection
     const skillDefs: { name: string; icon: string; keywords: string[] }[] = [
-      { name: 'Code', icon: '💻', keywords: ['code', 'fix', 'bug', 'refactor', 'build', 'implement', 'typescript', 'component', 'api', 'script', 'function', 'module', 'commit', 'push', 'merge', 'pr'] },
-      { name: 'Design', icon: '🎨', keywords: ['design', 'ui', 'ux', 'css', 'style', 'layout', 'animation', 'responsive', 'npc', 'pixel', 'theme'] },
-      { name: 'Ops', icon: '⚙️', keywords: ['deploy', 'server', 'database', 'security', 'config', 'automate', 'pipeline', 'monitor', 'backup', 'infrastructure', 'vercel', 'production'] },
-      { name: 'Research', icon: '🔍', keywords: ['research', 'find', 'search', 'analyze', 'audit', 'validate', 'evaluate', 'report', 'data', 'roi', 'metrics'] },
-      { name: 'Outreach', icon: '📧', keywords: ['email', 'outreach', 'creator', 'contact', 'dm', 'prospect', 'campaign', 'follow-up', 'qualified', 'sourced', 'pipeline'] },
-      { name: 'Docs', icon: '📝', keywords: ['doc', 'readme', 'guide', 'documentation', 'changelog', 'tutorial', 'checklist', 'wrote', 'status report'] },
-      { name: 'Ship', icon: '🚀', keywords: ['ship', 'launch', 'release', 'publish', 'demo', 'screenshot', 'gif', 'record', 'video', 'proof'] },
+      { name: 'Code', icon: '💻', keywords: ['code', 'bug', 'refactor', 'typescript', 'component', 'api', 'function', 'module', 'commit', 'merge', 'pr', 'jsx', 'tsx', 'css', 'html', 'sql', 'regex', 'parse', 'compile', 'lint'] },
+      { name: 'Design', icon: '🎨', keywords: ['design', 'ui', 'ux', 'style', 'layout', 'animation', 'responsive', 'npc', 'pixel', 'theme', 'mockup', 'wireframe'] },
+      { name: 'Ops', icon: '⚙️', keywords: ['deploy', 'server', 'database', 'security', 'config', 'automate', 'monitor', 'backup', 'infrastructure', 'vercel', 'production', 'ci', 'docker'] },
+      { name: 'Research', icon: '🔍', keywords: ['research', 'analyze', 'audit', 'validate', 'evaluate', 'report', 'data', 'roi', 'metrics', 'diagnos', 'investig'] },
+      { name: 'Outreach', icon: '📧', keywords: ['email', 'outreach', 'creator', 'contact', 'dm', 'prospect', 'campaign', 'follow-up', 'qualified', 'sourced', 'pipeline', 'call', 'lead', 'deal', 'negotiat', 'partnership', 'follower', 'tiktok', 'instagram'] },
+      { name: 'Docs', icon: '📝', keywords: ['doc', 'readme', 'guide', 'documentation', 'changelog', 'tutorial', 'checklist', 'wrote', 'status report', 'playbook', 'template'] },
+      { name: 'Ship', icon: '🚀', keywords: ['ship', 'launch', 'release', 'publish', 'demo', 'screenshot', 'gif', 'record', 'video', 'proof', 'built', 'created', 'fixed', 'implemented'] },
     ];
 
     // Count skill hits and calculate XP
