@@ -749,10 +749,30 @@ export default function HomePage() {
   }, [agents, sfx]);
 
   const hour = time.getHours();
-  const bgGrad =
-    hour >= 6 && hour < 18
-      ? 'linear-gradient(180deg, #0f172a 0%, #1e293b 100%)'
-      : 'linear-gradient(180deg, #020617 0%, #0f172a 100%)';
+  
+  // Enhanced day/night cycle with smooth transitions
+  const getTimeOfDay = () => {
+    if (hour >= 5 && hour < 7) return 'dawn';
+    if (hour >= 7 && hour < 12) return 'morning';
+    if (hour >= 12 && hour < 17) return 'afternoon';
+    if (hour >= 17 && hour < 19) return 'dusk';
+    if (hour >= 19 && hour < 22) return 'evening';
+    return 'night';
+  };
+  
+  const timeOfDay = getTimeOfDay();
+  
+  // Atmospheric gradients for each time period
+  const atmosphereGradients: Record<string, string> = {
+    dawn: 'linear-gradient(180deg, #1e1b4b 0%, #4c1d95 40%, #fb923c 100%)',
+    morning: 'linear-gradient(180deg, #0c4a6e 0%, #0369a1 50%, #bae6fd 100%)',
+    afternoon: 'linear-gradient(180deg, #0284c7 0%, #0ea5e9 50%, #e0f2fe 100%)',
+    dusk: 'linear-gradient(180deg, #581c87 0%, #db2777 40%, #fb923c 100%)',
+    evening: 'linear-gradient(180deg, #1e1b4b 0%, #312e81 50%, #1e293b 100%)',
+    night: 'linear-gradient(180deg, #020617 0%, #0f172a 50%, #1e293b 100%)',
+  };
+  
+  const bgGrad = atmosphereGradients[timeOfDay];
 
   // Responsive sizing
   const isMobile = screenSize === 'mobile';
