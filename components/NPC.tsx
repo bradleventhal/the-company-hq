@@ -8,7 +8,7 @@ import { randomColor, getQuirkyMoodMessage } from './utils';
 
 // === NPC Visual Trait System ===
 
-type HairStyle = 'classic' | 'spiky' | 'long' | 'bald' | 'afro' | 'bob' | 'ponytail';
+type HairStyle = 'classic' | 'spiky' | 'long' | 'bald' | 'afro' | 'bob' | 'ponytail' | 'mohawk';
 type Accessory = 'none' | 'glasses' | 'headphones' | 'cap' | 'earring';
 
 // Generate unique NPC visual traits from agent ID (deterministic)
@@ -31,7 +31,7 @@ function getNpcTraits(id: string) {
 
   const skinTones = ['#f3d6bf', '#e8c1a0', '#d8a67f', '#bf875d', '#9f6947', '#7f4e34', '#f1cdb6', '#c7906a'];
   const hairColors = ['#111827', '#2b2a28', '#6b3f2a', '#84563c', '#b37a4c', '#b91c1c', '#1d4ed8', '#334155', '#cbd5e1'];
-  const hairStyles: HairStyle[] = ['classic', 'spiky', 'long', 'bald', 'afro', 'bob', 'ponytail'];
+  const hairStyles: HairStyle[] = ['classic', 'spiky', 'long', 'bald', 'afro', 'bob', 'ponytail', 'mohawk'];
   const accessories: Accessory[] = ['none', 'none', 'glasses', 'headphones', 'cap', 'earring'];
   const pantsColors = ['#1f2937', '#0f172a', '#334155', '#374151', '#3f3f46', '#1e3a8a', '#14532d', '#4c1d95'];
 
