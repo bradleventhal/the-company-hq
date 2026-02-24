@@ -584,11 +584,36 @@ function NPC({ agent, size = 1, onClick, forceThought, flipped, hasCelebration }
         </div>
       </div>
       <div style={{
-        fontSize: 8 * size,
-        color: '#64748b',
-        fontFamily: '"Press Start 2P", monospace',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 4,
       }}>
-        {agent.role}
+        <span style={{
+          fontSize: 8 * size,
+          color: '#64748b',
+          fontFamily: '"Press Start 2P", monospace',
+        }}>
+          {agent.role}
+        </span>
+        {/* Status activity indicator */}
+        {agent.status === 'working' ? (
+          <span style={{
+            fontSize: 7 * size,
+            animation: 'statusPulse 1.5s ease-in-out infinite',
+            display: 'inline-block',
+          }}>
+            ⚡
+          </span>
+        ) : (
+          <span style={{
+            fontSize: 7 * size,
+            opacity: 0.5,
+            animation: 'statusFloat 3s ease-in-out infinite',
+            display: 'inline-block',
+          }}>
+            💤
+          </span>
+        )}
       </div>
     </div>
   );
@@ -3807,6 +3832,14 @@ export default function HomePage() {
         @keyframes pulse {
           0%, 100% { opacity: 1; }
           50% { opacity: 0.4; }
+        }
+        @keyframes statusPulse {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.6; transform: scale(1.2); }
+        }
+        @keyframes statusFloat {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-2px); }
         }
       `}</style>
 
