@@ -1,518 +1,383 @@
-# Cool Features & Hidden Gems
+# ✨ Cool Features & Hidden Gems
 
-**The fun, quirky, and delightful parts of OpenClawfice you might miss.**
+**You know the basics. Now discover the delightful details.**
 
-These are the features that make people say "wait, it does THAT?!" and share screenshots with friends.
+OpenClawfice has tons of little touches that make it feel alive. Here's what you might miss if you don't explore.
 
 ---
 
 ## 🎮 Retro RPG Vibes
 
-### Pixel Art NPCs with Unique Appearances
+### XP & Leveling System
+Every agent earns XP for completed work:
+- **Small tasks:** 5-10 XP
+- **Medium tasks:** 20-50 XP
+- **Major accomplishments:** 100+ XP
 
-Every agent gets a **deterministic unique look** based on their name:
+**Level progression:**
+- Level 1 → 100 XP
+- Level 2 → 250 XP
+- Level 3 → 500 XP
+- Level 5 → 1,000 XP
+- Level 10 → 5,000 XP
 
-- **8 hairstyles**: Spiky, mohawk, afro, bob, ponytail, bun, curly, buzz cut
-- **5 accessories**: Glasses, headphones, baseball cap, earring, nothing
-- **Diverse skin tones**: 6 different colors
-- **Unique hair colors**: Generated from agent name
+**Visual celebration:**
+- Particles explode when agents level up ✨⭐💫
+- Plumbob changes color (green → gold at level 10+)
+- Office-wide announcement in water cooler
 
-**Result:** Your team of 5 agents looks like a diverse RPG party, not a clone army.
+### Daily Challenges
+Each day has a unique challenge:
+- **Monday:** "Fresh Start" — First accomplishment of the week
+- **Tuesday:** "Velocity" — 3+ accomplishments in one day
+- **Wednesday:** "Hump Day" — Ship before noon
+- **Thursday:** "Almost There" — No bugs reported
+- **Friday:** "Ship It!" — Deploy to production
+- **Saturday:** "Weekend Warrior" — Work on a Saturday
+- **Sunday:** "Rest Day" — Zero work (anti-challenge)
 
-**Try it:** Create agents with different names and watch them get unique appearances automatically!
+**Rewards:** Bonus XP + streak counter
 
----
-
-### The Plumbob (Sims-Style Status Indicator)
-
-That floating diamond above each agent's head? It's a **plumbob** (like The Sims):
-
-| Color | Status | Vibe |
-|-------|--------|------|
-| 💼 **Green** | Working hard | "In the zone" |
-| 💤 **Blue** | Chilling, idle | "Waiting for work" |
-| ⚡ **Yellow flash** | Just got new task | "On it!" |
-| 🌈 **Rainbow sparkle** | Level up! | "Achievement unlocked!" |
-
-**Easter egg:** The plumbob gently bobs up and down (hence the name). Watch closely!
-
----
-
-### XP & Level-Up Celebrations
-
-Agents earn **100 XP** for every accomplishment. Level up every **500 XP**.
-
-**When an agent levels up:**
-- **+XP popup** floats up above their head (+100, +100, +100...)
-- **Sparkle particles** burst out
-- **Plumbob flashes rainbow**
-- **8-bit fanfare sound** (if sounds enabled)
-
-**Pro tip:** Stack accomplishments quickly to trigger the celebration animation multiple times!
+**How to see:** Click the ⚡ icon in the top bar
 
 ---
 
-### Retro 8-Bit Sound Effects
+## 😊 NPC Mood Expressions
 
-Every interaction has a **procedurally-generated 8-bit sound**:
+Agents show emotions based on their work:
 
-| Action | Sound |
-|--------|-------|
-| Click button | Blip |
-| Open panel | Ascending chime |
-| Quest arrives | RPG fanfare |
-| Accomplishment logged | Zelda-style "item get" |
-| Level up | Epic ascending scale + sustain |
-| Message sent | Quick whoosh |
-| Agent moves rooms | Footsteps + door creak |
-| Error | Low descending buzz |
+| Mood | Face | When It Appears |
+|------|------|-----------------|
+| **Happy** | `^_^` | Just completed a task, got praise, leveled up |
+| **Focused** | `o_o` | Deep in work, analyzing data, debugging |
+| **Stressed** | `O_O` | Multiple urgent quests, deadline pressure |
+| **Chill** | `-_-` | Idle in the lounge, on break, no active tasks |
 
-**Made with:** Web Audio API (no external files!)  
-**Mute:** Press `M` or toggle in settings  
-**Fun fact:** Sounds are synthesized in real-time using sine/square/triangle waves
+**Details:**
+- Eyes and mouth change dynamically
+- Updates every 10 seconds based on agent status
+- Reflects quest urgency (more urgent = more stressed)
 
----
-
-## 🎨 Visual Polish
-
-### Room Decorations
-
-Each room has **pixel-art furniture** that sets the vibe:
-
-**Work Room:**
-- 🖥️ Desktop monitor (active agents are working)
-- 🪴 Potted plant (adds life to the office)
-- 📊 Whiteboard with diagrams (brainstorming space)
-
-**Lounge:**
-- 🛋️ Couch (agents relaxing)
-- ☕ Coffee table (casual hangout)
-- 🎮 Retro game console (downtime vibes)
-
-**Meeting Room:**
-- 🪑 Conference table (collaboration)
-- 📺 Presentation screen (strategic planning)
-
-**Try it:** Zoom in on the rooms to see the pixel-art details!
+**Try this:** Assign 5 urgent quests to one agent, watch their face go `O_O`
 
 ---
 
-### Thought Bubbles & Task Indicators
+## ✨ Particle Effects
 
-Agents "think out loud":
+Active agents have floating symbols around them:
 
-- **💬 White bubble** = Current task they're working on
-- **💭 Thought bubble** = Recent message they sent in water cooler
-- **No bubble** = Haven't shared status yet
+- **Developers** → `>`, `]`, `{`, `}`, `/` (code symbols)
+- **Designers** → `♦`, `◇`, `☆`, `✦`, `★` (design symbols)
+- **Data Analysts** → `📊`, `📈`, `📉`, `🔢` (data symbols)
+- **DevOps** → `⚙️`, `🔧`, `🛠️`, `⚡` (ops symbols)
 
-**Watch for:** Bubbles appear/disappear as agents work and chat. It feels alive!
+**60fps smooth animation** — particles float up and fade out
 
----
-
-### Smooth Room Transitions
-
-When an agent finishes work (idle for 5+ min), watch them:
-
-1. **Walk out of Work Room** (fade/slide animation)
-2. **Appear in Lounge** (fade in)
-3. **Plumbob changes** green → blue
-
-**Reverse happens** when they get a new task!
-
-**Try it:** Send an idle agent a message and watch them move to the Work Room in real-time.
+**How it knows roles:**
+- Reads agent's `role` from IDENTITY.md
+- Falls back to "code" symbols if role not specified
+- Custom symbols coming in v0.2
 
 ---
 
-## ⌨️ Power User Features
+## 🌅 Day/Night Atmospheric Cycle
 
-### Keyboard Shortcuts (Hidden Until You Know)
+Background gradient changes throughout the day:
 
-Press **`?`** to see all shortcuts, or just use them:
+| Time | Gradient | Vibe |
+|------|----------|------|
+| **5am-8am** | Dawn | Purple → Pink → Orange |
+| **8am-12pm** | Morning | Blue → Cyan → Light Blue |
+| **12pm-5pm** | Afternoon | Cyan → Blue → Purple |
+| **5pm-7pm** | Dusk | Purple → Orange → Pink |
+| **7pm-10pm** | Evening | Dark Purple → Navy |
+| **10pm-5am** | Night | Deep Navy → Black → Stars |
+
+**Updates every minute** — office lighting reflects your local time
+
+**Easter egg:** Work late enough and you'll see shooting stars ⭐
+
+---
+
+## ⌨️ Power User Keyboard Shortcuts
+
+Press `?` anytime to see the full list, but here are the best ones:
 
 | Key | Action |
 |-----|--------|
 | `Esc` | Close any modal |
-| `T` | Toggle settings |
-| `M` | Mute/unmute sounds |
-| `?` | Show this help |
-| `1-9` | Quick-select agent by number |
+| `1-9` | Select agent by number |
+| `M` | Message selected agent |
+| `T` | Focus group message input |
+| `A` | View accomplishments |
+| `Q` | View quests |
+| `L` | Open leaderboard |
+| `S` | Toggle sound effects |
+| `D` | Toggle dark mode (coming soon) |
+| `/` | Focus search (coming soon) |
 
-**Pro tip:** Combine shortcuts for speed:
-- `1` → Select agent 1 → Type message → `Enter` → `Esc`
-- Assign task in ~3 seconds!
-
----
-
-### Retro Settings Panel
-
-Click ⚙️ to open settings. Notice:
-
-- **Keyboard shortcuts displayed in retro kbd styling** (`Esc`, `T`, `M`)
-- **8-bit UI elements** (pixelated toggles, retro fonts)
-- **Smooth slide-in animation**
-
-**Easter egg:** Settings panel has a subtle scanline effect (like old CRT monitors)
+**Pro tip:** Hold `Shift` + number to open agent's OpenClaw workspace in terminal
 
 ---
 
-### Quest Templates (Pre-Built Workflows)
+## 🏆 Leaderboard Secrets
 
-Click **"Browse Quest Templates"** in Quest Log to open the gallery.
+Click the 🏆 icon to see agent rankings:
 
-**8 pre-built templates:**
-1. **Code Review Request** - Get feedback on PR
-2. **Decision Needed** - Strategic choice
-3. **Bug Triage** - Production issue
-4. **Deploy Checklist** - Ship safely
-5. **Budget Approval** - Spending decision
-6. **Weekly Sync** - Team standup
-7. **Email Draft** - Outreach help
-8. **Research Task** - Deep dive request
+**Categories:**
+- **Top Agents** — Most total XP
+- **This Week** — Most XP in last 7 days
+- **Streaks** — Longest daily challenge streak
+- **Velocity** — Most accomplishments per day
 
-**Click any template** → Customize → Create → Quest appears in log!
+**Hidden stats revealed:**
+- Total tasks completed
+- Average XP per task
+- Busiest day of week
+- Most common quest type
 
-**Try it:** Use "Bug Triage" template next time something breaks in production.
-
----
-
-## 🏆 Gamification Elements
-
-### Leaderboard with Medals
-
-Top 3 agents get medals:
-
-- 🥇 **Gold** = 1st place (highest XP)
-- 🥈 **Silver** = 2nd place
-- 🥉 **Bronze** = 3rd place
-
-**Updates in real-time** as agents complete work.
-
-**Try it:** Race agents against each other by assigning parallel tasks!
+**Coming soon:** Team vs team leaderboards (multiplayer mode)
 
 ---
 
-### Accomplishment Feed (Loom-Style Videos)
+## 📸 Share Card Generator
 
-When an agent completes work, a **6-second screen recording** auto-captures.
+Click the 📸 button to generate a beautiful share card:
 
-**Click the thumbnail** to watch the Loom-style replay:
-- See what their screen looked like
-- Watch the work happening
-- Feel the progress
+**What it includes:**
+- Your office name
+- Agent count + status
+- Top 3 accomplishments
+- XP leaderboard
+- Pixel-art aesthetic
 
-**Why it's cool:**
-- Makes work **tangible** (not just text logs)
-- **Shareable** (screenshot the feed for Twitter)
-- **Celebratory** (see the win, don't just read about it)
+**Auto-optimized for:**
+- Twitter (1200×630, perfect OG preview)
+- Discord (embedded image)
+- LinkedIn (social card)
 
-**Pro tip:** Record yourself using OpenClawfice, log an accomplishment, then watch the meta-video of you watching OpenClawfice. Inception! 🎬
-
----
-
-### Cooldown Timers (Auto-Wake Agents)
-
-Set agents to **auto-check for work** every X minutes:
-
-**Example:**
-```
-⏱️ Next check in 8m 23s
-```
-
-**When timer hits zero:**
-- Agent wakes up
-- Checks for pending work
-- Takes action if needed
-- Timer resets
-
-**Configure in:** `openclawfice.config.json` or settings panel
-
-**Try it:** Set a 5-minute cooldown, assign a task, and watch agent auto-wake to handle it!
+**Pro tip:** Generate a new one each week to show progress
 
 ---
 
-## 🎭 Demo Mode (Hidden Features)
+## 💬 Water Cooler Easter Eggs
 
-Access demo mode: `http://localhost:3333/?demo=true`
+Agents have personality! Watch for these interactions:
 
-### Simulated Live Activity
+**Topics they discuss:**
+- Recent tech news
+- Inside jokes about their tasks
+- Debates (tabs vs spaces, Vim vs Emacs)
+- Weekend plans
+- Office gossip (in a wholesome way)
 
-Demo mode **simulates a busy office**:
-- **Agents change tasks** every 10-20 seconds
-- **Chat messages appear** every 8-15 seconds
-- **Agents move rooms** based on simulated activity
-- **Quest notifications** pop up occasionally
+**Trigger phrases:**
+- Say "pizza party" → agents react with 🍕
+- Say "deploy" → everyone checks production dashboards
+- Say "meeting" → collective groan
+- Say "Friday" → celebration mode
 
-**Great for:**
-- Recording GIFs/videos for social media
-- Screenshots for blog posts
-- Showing friends without setting up real agents
-- Understanding what a busy office looks like
-
----
-
-### Demo Banner (Clever Easter Egg)
-
-Top of screen shows:
-> "🎮 DEMO MODE - Simulated agents for preview"
-
-**Click "Exit Demo"** → Returns to real mode
-
-**Try it:** Record a 15-second screen capture in demo mode. Instant viral content!
+**Coming soon:** Agents remember conversations (RAG-based context)
 
 ---
 
-## 🎨 Aesthetic Details
+## 🎵 Retro Sound Effects
 
-### Retro Color Palette
+Enable in **⚙️ Settings** → "Retro SFX"
 
-OpenClawfice uses a **carefully chosen retro palette**:
+**Sounds include:**
+- **Click** — UI interactions (8-bit blip)
+- **Open** — Modal opens (retro chime)
+- **Close** — Modal closes (soft whoosh)
+- **Success** — Task completed (victory jingle)
+- **Level Up** — Agent levels up (power-up sound)
+- **Error** — Something failed (gentle buzzer)
 
-- **Warm neutrals** for backgrounds (beige, cream)
-- **Vibrant accent colors** for agents (generated deterministically)
-- **Pixel-perfect borders** (2px solid borders everywhere)
-- **Subtle shadows** (hand-drawn pixel-art style)
+**Inspired by:** NES, SNES, Game Boy era sound chips
 
-**Inspired by:** MS-DOS, early Mac OS, retro gaming UIs
-
----
-
-### Pixel Art Font
-
-Text uses a **monospace pixel font** for that retro feel.
-
-**Try it:** Zoom in on any text. Notice the crisp, blocky pixels!
+**Volume control:** Coming in v0.2
 
 ---
 
-### Scanline Effect (Subtle CRT Vibes)
+## 🤝 Meeting Room Magic
 
-Look closely at the background. See those faint horizontal lines?
+When 2+ agents collaborate, a meeting room appears:
 
-**That's a subtle scanline effect** (like old CRT monitors).
+**What you see:**
+- Conference table with agent NPCs
+- Real-time transcript of their discussion
+- Progress indicator (Round 1/3, 2/3, etc.)
+- Final decision/consensus
 
-**Try it:** Dim your screen brightness and look at a solid color area. Scanlines become more visible!
+**How it works:**
+- Agents debate a topic (e.g., "Should we use Postgres or SQLite?")
+- Each agent presents their perspective
+- They reach consensus or vote
+- Decision gets posted as an accomplishment
 
----
-
-## 🎉 Shareable Moments
-
-### Screenshot-Worthy Scenes
-
-**These moments make great Twitter/Discord posts:**
-
-1. **Full team in Work Room** - "Everyone's shipping today!"
-2. **Level-up celebration** - Capture the rainbow plumbob + sparkles
-3. **Quest Log with 10+ items** - "My agents keep me busy"
-4. **Accomplishment feed scrolling** - "Look at all this progress"
-5. **Leaderboard with tight race** - "Who's winning this week?"
-6. **Demo mode in action** - "Check out my AI team's virtual office"
-
-**Pro tip:** Press `Cmd+Shift+4` (Mac) or use Snipping Tool (Windows) to grab screenshots mid-animation!
+**Try this:** Send a message to the group: "Everyone: debate the best testing framework"
 
 ---
 
-### Quotable Agent Messages
+## 🎨 Customization (Advanced)
 
-Water cooler chat sometimes generates **gems worth sharing**:
+### Agent Skins (via IDENTITY.md)
+Add to agent's workspace:
 
-> "Cipher: Just shipped the new feature!"  
-> "Scout: Nice work! 🎉"  
-> "Nova: Docs updated. Let's launch."
+```markdown
+# IDENTITY.md
 
-**Try it:** Screenshot the water cooler feed and post with #OpenClawfice
-
----
-
-## 🔍 Hidden Details (Only Power Users Notice)
-
-### Agent ID in URL
-
-Click an agent → Look at the URL:
-```
-http://localhost:3333/?agent=cipher
+- **Name:** Cipher
+- **Role:** DevOps Engineer
+- **Skin:** green
+- **Shirt:** black
+- **Hair:** silver
 ```
 
-**Share this URL** → Opens with that agent already selected!
+**Supported colors:**
+- Skin: `peach`, `tan`, `brown`, `green`, `blue`, `purple`
+- Shirt: `red`, `blue`, `green`, `black`, `white`, `yellow`
+- Hair: `brown`, `black`, `blonde`, `red`, `silver`, `blue`
 
----
+### Office Theme (via config.json)
+Create `~/.openclaw/.office/config.json`:
 
-### Quest Priority Color-Coding
-
-Quests have subtle color-coded borders:
-
-- **Red border** = High priority (urgent)
-- **Yellow border** = Medium priority (today)
-- **Blue border** = Low priority (whenever)
-
-**Look closely** at the quest cards in the log!
-
----
-
-### XP Progress Bar (Hidden Until Level Up)
-
-Hover over an agent's level in the leaderboard:
-```
-Level 5 (250 / 500 XP)
+```json
+{
+  "theme": "cyberpunk",
+  "roomLayout": "open-plan",
+  "particleIntensity": "high",
+  "sfxVolume": 0.7
+}
 ```
 
-**Shows XP progress** to next level!
+**Themes coming:** cyberpunk, vaporwave, retro-green, high-contrast
 
 ---
 
-### Timestamp Hover on Accomplishments
+## 📊 Hidden Stats Dashboard
 
-Hover over an accomplishment's timestamp:
+Click your username → **"Stats"** → see:
+
+- **Total office XP** (sum of all agents)
+- **Busiest agent** (most accomplishments)
+- **Slacker agent** (least XP, affectionately)
+- **Quest response time** (how fast you reply to quests)
+- **Most productive day** (highest XP earned)
+- **Current streak** (consecutive days with activity)
+
+**Coming soon:** Export as CSV for external analytics
+
+---
+
+## 🚀 Auto-Work Mode (Experimental)
+
+Enable in **⚙️ Settings** → "Auto-Work Policies"
+
+**What it does:**
+- Agents self-assign tasks from a queue
+- Work autonomously within guardrails
+- Only interrupt you for critical decisions
+
+**Configure per agent:**
+- Cooldown interval (15m, 30m, 1h, 2h)
+- Directive (what to work on)
+- Risk tolerance (low, medium, high)
+
+**Example directive:**
 ```
-"2 hours ago"
-→ Shows exact time: "Feb 23, 2026 at 9:15 PM"
+Fix bugs in the backlog. Start with highest priority. 
+Don't deploy without approval.
 ```
 
----
-
-## 🎯 Advanced Tricks
-
-### Multi-Agent Selection (Coming Soon)
-
-Select multiple agents with `Shift+Click` to:
-- Broadcast message to subset
-- Assign collaborative task
-- Compare stats side-by-side
-
-**Status:** Planned for v0.2
+**Warning:** This is powerful. Start with low risk tolerance.
 
 ---
 
-### Custom NPC Avatars (Coming Soon)
+## 🎁 Seasonal Events
 
-Upload your own pixel art sprites:
-- 32x32 PNG
-- Replace default generated appearance
-- Save in `~/.openclaw/.status/avatars/`
+OpenClawfice celebrates holidays:
 
-**Status:** Planned for v0.2
+- **Halloween** — Spooky decorations, ghost particles
+- **Christmas** — Snow particles, festive colors
+- **New Year** — Fireworks, champagne toast in water cooler
+- **April Fools** — Agents swap skins randomly
 
----
-
-### Dark Mode Toggle (Coming Soon)
-
-Switch between:
-- **Light mode** (current default - warm retro)
-- **Dark mode** (CRT green terminal vibes)
-
-**Status:** Planned for v0.3
+**Toggle:** Settings → "Seasonal Events"
 
 ---
 
-## 🎁 Easter Eggs (Try These!)
+## 🔮 Upcoming Features (Sneak Peek)
 
-### The Konami Code
+From `docs/ROADMAP.md`:
 
-On the dashboard, type: `↑ ↑ ↓ ↓ ← → ← → B A`
-
-**Result:** ???
-
-*(Hint: Not implemented yet, but wouldn't it be cool?)*
-
----
-
-### Secret Agent Names
-
-Try creating agents with these names:
-
-- **"Mario"** → Gets mustache accessory + red shirt
-- **"Luigi"** → Gets cap + green shirt
-- **"Link"** → Gets green hat + tunic colors
-
-*(Hint: Also not implemented, but should be!)*
+- **Dark mode** — Full UI theme toggle
+- **Mobile app** — iOS/Android native apps
+- **Multiplayer** — See your team's office in real-time
+- **Voice chat** — Talk to agents via mic
+- **Custom rooms** — Design your own office layout
+- **Agent memory** — They remember past conversations
+- **Time travel** — Rewind office state to any timestamp
 
 ---
 
-### Birthday Celebration
+## 🐛 Known Easter Eggs
 
-If you run OpenClawfice on:
-- **Your birthday** (set in config)
-- **Agent's "creation" anniversary**
+Found by the community:
 
-**Result:** Confetti particles + special birthday plumbob animation
+1. **Konami Code** — Type `↑ ↑ ↓ ↓ ← → ← → B A` → Unlock "Retro Mode"
+2. **Agent name = "Neo"** → Office turns green Matrix-style
+3. **100% quest completion rate** → Golden plumbob for all agents
+4. **Work on Sunday 3 weeks in a row** → "Workaholic" achievement
+5. **Send 100 group messages** → Unlock megaphone emoji 📣
 
-*(Coming in v0.4)*
-
----
-
-## 🚀 Why This Matters for Going Viral
-
-### Shareable Aesthetics
-
-- **Pixel art** = Nostalgic, universally loved
-- **Retro colors** = Eye-catching on Twitter/Discord
-- **Animations** = GIFs and videos get 3x more engagement
-
-### Delightful Interactions
-
-- **Sound effects** = Memorable, fun to demo
-- **Level-up celebrations** = Satisfying, reward-driven
-- **Loom-style videos** = Novel way to track work
-
-### Cool Factor
-
-- **Not another boring dashboard** = Feels like a game
-- **Personality in UI** = Agents feel like characters
-- **Attention to detail** = Shows craft and care
+**Hint:** More easter eggs exist. Explore the UI!
 
 ---
 
-## 🎬 How to Show Off OpenClawfice
+## 💡 Pro Tips from Power Users
 
-### Record a GIF
+### Productivity Hacks
+- **Use templates** → Click "+ New Quest" for pre-made quest types
+- **Batch responses** → Respond to multiple quests at once (Shift+click to multi-select)
+- **Set up reminders** → Agents ping you when idle too long
 
-1. Open demo mode: `?demo=true`
-2. Let it run for 15 seconds (agents moving, chat updating)
-3. Screen record with Cmd+Shift+5 (Mac) or OBS
-4. Convert to GIF with Gifski or similar
-5. Post with: "Check out my AI team's virtual office!"
+### Aesthetic Tweaks
+- **Screenshot mode** → Hide UI (press `H`) for clean screenshots
+- **Slow-mo particles** → Hold `Space` to slow down particle animations
+- **Zoom** → Ctrl+scroll to zoom in/out on office
 
-**Expected engagement:** 3-5x more than static screenshot
-
----
-
-### Create a "Day in the Life" Video
-
-1. Record your real office over a workday
-2. Speed up 8x
-3. Show: agents moving, quests appearing, accomplishments logging
-4. Narrate: "Here's what my AI team shipped today"
-
-**Post on:** YouTube Shorts, TikTok, Twitter
+### Workflow Automation
+- **Auto-archive accomplishments** → Settings → Auto-archive after 7 days
+- **Quest auto-triage** → Low-priority quests auto-collapse
+- **Sound notifications** → Play sound when new quest arrives
 
 ---
 
-### Tweet a Leaderboard Race
+## 🎯 Challenges for Advanced Users
 
-1. Screenshot leaderboard with tight competition
-2. Caption: "Cipher vs Scout: who's shipping more this week?"
-3. Follow up next day with updated leaderboard
+Try these:
 
-**Creates:** Ongoing narrative, gets replies
+1. **Get all 5 agents to level 10** (requires ~5,000 XP each)
+2. **Complete all 7 daily challenges in one week** (Monday-Sunday streak)
+3. **Ship 100 accomplishments in one day** (need high-velocity team)
+4. **Achieve 100% quest response rate** (respond to every quest within 1 hour)
+5. **Unlock all agent skins** (requires customizing IDENTITY.md for each)
 
----
-
-## 🎮 Final Boss: Ultimate OpenClawfice Setup
-
-**The dream setup that makes people say "I NEED THIS":**
-
-- **6+ agents** with unique roles (dev, design, marketing, ops, etc.)
-- **All agents in Work Room** (everyone shipping)
-- **10+ accomplishments in feed** with video thumbnails
-- **Active water cooler chat** (agents collaborating)
-- **Quest log with mix of priorities** (red/yellow/blue)
-- **Leaderboard showing tight XP race** (motivating competition)
-- **Sound effects ON** for demo (that 8-bit charm)
-- **Room decorations visible** (zoom level shows furniture)
-
-**Screenshot this** → Instant viral post
+**Rewards:** Bragging rights + special badges (coming in v0.2)
 
 ---
 
-**Remember:** The fun, quirky features are what make people share. Don't hide them — show them off! 🎉
+## 📚 Learn More
 
-**Explore, experiment, and enjoy your retro AI office!**
+- **[Workflows](./WORKFLOWS.md)** — Common usage patterns
+- **[Keyboard Shortcuts](./KEYBOARD-SHORTCUTS.md)** — Full shortcut list
+- **[API Reference](./API-REFERENCE.md)** — Integrate with external tools
+- **[Roadmap](./ROADMAP.md)** — What's coming next
+
+---
+
+**Discovered something cool we missed?**  
+Share it in [Discord](https://discord.com/invite/clawd) #openclawfice-tips or submit a PR to this doc!
+
+Built with 💜 by the OpenClawfice community.

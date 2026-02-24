@@ -25,10 +25,10 @@ function getNpcTraits(id: string) {
   const pantsColors = ['#334155', '#1e293b', '#3b4252', '#4c566a', '#2d3748', '#1a202c', '#374151', '#2e1065'];
 
   return {
-    skinColor: skinTones[hash1 % skinTones.length],
+    skinColor: id === '_owner' ? '#d4a574' : skinTones[hash1 % skinTones.length],
     hairColor: hairColors[hash2 % hairColors.length],
-    hairStyle: hairStyles[hash3 % hairStyles.length],
-    accessory: accessories[(hash1 + hash2) % accessories.length],
+    hairStyle: id === '_owner' ? 'classic' : hairStyles[hash3 % hairStyles.length],
+    accessory: id === '_owner' ? 'none' : accessories[(hash1 + hash2) % accessories.length],
     pantsColor: pantsColors[hash3 % pantsColors.length],
   };
 }
