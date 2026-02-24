@@ -800,7 +800,7 @@ export default function HomePage() {
             })}
           </div>
           <button
-            onClick={() => { sfx.play('meetingStart'); setShowCallMeeting(true); }}
+            onClick={() => { sfx.play('open'); setShowCallMeeting(true); }}
             style={{
               background: 'none',
               border: 'none',
@@ -1161,40 +1161,37 @@ export default function HomePage() {
                 </div>
 
                 {/* Participants facing each other */}
+                {/* Participants — face each other across the table */}
                 <div style={{
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'flex-end',
-                  gap: isMobile ? 24 : 40,
+                  gap: isMobile ? 16 : 28,
+                  flexWrap: 'wrap',
                   marginBottom: 8,
                 }}>
-                  {meeting.participants && meeting.participants.length >= 2 && (() => {
-                    const participant1 = agents.find(a => a.id === meeting.participants![0]);
-                    const participant2 = agents.find(a => a.id === meeting.participants![1]);
-                    
+                  {meeting.participants && meeting.participants.map((pId, idx) => {
+                    const agent = agents.find(a => a.id === pId);
+                    if (!agent) return null;
+                    // Odd-indexed participants face left (flipped) for face-to-face effect
+                    const flipped = idx % 2 === 1;
                     return (
-                      <>
-                        {participant1 && (
-                          <NPC
-                            agent={participant1}
-                            size={npcSize * 0.85}
-                            onClick={() => { sfx.play('click'); setSelectedAgent(participant1); }}
-                            hasCelebration={celebrations.some(c => c.agentId === participant1.id)}
-                          />
-                        )}
-
-                        {participant2 && (
-                          <NPC
-                            agent={participant2}
-                            size={npcSize * 0.85}
-                            onClick={() => { sfx.play('click'); setSelectedAgent(participant2); }}
-                            flipped
-                            hasCelebration={celebrations.some(c => c.agentId === participant2.id)}
-                          />
-                        )}
-                      </>
+                      <div key={pId} style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        animation: `npcEntrance 0.5s ease-out ${idx * 0.12}s both`,
+                      }}>
+                        <NPC
+                          agent={agent}
+                          size={npcSize * 0.85}
+                          onClick={() => { sfx.play('click'); setSelectedAgent(agent); }}
+                          flipped={flipped}
+                          hasCelebration={celebrations.some(c => c.agentId === agent.id)}
+                        />
+                      </div>
                     );
-                  })()}
+                  })}
                 </div>
 
                 {/* Live Discussion Transcript */}

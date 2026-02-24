@@ -26,9 +26,9 @@ export function useDemoMode() {
       '/api/office/meeting': '/api/demo/meeting',
       '/api/office/config': '/api/demo/config',
       '/api/office/autowork': '/api/demo/autowork',
+      '/api/office/meeting/start': '/api/demo/meeting/start',
       '/api/office/message': '/api/demo/message',
       '/api/office/stop': '/api/demo/stop',
-      '/api/meeting': '/api/demo/meeting',
     };
     
     return demoMap[path] || path;
