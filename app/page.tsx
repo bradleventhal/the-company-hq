@@ -67,6 +67,7 @@ export default function HomePage() {
   const [showSettings, setShowSettings] = useState(false);
   const [sfxEnabled, setSfxEnabled] = useState(() => typeof window !== 'undefined' ? localStorage.getItem('openclawfice-sfx') === 'on' : false);
   const [screenSize, setScreenSize] = useState<'mobile' | 'tablet' | 'desktop'>('desktop');
+  const [githubStars, setGithubStars] = useState<number | null>(null);
 
   useEffect(() => {
     const i = setInterval(() => setTime(new Date()), 1000);
@@ -99,6 +100,20 @@ export default function HomePage() {
     };
     fetchConfig();
   }, []);
+
+  // Fetch GitHub stars
+  useEffect(() => {
+    const fetchStars = async () => {
+      try {
+        const res = await fetch(getApiPath('/api/github/stars'));
+        const data = await res.json();
+        setGithubStars(data.stars);
+      } catch (err) {
+        console.debug('Failed to fetch GitHub stars:', err);
+      }
+    };
+    fetchStars();
+  }, [getApiPath]);
 
   // Listen for demo triggers (from isolated recording script)
   useEffect(() => {
@@ -843,6 +858,44 @@ export default function HomePage() {
           >
             📸
           </button>
+          <a
+            href="https://github.com/openclawfice/openclawfice"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => sfx.play('click')}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 4,
+              background: 'rgba(99,102,241,0.1)',
+              border: '1px solid rgba(99,102,241,0.2)',
+              borderRadius: 6,
+              padding: '4px 8px',
+              textDecoration: 'none',
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+            }}
+            title="Star on GitHub"
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'rgba(99,102,241,0.2)';
+              e.currentTarget.style.borderColor = 'rgba(99,102,241,0.4)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'rgba(99,102,241,0.1)';
+              e.currentTarget.style.borderColor = 'rgba(99,102,241,0.2)';
+            }}
+          >
+            <span style={{ fontSize: 12 }}>⭐</span>
+            {githubStars !== null && (
+              <span style={{
+                fontSize: 9,
+                fontFamily: '"Press Start 2P", monospace',
+                color: '#a5b4fc',
+              }}>
+                {githubStars}
+              </span>
+            )}
+          </a>
           <button
             onClick={() => { sfx.play('open'); setShowSettings(true); }}
             style={{
