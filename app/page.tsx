@@ -97,6 +97,59 @@ export default function HomePage() {
     fetchConfig();
   }, []);
 
+  // Listen for demo triggers (from isolated recording script)
+  useEffect(() => {
+    const handleDemoTrigger = (event: MessageEvent) => {
+      if (event.data?.type === 'demo_trigger') {
+        const { action, agent, amount, agents: meetingAgents, topic } = event.data;
+        
+        switch (action) {
+          case 'xp':
+            // Trigger XP celebration
+            if (agent) {
+              setCelebrations(prev => [...prev, { agentId: agent, timestamp: Date.now() }]);
+              sfx.playXP();
+            }
+            break;
+          
+          case 'meeting':
+            // Show meeting room
+            setMeeting({
+              active: true,
+              topic: topic || 'Demo Meeting',
+              participants: meetingAgents || ['Cipher', 'Nova'],
+              currentRound: 1,
+              maxRounds: 3,
+              startedAt: Date.now(),
+            });
+            break;
+          
+          case 'quest':
+            // Open first pending action if available
+            if (pendingActions.length > 0) {
+              setExpandedAction(pendingActions[0].id);
+            }
+            break;
+          
+          case 'accomplishment':
+            // Highlight accomplishments feed (scroll handled by CSS)
+            if (accomplishments.length > 0) {
+              setSelectedAccomplishment(accomplishments[0]);
+            }
+            break;
+          
+          case 'watercooler':
+            // Scroll to chat (handled by ref)
+            chatRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            break;
+        }
+      }
+    };
+    
+    window.addEventListener('message', handleDemoTrigger);
+    return () => window.removeEventListener('message', handleDemoTrigger);
+  }, [pendingActions, accomplishments, sfx]);
+
   // Load autowork policies every 15s
   useEffect(() => {
     const fetchAutowork = async () => {
@@ -1469,7 +1522,10 @@ export default function HomePage() {
                           {a.title}
                         </span>
                       </div>
-                      {hasMedia && (
+                      {a.file && (
+                        <span style={{ fontSize: 10, flexShrink: 0 }} title={`File: ${a.file.split('/').pop()}`}>📄</span>
+                      )}
+                      {hasMedia && !a.file && (
                         <span style={{ fontSize: 10, flexShrink: 0 }} title="Loom recording attached">🎬</span>
                       )}
                       {isRecording && (
@@ -2104,31 +2160,84 @@ export default function HomePage() {
                 {linkifyFiles(selectedAccomplishment.detail)}
               </div>
             )}
-            {selectedAccomplishment.screenshot && (
+            {/* File link — prominent when available */}
+            {selectedAccomplishment.file && (
+              <a
+                href="#"
+                onClick={async (e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  try {
+                    const res = await fetch('/api/office/open-file', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ name: selectedAccomplishment.file!.split('/').pop() }),
+                    });
+                    if (!res.ok) {
+                      const data = await res.json();
+                      alert(`Could not open file:\n${data.error}`);
+                    }
+                  } catch {
+                    alert('Failed to open file');
+                  }
+                }}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 10,
+                  background: 'rgba(96,165,250,0.08)', border: '1px solid rgba(96,165,250,0.25)',
+                  borderRadius: 8, padding: '10px 14px', marginBottom: 16,
+                  color: '#60a5fa', fontSize: 13, fontFamily: 'monospace',
+                  cursor: 'pointer', textDecoration: 'none',
+                  transition: 'all 0.2s',
+                }}
+                title={`Open ${selectedAccomplishment.file.split('/').pop()} in editor`}
+              >
+                <span style={{ fontSize: 20 }}>📄</span>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontWeight: 700, fontSize: 12 }}>
+                    {selectedAccomplishment.file.split('/').pop()}
+                  </div>
+                  <div style={{ fontSize: 10, color: '#475569', marginTop: 2 }}>
+                    Click to open in editor ↗
+                  </div>
+                </div>
+              </a>
+            )}
+            {selectedAccomplishment.screenshot && selectedAccomplishment.screenshot !== 'recording' && (
               <div>
-                {selectedAccomplishment.screenshot.endsWith('.mp4') || selectedAccomplishment.screenshot.endsWith('.webm') || selectedAccomplishment.screenshot.endsWith('.mov') ? (
-                  <video
-                    src={`/api/office/screenshot?file=${encodeURIComponent(selectedAccomplishment.screenshot)}`}
-                    controls
-                    autoPlay
-                    style={{
-                      width: '100%',
-                      borderRadius: 8,
-                      border: '1px solid #334155',
-                      background: '#000',
+                {selectedAccomplishment.file && (
+                  <div style={{ fontSize: 10, color: '#475569', marginBottom: 6, cursor: 'pointer' }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const el = (e.target as HTMLElement).nextElementSibling as HTMLElement;
+                      if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
                     }}
-                  />
-                ) : (
-                  <img
-                    src={`/api/office/screenshot?file=${encodeURIComponent(selectedAccomplishment.screenshot)}`}
-                    alt={selectedAccomplishment.title}
-                    style={{
-                      width: '100%',
-                      borderRadius: 8,
-                      border: '1px solid #334155',
-                    }}
-                  />
+                  >▶ Screen recording</div>
                 )}
+                <div style={selectedAccomplishment.file ? { display: 'none' } : undefined}>
+                  {selectedAccomplishment.screenshot.endsWith('.mp4') || selectedAccomplishment.screenshot.endsWith('.webm') || selectedAccomplishment.screenshot.endsWith('.mov') ? (
+                    <video
+                      src={`/api/office/screenshot?file=${encodeURIComponent(selectedAccomplishment.screenshot)}`}
+                      controls
+                      autoPlay={!selectedAccomplishment.file}
+                      style={{
+                        width: '100%',
+                        borderRadius: 8,
+                        border: '1px solid #334155',
+                        background: '#000',
+                      }}
+                    />
+                  ) : (
+                    <img
+                      src={`/api/office/screenshot?file=${encodeURIComponent(selectedAccomplishment.screenshot)}`}
+                      alt={selectedAccomplishment.title}
+                      style={{
+                        width: '100%',
+                        borderRadius: 8,
+                        border: '1px solid #334155',
+                      }}
+                    />
+                  )}
+                </div>
               </div>
             )}
             <button
