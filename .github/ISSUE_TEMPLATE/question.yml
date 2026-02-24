@@ -1,0 +1,37 @@
+name: ❓ Question
+description: Ask a question about using OpenClawfice
+title: "[Question]: "
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Have a question? We're here to help!
+        
+        **💡 Tip:** Check the [docs](https://github.com/openclaw/openclawfice/tree/main/docs) and [FAQ](https://github.com/openclaw/openclawfice/blob/main/docs/FAQ.md) first.
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Your question
+      description: What would you like to know?
+      placeholder: "How do I configure cooldown timers for my agents?"
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: What have you tried?
+      description: Have you looked at the docs or tried anything already?
+      placeholder: "I read the FAQ but couldn't find info about cooldowns..."
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      description: Screenshots or anything else that helps
+    validations:
+      required: false

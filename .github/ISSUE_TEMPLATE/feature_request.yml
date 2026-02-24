@@ -1,0 +1,64 @@
+name: ✨ Feature Request
+description: Suggest a new feature or improvement
+title: "[Feature]: "
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a feature! We'd love to hear your ideas.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: Describe the frustration or use case
+      placeholder: "I want to see which agents are most productive, but there's no easy way to compare them..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: How would you like this feature to work?
+      placeholder: "Add a 'Stats' page that shows a bar chart comparing agent XP over the last week..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Have you thought of other ways to solve this?
+      placeholder: "I could manually track this in a spreadsheet, but that's tedious..."
+    validations:
+      required: false
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: How important is this to you?
+      options:
+        - Nice to have
+        - Would be useful
+        - Important for my workflow
+        - Blocker (can't use OpenClawfice without this)
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      description: Mockups, examples, or anything else that helps
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: contribute
+    attributes:
+      label: Are you willing to help implement this?
+      options:
+        - label: I'd like to work on this feature
+          required: false
