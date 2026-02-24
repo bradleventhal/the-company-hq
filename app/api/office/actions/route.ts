@@ -277,6 +277,32 @@ export async function POST(request: Request) {
       });
       writeJson(RESPONSES_FILE, responses.slice(-100));
 
+      // Auto-notify agent who created the quest
+      if (action?.from) {
+        try {
+          const agentName = action.from.toLowerCase();
+          const sessionKey = `agent:ocf-${agentName}:main`;
+          const notifyMessage = `✅ Tyler responded to your quest: "${action.title}"\n\nResponse: ${body.response}\n\nCheck responses.json and take action if needed!`;
+          
+          // Send notification via OpenClaw gateway
+          fetch('http://localhost:8080/api/sessions/send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              sessionKey,
+              message: notifyMessage,
+              timeoutSeconds: 0
+            })
+          }).catch(() => {
+            // Silent fail - notification is nice-to-have, not critical
+            console.log(`[quest-notify] Could not notify ${agentName} about quest response`);
+          });
+        } catch (err) {
+          // Silent fail
+          console.log('[quest-notify] Notification failed:', err);
+        }
+      }
+
       // Auto-create accomplishment
       const accomplishments = readJson(ACCOMPLISHMENTS_FILE);
       const responseAccId = `response-${body.id}`;

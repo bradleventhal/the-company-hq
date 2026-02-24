@@ -297,6 +297,23 @@ WHERE DO I START?
 
 ---
 
+## 🔧 Recent Technical Updates
+
+### Recording System Fix (Feb 24, 2026)
+**Problem:** Loom videos captured random screen content (terminals, wrong tabs)  
+**Solution:** Headless Chrome isolated recorder - completely invisible, always captures OpenClawfice  
+→ **[RECORDING-FIX-FEB24.md](./RECORDING-FIX-FEB24.md)** - Complete technical documentation  
+→ [ISOLATED-RECORDING.md](./ISOLATED-RECORDING.md) - Original implementation guide  
+→ [IMPROVING-LOOM-RECORDINGS.md](./IMPROVING-LOOM-RECORDINGS.md) - Recording approaches analysis
+
+**Key features:**
+- ✅ Zero user disruption (invisible headless browser)
+- ✅ Feature-specific demos (XP, meetings, quests auto-triggered)
+- ✅ Cross-platform (macOS, Linux, Windows)
+- ✅ Fully automated (works with accomplishments API)
+
+---
+
 ## 🔄 Keeping This Updated
 
 When you add a new doc:

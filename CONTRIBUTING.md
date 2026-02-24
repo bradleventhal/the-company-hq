@@ -88,6 +88,14 @@ Help others get started:
 
 ## Coding Guidelines
 
+### ⚠️ Critical Rules
+
+**No Tailwind CSS.** This project uses **inline styles only**. Do not use `className` with utility classes like `bg-gray-900`, `text-white`, `flex`, etc. Tailwind is not installed or configured. Use `style={{ }}` objects for all styling.
+
+**No root docs.** All documentation goes in `docs/`. The repo root has exactly these `.md` files: README, INSTALL, QUICKSTART, CHANGELOG, CLA, CONTRIBUTING, SKILL, STATUS-FILES, TROUBLESHOOTING, WHAT-IS-THIS. Do not add others.
+
+**Shared types go in `components/types.ts`.** Shared utils go in `components/utils.ts`. New components go in `components/` as separate files.
+
 ### Code Style
 
 We use TypeScript + Next.js. Follow the existing code style:

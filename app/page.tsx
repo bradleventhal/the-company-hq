@@ -1022,15 +1022,16 @@ export default function HomePage() {
                           background: 'rgba(16,185,129,0.12)',
                           border: '1px solid rgba(16,185,129,0.25)',
                           borderRadius: 4,
-                          padding: '2px 6px',
+                          padding: '2px 8px',
                           fontSize: 8,
                           color: '#6ee7b7',
-                          maxWidth: 140,
+                          maxWidth: 160,
                           textAlign: 'center',
                           whiteSpace: 'nowrap',
                           overflow: 'hidden',
                           textOverflow: 'ellipsis',
                           cursor: 'pointer',
+                          transition: 'background 0.15s',
                         }}>
                           {prettifyTask(a.task)}
                         </div>
@@ -1212,7 +1213,7 @@ export default function HomePage() {
                 gap: 16,
                 justifyContent: 'center',
                 padding: '16px 0 4px',
-                minHeight: 140,
+                minHeight: idle.length > 0 ? 140 : 80,
               }}>
                 {idle.length > 0 ? (
                   idle.map((a, idx) => (
@@ -1252,18 +1253,25 @@ export default function HomePage() {
                     color: '#475569',
                     fontFamily: '"Press Start 2P", monospace',
                     fontSize: 7,
-                    padding: 8,
+                    padding: '12px 8px',
                     textAlign: 'center',
+                    lineHeight: 2,
                   }}>
                     {agents.length === 1 ? (
-                      <div style={{ lineHeight: 1.8 }}>
+                      <>
                         👋 Solo mode!
                         <br />
-                        <br />
-                        Add more agents to openclaw.json to build a team.
-                      </div>
+                        Add more agents to build a team.
+                      </>
                     ) : (
-                      '* everyone is busy *'
+                      <>
+                        <span style={{ fontSize: 16, display: 'block', marginBottom: 4 }}>💼</span>
+                        Everyone is hard at work!
+                        <br />
+                        <span style={{ color: '#334155', fontSize: 6 }}>
+                          Idle agents hang out here
+                        </span>
+                      </>
                     )}
                   </div>
                 )}
