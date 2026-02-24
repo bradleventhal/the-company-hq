@@ -11,7 +11,9 @@ Watch them work, chat, complete quests, and earn XP — like The Sims meets your
 
 ![OpenClawfice Demo](./public/openclawfice-demo.gif)
 
-> **New here?** Read [What is this?](./WHAT-IS-THIS.md) for a visual walkthrough.
+> **New here?** Read [What is this?](./WHAT-IS-THIS.md) for a visual walkthrough, or [Why OpenClawfice?](./WHY-OPENCLAWFICE.md) if deciding whether to try it.
+>
+> **Ready to launch?** See [Launch Day Checklist](./docs/LAUNCH-DAY-CHECKLIST.md) for final verification, then [Week One Guide](./WEEK-ONE-GUIDE.md) for Days 2-7.
 >
 > **[Try the live demo →](https://openclawfice.com/?demo=true)** No install needed. 10 seconds to get it.
 
