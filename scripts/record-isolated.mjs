@@ -54,7 +54,7 @@ function findChrome() {
 }
 
 async function triggerFeatureDemo(page, feature) {
-  console.log(`Triggering feature demo: ${feature}`);
+  process.stderr.write(`[recording] Triggering feature demo: ${feature}\n`);
   
   try {
     switch (feature) {
@@ -145,7 +145,7 @@ async function main() {
     unlinkSync(join(FRAMES_DIR, f));
   }
 
-  console.log(`Recording: ${url} (feature: ${featureType}) → ${FINAL_FILE} (${duration}s)`);
+  process.stderr.write(`[recording] ${url} → ${FINAL_FILE} (${duration}s)\n`);
 
   const browser = await puppeteer.launch({
     executablePath: chromePath,
@@ -183,7 +183,7 @@ async function main() {
     const totalFrames = duration * fps;
     const frameInterval = 1000 / fps;
 
-    console.log(`Capturing ${totalFrames} frames at ${fps}fps...`);
+    process.stderr.write(`[recording] Capturing ${totalFrames} frames at ${fps}fps...\n`);
 
     for (let i = 0; i < totalFrames; i++) {
       const frameNum = String(i).padStart(5, '0');
@@ -197,7 +197,7 @@ async function main() {
       }
     }
 
-    console.log(`Captured ${totalFrames} frames. Encoding mp4...`);
+    process.stderr.write(`[recording] Encoding mp4...\n`);
 
     // Stitch frames into mp4 with ffmpeg
     try {

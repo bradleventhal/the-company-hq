@@ -125,12 +125,13 @@ function triggerRecording(accomplishmentId: string, title: string, who: string, 
         try {
           const accomplishments = readJson(ACCOMPLISHMENTS_FILE);
           const acc = accomplishments.find(
-            (a: any) => a.id === accomplishmentId && a.screenshot === 'recording'
+            (a: any) => a.id === accomplishmentId
           );
           if (acc) {
             if (value) {
               acc.screenshot = value;
-            } else {
+            } else if (acc.screenshot === 'recording') {
+              // Only clear if still in recording state (don't overwrite a valid screenshot)
               delete acc.screenshot;
             }
             writeJson(ACCOMPLISHMENTS_FILE, accomplishments);
@@ -204,9 +205,24 @@ export async function GET(request: Request) {
     });
   }
 
+  const accomplishments = readJson(ACCOMPLISHMENTS_FILE);
+  let dirty = false;
+  for (const acc of accomplishments) {
+    if (!acc.file && acc.title) {
+      const related = findRelatedFile(acc.title, acc.detail || '');
+      if (related) {
+        acc.file = related;
+        dirty = true;
+      }
+    }
+  }
+  if (dirty) {
+    try { ensureStatusDir(); writeJson(ACCOMPLISHMENTS_FILE, accomplishments); } catch {}
+  }
+
   return NextResponse.json({
     actions: readJson(ACTIONS_FILE),
-    accomplishments: readJson(ACCOMPLISHMENTS_FILE),
+    accomplishments,
     timestamp: new Date().toISOString(),
   });
 }
