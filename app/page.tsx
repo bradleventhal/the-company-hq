@@ -106,6 +106,7 @@ export default function HomePage() {
   const [githubStars, setGithubStars] = useState<number | null>(null);
   const [showBoot, setShowBoot] = useState(false);
   const [nowMs, setNowMs] = useState(0);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
     const seen = sessionStorage.getItem('openclawfice-boot-seen');
@@ -1037,6 +1038,41 @@ export default function HomePage() {
               </span>
             )}
           </a>
+          <button
+            onClick={async () => {
+              if (isRefreshing) return;
+              setIsRefreshing(true);
+              sfx.play('click');
+              // Trigger a manual refresh of all data
+              try {
+                await Promise.all([
+                  fetch(getApiPath('/api/office')).then(r => r.json()).then(data => {
+                    setAgents(data.agents || []);
+                  }),
+                  fetch(getApiPath('/api/office/actions')).then(r => r.json()).then(d => {
+                    setPendingActions(d.actions || []);
+                    setAccomplishments(d.accomplishments || []);
+                  }),
+                ]);
+              } catch (err) {
+                console.error('Refresh failed:', err);
+              }
+              setTimeout(() => setIsRefreshing(false), 800);
+            }}
+            disabled={isRefreshing}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: isRefreshing ? '#6366f1' : '#475569',
+              cursor: isRefreshing ? 'not-allowed' : 'pointer',
+              fontSize: 14,
+              padding: '2px 4px',
+              animation: isRefreshing ? 'spin 1s linear infinite' : 'none',
+            }}
+            title="Refresh Status"
+          >
+            ↻
+          </button>
           <button
             onClick={() => { sfx.play('open'); setShowSettings(true); }}
             style={{
@@ -2383,6 +2419,10 @@ export default function HomePage() {
         @keyframes pulse {
           0%, 100% { opacity: 1; }
           50% { opacity: 0.4; }
+        }
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
         }
         @keyframes statusPulse {
           0%, 100% { opacity: 1; transform: scale(1); }

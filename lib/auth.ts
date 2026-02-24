@@ -2,71 +2,11 @@ import fs from 'fs';
 import path from 'path';
 import os from 'os';
 import { randomBytes } from 'crypto';
-import { execSync } from 'child_process';
 
 const TOKEN_FILE = path.join(os.homedir(), '.openclaw', '.openclawfice-token');
-const KEYCHAIN_SERVICE = 'openclawfice';
-const KEYCHAIN_ACCOUNT = 'api-token';
 
 /**
- * Check if we're on macOS and can use Keychain
- */
-function isKeychainAvailable(): boolean {
-  return process.platform === 'darwin';
-}
-
-/**
- * Store token in macOS Keychain using `security` CLI.
- * On first run, macOS will prompt user:
- * "Node wants to access key 'openclawfice-api-token' in your keychain"
- * 
- * If user clicks "Always Allow", no more prompts.
- * 
- * This is MORE secure than file-based because:
- * - Malicious apps need explicit Keychain access (user sees prompt with app name)
- * - Encrypted at rest by macOS
- * - Can't be read with simple file access
- */
-function storeInKeychain(token: string): boolean {
-  try {
-    // Try to delete existing entry first (ignore errors)
-    try {
-      execSync(
-        `security delete-generic-password -s "${KEYCHAIN_SERVICE}" -a "${KEYCHAIN_ACCOUNT}" 2>/dev/null`,
-        { stdio: 'ignore' }
-      );
-    } catch {}
-
-    // Add new entry
-    execSync(
-      `security add-generic-password -s "${KEYCHAIN_SERVICE}" -a "${KEYCHAIN_ACCOUNT}" -w "${token}"`,
-      { stdio: 'pipe' }
-    );
-    return true;
-  } catch (err) {
-    console.debug('Failed to store token in Keychain:', err);
-    return false;
-  }
-}
-
-/**
- * Retrieve token from macOS Keychain
- */
-function getFromKeychain(): string | null {
-  try {
-    const result = execSync(
-      `security find-generic-password -s "${KEYCHAIN_SERVICE}" -a "${KEYCHAIN_ACCOUNT}" -w`,
-      { encoding: 'utf-8', stdio: 'pipe' }
-    );
-    return result.trim();
-  } catch (err) {
-    // Not found or access denied
-    return null;
-  }
-}
-
-/**
- * Store token in file (fallback for non-macOS or if Keychain fails)
+ * Store token in file
  */
 function storeInFile(token: string): boolean {
   try {
@@ -95,56 +35,20 @@ function getFromFile(): string | null {
 
 /**
  * Generate or load the API auth token.
- * 
- * Strategy:
- * 1. Try macOS Keychain (if available)
- * 2. Fall back to file-based storage
- * 3. Generate new token if neither exists
- * 
- * Security benefits of Keychain:
- * - Encrypted at rest by macOS
- * - Malicious apps trigger permission prompt (user sees app name)
- * - First access: "Node wants to access key..." → user clicks "Always Allow"
- * - Subsequent access: silent (no prompts)
- * - If malicious app tries: "evil-app wants to access key..." → user clicks Deny
+ * Simple file-based storage in ~/.openclaw/.openclawfice-token
  */
 export function getOrCreateToken(): string {
   try {
-    // Strategy 1: Try Keychain (macOS only)
-    if (isKeychainAvailable()) {
-      const keychainToken = getFromKeychain();
-      if (keychainToken) {
-        return keychainToken;
-      }
-    }
-
-    // Strategy 2: Try file-based
+    // Try to read existing token
     const fileToken = getFromFile();
     if (fileToken) {
-      // Migrate to Keychain if possible
-      if (isKeychainAvailable()) {
-        if (storeInKeychain(fileToken)) {
-          // Successfully migrated - optionally remove file
-          // (Keep file as backup for now)
-          return fileToken;
-        }
-      }
       return fileToken;
     }
 
-    // Strategy 3: Generate new token
+    // Generate new token
     const newToken = randomBytes(32).toString('hex');
 
-    // Try to store in Keychain first
-    if (isKeychainAvailable()) {
-      if (storeInKeychain(newToken)) {
-        // Also store in file as backup
-        storeInFile(newToken);
-        return newToken;
-      }
-    }
-
-    // Fall back to file-only storage
+    // Store in file
     if (storeInFile(newToken)) {
       return newToken;
     }
