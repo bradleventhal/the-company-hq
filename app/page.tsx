@@ -238,6 +238,65 @@ function getQuirkyMoodMessage(agent: Agent): string {
   return pool[Math.floor(Math.random() * pool.length)];
 }
 
+function linkifyFiles(text: string): (string | React.ReactElement)[] {
+  const FILE_PATTERN = /(?:File:\s*)([A-Za-z0-9_\-\.]+\.[a-z]{1,10})|(?<![\/\w])([A-Z][A-Z0-9_\-]+\.[a-z]{1,10})(?![\/\w])/g;
+  const parts: (string | React.ReactElement)[] = [];
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+  while ((match = FILE_PATTERN.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index));
+    }
+    const filename = match[1] || match[2];
+    const fullMatch = match[0];
+    const prefix = fullMatch.startsWith('File:') ? 'File: ' : '';
+    parts.push(
+      <span key={match.index}>
+        {prefix}
+        <a
+          href="#"
+          onClick={async (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            try {
+              const res = await fetch(`/api/office/open-file`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: filename }),
+              });
+              if (!res.ok) {
+                const data = await res.json();
+                alert(`Could not find ${filename}:\n${data.error}`);
+              }
+            } catch {
+              alert(`Failed to open ${filename}`);
+            }
+          }}
+          style={{
+            color: '#60a5fa',
+            textDecoration: 'underline',
+            textDecorationStyle: 'dotted' as const,
+            cursor: 'pointer',
+            fontFamily: 'monospace',
+            fontSize: 11,
+            background: 'rgba(96,165,250,0.08)',
+            padding: '1px 4px',
+            borderRadius: 3,
+          }}
+          title={`Open ${filename} in editor`}
+        >
+          📄 {filename}
+        </a>
+      </span>
+    );
+    lastIndex = match.index + fullMatch.length;
+  }
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+  return parts.length > 0 ? parts : [text];
+}
+
 function Plumbob({ mood, agent }: { mood: Mood; agent?: Agent }) {
   const colors: Record<Mood, string> = {
     great: '#22c55e',
@@ -2542,7 +2601,7 @@ export default function HomePage() {
               minHeight: 80,
             }}>
               {working.length > 0 ? (
-                working.map(a => (
+                working.map((a, idx) => (
                   <div
                     key={a.id}
                     style={{
@@ -2550,6 +2609,7 @@ export default function HomePage() {
                       flexDirection: 'column',
                       alignItems: 'center',
                       gap: 4,
+                      animation: `npcEntrance 0.5s ease-out ${idx * 0.1}s both`,
                     }}
                   >
                     {a.task && (
@@ -2751,7 +2811,7 @@ export default function HomePage() {
                 minHeight: 140,
               }}>
                 {idle.length > 0 ? (
-                  idle.map(a => (
+                  idle.map((a, idx) => (
                     <div
                       key={a.id}
                       style={{
@@ -2759,6 +2819,7 @@ export default function HomePage() {
                         flexDirection: 'column',
                         alignItems: 'center',
                         gap: 4,
+                        animation: `npcEntrance 0.5s ease-out ${idx * 0.1}s both`,
                       }}
                     >
                       {a.isNew && (
@@ -3439,7 +3500,42 @@ export default function HomePage() {
               </div>
 
               {/* Description */}
-              <div style={{ fontSize: 12, color: '#94a3b8', lineHeight: 1.6, marginBottom: 12 }}>{action.description}</div>
+              <div style={{ fontSize: 12, color: '#94a3b8', lineHeight: 1.6, marginBottom: 12 }}>{linkifyFiles(action.description)}</div>
+
+              {/* Structured file attachment */}
+              {action.data?.file && (
+                <a
+                  href="#"
+                  onClick={async (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    try {
+                      const res = await fetch('/api/office/open-file', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name: action.data!.file }),
+                      });
+                      if (!res.ok) {
+                        const data = await res.json();
+                        alert(`Could not find ${action.data!.file}:\n${data.error}`);
+                      }
+                    } catch {
+                      alert(`Failed to open ${action.data!.file}`);
+                    }
+                  }}
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 6,
+                    background: 'rgba(96,165,250,0.1)', border: '1px solid rgba(96,165,250,0.3)',
+                    borderRadius: 6, padding: '6px 12px', marginBottom: 12,
+                    color: '#60a5fa', fontSize: 11, fontFamily: 'monospace',
+                    cursor: 'pointer', textDecoration: 'none',
+                  }}
+                  title={`Open ${action.data.file} in editor`}
+                >
+                  📄 {action.data.file}
+                  <span style={{ fontSize: 9, color: '#475569' }}>↗ open in editor</span>
+                </a>
+              )}
 
               {/* Email body */}
               {action.data?.body && (
@@ -3656,7 +3752,7 @@ export default function HomePage() {
             </div>
             {selectedAccomplishment.detail && (
               <div style={{ fontSize: 13, color: '#94a3b8', lineHeight: 1.6, marginBottom: 16 }}>
-                {selectedAccomplishment.detail}
+                {linkifyFiles(selectedAccomplishment.detail)}
               </div>
             )}
             {selectedAccomplishment.screenshot && (
@@ -3882,6 +3978,10 @@ export default function HomePage() {
         @keyframes statusFloat {
           0%, 100% { transform: translateY(0); }
           50% { transform: translateY(-2px); }
+        }
+        @keyframes npcEntrance {
+          0% { opacity: 0; transform: translateY(12px) scale(0.9); }
+          100% { opacity: 1; transform: translateY(0) scale(1); }
         }
       `}</style>
 
