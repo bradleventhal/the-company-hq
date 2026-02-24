@@ -784,7 +784,7 @@ export default function HomePage() {
     <div style={{
       height: '100vh',
       overflow: 'hidden',
-      background: bgGrad,
+      background: '#000',
       color: '#e2e8f0',
       fontFamily: 'system-ui',
     }}>
