@@ -3,6 +3,7 @@
 import React from 'react';
 import type { Accomplishment } from './types';
 import { linkifyFiles } from './CooldownTimer';
+import { useAuthToken } from '../hooks/useAuthToken';
 
 interface AccomplishmentDetailModalProps {
   accomplishment: Accomplishment | null;
@@ -11,6 +12,8 @@ interface AccomplishmentDetailModalProps {
 }
 
 export function AccomplishmentDetailModal({ accomplishment, onClose, onOpenFile }: AccomplishmentDetailModalProps) {
+  const authToken = useAuthToken();
+  
   if (!accomplishment) return null;
 
   return (
@@ -123,7 +126,7 @@ export function AccomplishmentDetailModal({ accomplishment, onClose, onOpenFile 
               accomplishment.screenshot.endsWith('.webm') ||
               accomplishment.screenshot.endsWith('.mov') ? (
                 <video
-                  src={`/api/office/screenshot?file=${encodeURIComponent(accomplishment.screenshot)}`}
+                  src={authToken ? `/api/office/screenshot?file=${encodeURIComponent(accomplishment.screenshot)}&token=${authToken}` : undefined}
                   controls
                   autoPlay={!accomplishment.file}
                   style={{
@@ -135,7 +138,7 @@ export function AccomplishmentDetailModal({ accomplishment, onClose, onOpenFile 
                 />
               ) : (
                 <img
-                  src={`/api/office/screenshot?file=${encodeURIComponent(accomplishment.screenshot)}`}
+                  src={authToken ? `/api/office/screenshot?file=${encodeURIComponent(accomplishment.screenshot)}&token=${authToken}` : undefined}
                   alt={accomplishment.title}
                   style={{
                     width: '100%',

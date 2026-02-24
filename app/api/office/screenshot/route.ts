@@ -8,10 +8,25 @@ import { requireAuth } from '@/lib/auth';
 const STATUS_DIR = join(homedir(), '.openclaw', '.status', 'screenshots');
 
 export async function GET(req: Request) {
-  const authError = requireAuth(req);
-  if (authError) return authError;
-
   const { searchParams } = new URL(req.url);
+  
+  // Accept token either in header or query param (for <video> elements)
+  const authError = requireAuth(req);
+  const tokenParam = searchParams.get('token');
+  
+  if (authError && !tokenParam) {
+    return authError;
+  }
+  
+  // If no header auth, verify query param
+  if (authError && tokenParam) {
+    const { getOrCreateToken } = await import('@/lib/auth');
+    const expectedToken = getOrCreateToken();
+    if (tokenParam !== expectedToken) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+  }
+
   const file = searchParams.get('file');
 
   if (!file || !validateFilename(file)) {
