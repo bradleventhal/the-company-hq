@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import type { Agent, Mood } from './types';
 import { Celebration } from './Celebration';
+import { NPCParticles } from './NPCParticles';
 import { randomColor, getQuirkyMoodMessage } from './utils';
 
 // === NPC Visual Trait System ===
@@ -212,14 +213,21 @@ export function NPC({ agent, size = 1, onClick, forceThought, flipped, hasCelebr
       )}
       {hasCelebration && <Celebration />}
       <Plumbob mood={agent.mood} agent={agent} />
-      <div style={{
-        width: s * 8,
-        height: s * 10,
-        imageRendering: 'pixelated' as any,
-        position: 'relative',
-        animation: 'npcBob 2s ease-in-out infinite',
-        ...(flipped ? { transform: 'scaleX(-1)' } : {}),
-      }}>
+      <div style={{ position: 'relative', width: s * 8, height: s * 10 }}>
+        <NPCParticles
+          agentStatus={agent.status}
+          agentRole={agent.role}
+          width={s * 8}
+          height={s * 10}
+        />
+        <div style={{
+          width: s * 8,
+          height: s * 10,
+          imageRendering: 'pixelated' as any,
+          position: 'relative',
+          animation: 'npcBob 2s ease-in-out infinite',
+          ...(flipped ? { transform: 'scaleX(-1)' } : {}),
+        }}>
         {/* Hair */}
         <NpcHair style={traits.hairStyle} s={s} hairColor={hairColor} />
         {/* Head */}
@@ -511,6 +519,7 @@ export function NPC({ agent, size = 1, onClick, forceThought, flipped, hasCelebr
           background: pantsColor,
           borderRadius: `0 0 ${s * 0.4}px ${s * 0.4}px`,
         }} />
+        </div>
       </div>
       <div style={{
         display: 'flex',
