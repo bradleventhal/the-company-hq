@@ -18,7 +18,7 @@ import { Celebration } from '../components/Celebration';
 import { AchievementToastContainer, AchievementToastData } from '../components/AchievementToast';
 import { DemoTour } from '../components/DemoTour';
 import { BootSequence } from '../components/BootSequence';
-import { DailyChallenge } from '../components/DailyChallenge';
+
 
 export default function HomePage() {
   const { isDemoMode, getApiPath } = useDemoMode();
@@ -118,18 +118,15 @@ export default function HomePage() {
     fetchConfig();
   }, []);
 
-  // Fetch GitHub stars (once on mount)
+  // Fetch GitHub stars once
+  const starsFetched = useRef(false);
   useEffect(() => {
-    const fetchStars = async () => {
-      try {
-        const res = await fetch('/api/github/stars');
-        const data = await res.json();
-        setGithubStars(data.stars);
-      } catch (err) {
-        console.debug('Failed to fetch GitHub stars:', err);
-      }
-    };
-    fetchStars();
+    if (starsFetched.current) return;
+    starsFetched.current = true;
+    fetch('/api/github/stars')
+      .then(r => r.json())
+      .then(d => setGithubStars(d.stars))
+      .catch(() => {});
   }, []);
 
   // Listen for demo triggers (from isolated recording script)
@@ -1204,8 +1201,8 @@ export default function HomePage() {
           </Room>
           )}
 
-          {/* MEETING ROOM — only appears when meeting.active = true */}
-          {meeting.active && (
+          {/* MEETING ROOM — only appears when meeting.active = true, hidden in demo */}
+          {meeting.active && !isDemoMode && (
             <Room
               title="Meeting Room"
               icon="🤝"
@@ -1706,11 +1703,6 @@ export default function HomePage() {
                 )}
               </div>
             </Room>
-          </div>
-
-          {/* DAILY CHALLENGE */}
-          <div style={{ padding: '0 8px' }}>
-            <DailyChallenge getApiPath={getApiPath} />
           </div>
 
           {/* ACCOMPLISHMENTS */}
