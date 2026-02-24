@@ -53,7 +53,7 @@ export default function HomePage() {
   }, [isDemoMode, authenticatedFetch]);
   const [agents, setAgents] = useState<Agent[]>([]);
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
-  const [time, setTime] = useState(new Date());
+  const [hour] = useState(() => new Date().getHours());
   const [pendingActions, setPendingActions] = useState<PendingAction[]>([]);
   const [accomplishments, setAccomplishments] = useState<Accomplishment[]>([]);
   const [selectedAccomplishment, setSelectedAccomplishment] = useState<Accomplishment | null>(null);
@@ -107,11 +107,6 @@ export default function HomePage() {
     sessionStorage.setItem('openclawfice-boot-seen', 'true');
     return true;
   });
-
-  useEffect(() => {
-    const i = setInterval(() => setTime(new Date()), 1000);
-    return () => clearInterval(i);
-  }, []);
 
   // Detect screen size for responsive layout
   useEffect(() => {
@@ -318,12 +313,17 @@ export default function HomePage() {
   }, []);
 
   // Poll meeting status every 3s (initial load handled above)
+  const lastMeetingJson = useRef('');
   useEffect(() => {
     const fetchMeeting = async () => {
       try {
         const res = await secureFetch(getApiPath('/api/office/meeting'));
         const data = await res.json();
-        setMeeting(data);
+        const json = JSON.stringify(data);
+        if (json !== lastMeetingJson.current) {
+          lastMeetingJson.current = json;
+          setMeeting(data);
+        }
       } catch {}
     };
     const i = setInterval(fetchMeeting, 3000);
@@ -618,12 +618,12 @@ export default function HomePage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatLogLen, config.waterCooler?.frequency, config.waterCooler?.enabled]);
 
-  // Countdown tick
+  // Countdown tick — only re-renders when value actually changes
   useEffect(() => {
     const tick = setInterval(() => {
       if (chatTargetRef.current > 0) {
         const remaining = Math.max(0, Math.round((chatTargetRef.current - Date.now()) / 1000));
-        setNextChatIn(prev => prev === -1 ? prev : remaining);
+        setNextChatIn(prev => prev === remaining ? prev : remaining);
       }
     }, 1000);
     return () => clearInterval(tick);
@@ -783,7 +783,7 @@ export default function HomePage() {
     return () => window.removeEventListener('keydown', handler);
   }, [agents, sfx]);
 
-  const hour = time.getHours();
+  // hour is computed once on mount from useState initializer
   
   // Enhanced day/night cycle with smooth transitions
   const getTimeOfDay = () => {
@@ -907,17 +907,7 @@ export default function HomePage() {
           <Stat icon="🟢" n={working.length} />
           <Stat icon="☕" n={idle.length} />
           {pendingActions.length > 0 && <Stat icon="⚔️" n={pendingActions.length} />}
-          <div style={{
-            fontFamily: '"Press Start 2P", monospace',
-            fontSize: 9,
-            color: '#64748b',
-          }}>
-            {time.toLocaleTimeString('en-US', {
-              hour: '2-digit',
-              minute: '2-digit',
-              timeZone: 'America/New_York',
-            })}
-          </div>
+          <Clock />
           <button
             onClick={() => { sfx.play('open'); setShowCallMeeting(true); }}
             style={{
