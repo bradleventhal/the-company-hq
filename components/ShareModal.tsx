@@ -11,7 +11,7 @@ interface ShareModalProps {
 export function ShareModal({ onClose, agentCount, workingCount }: ShareModalProps) {
   const [copied, setCopied] = useState(false);
 
-  const shareText = `Just set up my AI team office with OpenClawfice! 🏢\n\n${agentCount} agents working together, ${workingCount} currently active.\n\nIt's like The Sims meets AI agents - retro pixel art, real-time updates, quest system, and auto-work scheduling.\n\nTry the demo: localhost:3333?demo=true\nGitHub: github.com/openclaw/openclawfice`;
+  const shareText = `Just set up my AI team office with OpenClawfice! 🏢\n\n${agentCount} agents working together, ${workingCount} currently active.\n\nIt's like The Sims meets AI agents - retro pixel art, real-time updates, quest system, and auto-work scheduling.\n\nTry the demo: openclawfice.com/demo\nGitHub: github.com/openclawfice/openclawfice`;
 
   const handleCopyText = () => {
     navigator.clipboard.writeText(shareText);

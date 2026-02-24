@@ -260,7 +260,7 @@ We're working on:
 - Feature requests
 - Installation problems that aren't in docs
 
-**Create issue:** https://github.com/openclaw/openclawfice/issues/new
+**Create issue:** https://github.com/openclawfice/openclawfice/issues/new
 
 **Before posting:**
 1. Search existing issues (might already be solved)
@@ -283,7 +283,7 @@ We're working on:
 - Feature brainstorming
 - Show-and-tell (cool setups)
 
-**Start discussion:** https://github.com/openclaw/openclawfice/discussions
+**Start discussion:** https://github.com/openclawfice/openclawfice/discussions
 
 **Typical response time:** Days
 
@@ -378,11 +378,11 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for full guide.
 
 ### Code Contributions
 
-**Good first issues:** https://github.com/openclaw/openclawfice/labels/good-first-issue
+**Good first issues:** https://github.com/openclawfice/openclawfice/labels/good-first-issue
 
 **Dev setup:**
 ```bash
-git clone https://github.com/openclaw/openclawfice.git
+git clone https://github.com/openclawfice/openclawfice.git
 cd openclawfice
 npm install
 npm run dev

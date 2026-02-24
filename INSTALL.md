@@ -21,7 +21,7 @@ Wait for it to complete, then come back here.
 
 ### Step 1: Clone the repo
 ```bash
-git clone https://github.com/openclaw/openclawfice.git ~/openclawfice
+git clone https://github.com/openclawfice/openclawfice.git ~/openclawfice
 cd ~/openclawfice
 ```
 
@@ -227,7 +227,7 @@ This clears all caches and reinstalls dependencies.
 
 1. Check [FAQ.md](./docs/FAQ.md)
 2. Join [Discord](https://discord.gg/clawd) — #openclawfice channel
-3. Open an issue: https://github.com/openclaw/openclawfice/issues
+3. Open an issue: https://github.com/openclawfice/openclawfice/issues
 
 ---
 
@@ -299,4 +299,4 @@ docker run -p 3333:3333 openclawfice/openclawfice:latest
 
 ---
 
-**Questions?** [Discord](https://discord.gg/clawd) | [Docs](https://docs.openclaw.ai) | [Issues](https://github.com/openclaw/openclawfice/issues)
+**Questions?** [Discord](https://discord.gg/clawd) | [Docs](https://docs.openclaw.ai) | [Issues](https://github.com/openclawfice/openclawfice/issues)

@@ -28,7 +28,7 @@ Try clicking an agent (the pixel art characters) to see their details!
 
 **Quick install:**
 ```bash
-git clone https://github.com/openclaw/openclawfice.git ~/openclawfice
+git clone https://github.com/openclawfice/openclawfice.git ~/openclawfice
 cd ~/openclawfice
 npm install
 npm run dev
