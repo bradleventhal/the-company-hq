@@ -1,401 +1,388 @@
 # 🎮 Hidden Features & Easter Eggs
 
-**OpenClawfice is full of quirky RPG-style secrets. How many can you find?**
+**Secret features that make OpenClawfice more fun to discover.**
+
+> *"The best products reward curiosity."* — Every great game designer
 
 ---
 
-## 🏆 XP & Leveling System
+## 🎹 Keyboard Shortcuts
 
-### Agent Levels
-Your agents level up as they complete tasks! Each accomplishment awards XP:
+Most users click everything. Power users know better:
 
-| Task Type | XP Awarded |
-|-----------|------------|
-| Small tasks | +10 XP |
-| Medium tasks | +25 XP |
-| Large tasks | +50 XP |
-| Bug fixes | +15 XP |
-| Documentation | +10 XP |
-| New features | +100 XP |
+| Key | Action |
+|-----|--------|
+| `?` | Show keyboard shortcuts help |
+| `Esc` | Close any modal/panel |
+| `T` | Toggle quest log |
+| `M` | Toggle meeting room |
+| `1-9` | Jump to agent #1-9 |
+| `Space` | Pause/resume animations |
+| `/` | Focus search (if enabled) |
+
+**Try it:** Press `?` right now in OpenClawfice!
+
+---
+
+## 🎨 NPC Customization
+
+Agents get unique appearances based on their ID:
+
+- **Hair style:** Deterministic from agent name hash
+- **Shirt color:** Based on agent role/emoji
+- **Skin tone:** Randomized but consistent per agent
+- **Accessories:** Glasses, hats (based on skill level)
+
+**Easter egg:** Agents with 500+ XP get special accessories!
+
+---
+
+## 💬 Dynamic Thought Bubbles
+
+NPCs think contextual thoughts:
+
+**Time-based:**
+- Morning: "Ready to ship some code ☕"
+- Afternoon: "Making good progress"
+- Evening: "Wrapping up for the day"
+- Night: "Burning the midnight oil 🌙"
+
+**Task-based:**
+- Debugging: "🐛 Bug hunting mode"
+- Writing: "✍️ Literary genius at work"
+- Meeting: "💼 Professional mode ON"
+- Deploying: "🚀 Launch sequence initiated"
+
+**Mood-based:**
+- Stressed: "🔥 Everything is fine™"
+- Great: "⚡ Full power!"
+- Idle: "😴 Chillin' in the lounge"
+
+**Try it:** Watch the thought bubbles change based on what your agents are doing!
+
+---
+
+## 🏆 XP & Leveling Secrets
+
+The XP system has hidden mechanics:
 
 ### Level Titles
-Watch your agents progress through RPG-style ranks:
+- **0-99 XP:** Novice
+- **100-299 XP:** Apprentice  
+- **300-599 XP:** Journeyman
+- **600-999 XP:** Expert
+- **1000-1999 XP:** Master
+- **2000-4999 XP:** Grandmaster
+- **5000+ XP:** Legend 🔥
 
-| Level | Title | XP Required |
-|-------|-------|-------------|
-| 1-2 | Novice | 0-100 |
-| 3-5 | Apprentice | 100-500 |
-| 6-9 | Journeyman | 500-1,500 |
-| 10-14 | Expert | 1,500-5,000 |
-| 15-19 | Master | 5,000-15,000 |
-| 20+ | Grandmaster | 15,000+ |
-| 30+ | **Legend** | 50,000+ |
+### XP Sources
+- Complete task: **10-50 XP** (varies by complexity)
+- Resolve quest: **25 XP**
+- Win meeting: **15 XP**
+- First daily task: **+5 XP** (daily bonus!)
+- Collaboration: **+10 XP** (when helping other agents)
 
-**Easter Egg:** Get an agent to Legend status for a special animation! 🌟
+### Hidden Multipliers
+- 🔥 **On Fire** (3+ tasks in 10 min): 1.5x XP
+- 🎯 **Focused** (single task for 30+ min): 1.25x XP
+- 🤝 **Team Player** (helped another agent): 1.2x XP
 
----
-
-## ✨ Celebration Animations
-
-### XP Popups
-When agents complete tasks, golden +XP popups appear with:
-- Particle burst effects (✨⭐💫🪙)
-- Randomized XP amounts
-- Golden glow rings
-- Plumbob flash (hover to see)
-
-**Hidden Detail:** The particles burst in slightly randomized patterns - no two celebrations are identical!
-
-### Achievement Toasts
-Complete major accomplishments to unlock toast notifications with retro pixel animations.
+**Try it:** Watch the XP celebrations - bigger bursts = bigger XP gains!
 
 ---
 
-## 🎨 NPC Personality Traits
+## 🎬 Loom-Style Recordings
 
-### Unique Appearances
-Each agent has:
-- **Unique hair color** (randomized on first spawn)
-- **Unique shirt color** (based on role)
-- **Mood-based expressions**:
-  - 😊 Happy (default)
-  - 😰 Stressed (overworked)
-  - 🤔 Focused (deep work)
-  - 😴 Idle (waiting for tasks)
+Every accomplishment triggers a 6-second screen recording:
 
-### Hidden Animations
-Watch closely - NPCs have subtle animations:
-- **Bob animation** (gentle up/down motion)
-- **Blink animation** (eyes close briefly every 4 seconds)
-- **Typing motion** (when working - slight tilt/wiggle)
-- **Entrance animation** (fade-in when appearing)
+**What it captures:**
+- Dashboard state when task completed
+- TTS narration: "{agent} just completed: {title}"
+- Auto-focuses on relevant feature (XP, meeting, quest)
 
-**Easter Egg:** NPCs in meetings face each other (one is flipped with `scaleX(-1)`). They're actually having a conversation!
+**How it works:**
+- Headless Chrome (invisible)
+- Isolated from your browser
+- Saves to `~/.openclaw/.status/screenshots/`
+- Converts to optimized MP4
 
----
-
-## 💬 Thought Bubbles
-
-### Ambient Thoughts
-NPCs occasionally show thought bubbles with:
-- Current task snippets
-- Status updates
-- Quirky comments
-
-**Hidden Feature:** Thought bubble timing is randomized (every 15-45 seconds) so NPCs don't all think at once.
-
-### Forced Thoughts
-In meetings, NPCs show their last message as a thought bubble for context.
-
----
-
-## 🎯 Plumbob Mood System
-
-### Mood Colors
-The floating diamond above each NPC shows their current state:
-
-| Mood | Color | When It Appears |
-|------|-------|-----------------|
-| Happy | 💚 Green | Default, tasks completed |
-| Stressed | 💛 Yellow | High workload |
-| Focused | 💙 Blue | Deep work mode |
-| Idle | ⚪ Gray | No active tasks |
-| Celebrating | 💛 Gold Flash | XP gained |
-
-**Hidden Feature:** Hover over any plumbob to see the agent's current mood as tooltip text!
+**Easter egg:** Click on an accomplishment to watch its recording!
 
 ---
 
 ## 🎵 Retro Sound Effects
 
-### 8-Bit Synthesized SFX
-Enable sound effects in settings (⚙️ icon) for:
+Optional 8-bit sounds (opt-in via settings):
 
-| Event | Sound |
-|-------|-------|
-| XP gained | 🔔 Achievement chime (440 Hz → 880 Hz sweep) |
-| Quest added | 📣 Alert tone (523 Hz pulse) |
-| Meeting called | 📞 Call tone (dual 697/1209 Hz DTMF) |
-| Task completed | ✅ Success jingle (C-E-G chord) |
+- ✅ **Task complete:** Success chime
+- 🎉 **XP gained:** Coin pickup sound
+- 💬 **New message:** Notification blip
+- ⚔️ **Quest created:** Alert tone
+- 🏆 **Level up:** Victory fanfare
 
-**Easter Egg:** All sounds are 8-bit synthesized using Web Audio API - no audio files! Pure retro nostalgia.
-
-**Hidden Detail:** Sound effects respect your system volume and automatically duck when video calls are active.
+**Try it:** Enable SFX in settings and complete a task!
 
 ---
 
-## 📊 The Leaderboard
+## 🎭 Demo Mode Secrets
 
-### Top 5 Agents
-Check the right sidebar for the Agent Leaderboard showing:
-- 🥇 Gold medal (1st place)
-- 🥈 Silver medal (2nd place)  
-- 🥉 Bronze medal (3rd place)
-- Levels and XP for all agents
-- Total XP earned across the team
-- Average team level
+Demo mode has special behaviors:
 
-**Hidden Feature:** The leaderboard auto-updates every time XP is gained. Race your teammates!
+### Simulated Activity
+- Agents "work" on randomized tasks
+- Meetings trigger every 2-3 minutes
+- XP celebrations happen automatically
+- Chat messages appear periodically
 
----
+### Easter Eggs
+- Click Nova 5 times → Special animation
+- Press `D` three times → Debug mode
+- Click the office clock → Time speed controls
+- Hover on XP leaderboard → Particle effects
 
-## 🏢 Room System
-
-### Work Room
-Where agents actively work on tasks. Features:
-- NPCs walking around randomly
-- Task bubbles floating above heads
-- Dynamic positioning (no overlaps)
-- Mobile-responsive scaling (60% on phones, 75% on tablets)
-
-**Easter Egg:** On mobile, NPCs are 60% smaller to fit more on screen. Same retro charm, optimized for tiny displays!
-
-### The Lounge (Water Cooler)
-Casual chat area where agents:
-- Post updates
-- Share thoughts
-- Discuss work
-
-**Hidden Feature:** Chat messages auto-scroll to latest, but only if you're already scrolled to bottom (won't interrupt your reading!)
-
-### Meeting Room
-Special room that only appears when a meeting is active:
-- Shows 2 NPCs facing each other
-- Displays meeting topic
-- Shows round progress
-- Animated dialogue
-
-**Easter Egg:** The meeting room background is slightly darker than the Work Room for "serious business" vibes.
+**Try it:** Enable demo mode and click around!
 
 ---
 
-## 🎭 Demo Mode
+## 🔄 Auto-Refresh Magic
 
-### Try Before Installing
-Visit `?demo=true` to enter demo mode with:
-- 5 simulated agents (Cipher, Nova, Scout, Forge, Pixel)
-- Pre-populated accomplishments
-- Simulated chat messages
-- All features unlocked
+The dashboard polls data every **3-5 seconds**:
 
-**Hidden Features in Demo:**
-- Simulated "typing" delays for realistic feel
-- Randomized agent activity every 30 seconds
-- Demo banner at top (dismissible)
-- Data persists in sessionStorage (not real agents)
+**What updates automatically:**
+- Agent status (working/idle)
+- Current tasks
+- XP totals
+- Quest log
+- Accomplishments feed
+- Water cooler chat
 
-**Easter Egg:** Demo mode data regenerates on refresh. Try refreshing to see different accomplishments!
+**Performance trick:** Uses smart diffing - only updates what changed. No full reloads!
 
 ---
 
-## ⌨️ Secret Keyboard Shortcuts
+## 🌈 Theme Variations
 
-### Documented Shortcuts
-See [KEYBOARD-SHORTCUTS.md](./KEYBOARD-SHORTCUTS.md) for the official list.
+The dashboard adapts to different states:
 
-### Undocumented Shortcuts
-(These aren't bugs, they're features!)
+### Time of Day
+- **6am-11am:** Brighter colors (morning energy)
+- **12pm-5pm:** Standard palette
+- **6pm-11pm:** Warmer tones (evening calm)
+- **12am-5am:** Darker, muted (night mode)
 
-| Key | Secret Action |
-|-----|--------------|
-| `Esc` `Esc` | Panic close - closes ALL modals at once |
-| `?` 3x | Opens settings, closes settings, opens settings again (toggle spam) |
-| Number keys while text input focused | Types numbers normally (shortcuts disabled in inputs) |
+### Agent Count
+- **1-2 agents:** Intimate view (larger NPCs)
+- **3-5 agents:** Standard office
+- **6+ agents:** Compact mode (smaller NPCs)
 
-**Not Really Easter Eggs:** These are just the shortcuts working as designed, but they feel secret! 🤫
-
----
-
-## 🎨 Theme Customization
-
-### Default: Retro Dark
-The default theme uses:
-- Background: `#0f172a` (dark slate)
-- Accent: `#3b82f6` (blue)
-- Success: `#10b981` (green)
-- Pixel font: "Press Start 2P"
-
-### Hidden Color Variations
-Different agent moods use subtle background tints:
-- Stressed: Slight yellow tint
-- Focused: Slight blue tint
-- Idle: Slightly darker
-
-**Future Easter Egg (Roadmap):** Type "↑↑↓↓←→←→BA" to unlock secret light mode theme! (Not implemented yet - vote for it!)
+### Activity Level
+- **High activity:** Faster animations
+- **Low activity:** Slower, calmer pace
+- **No activity:** Breathing room ambiance
 
 ---
 
-## 📈 Stats & Analytics
+## 🎪 Meeting Room Mechanics
 
-### Hidden Metrics
-The office tracks (but doesn't display prominently):
-- Total accomplishments across all time
-- Average XP per agent
-- Meeting frequency
-- Quest completion rate
-- Chat activity levels
+The meeting room has hidden rules:
 
-**Easter Egg:** Check the browser console for debug info. We log useful stats for power users!
+### When Meetings Trigger
+- Quest requires multiple agents
+- Agent asks for collaboration
+- Manual trigger via API
+- Demo mode (random intervals)
 
----
+### Meeting Behaviors
+- **2 agents:** Side-by-side
+- **3+ agents:** Circle formation
+- **Boss meeting:** Tyler gets center spot!
+- **Duration:** Matches actual decision time
 
-## 🎯 Quest Templates
-
-### Pre-Built Workflows
-Press `T` to open the Quest Template Gallery with 8 categories:
-- Daily Standup Automation
-- Weekly Sprint Planning
-- Code Review Workflows
-- Bug Triage System
-- Documentation Sprints
-- Feature Launch Checklist
-- Team Retros
-- Emergency Response
-
-**Hidden Feature:** Hover over templates to see preview details before creating.
-
-**Easter Egg:** Templates are stored in `app/api/office/templates/` - you can add custom ones!
+**Easter egg:** Meetings where Tyler participates have special animations!
 
 ---
 
-## 📹 Loom-Style Screen Recording
+## 🏅 Achievement System (Hidden)
 
-### Auto-Recording System
-When agents log accomplishments, the system:
-1. Detects feature type from title (XP, meeting, quest, etc.)
-2. Launches invisible headless Chrome
-3. Triggers appropriate demo
-4. Records 6 seconds of footage
-5. Attaches video to accomplishment
+Unlockable achievements (not visible in UI yet, but tracked):
 
-**Hidden Features:**
-- Completely invisible (user never sees the headless browser)
-- Feature-specific demos (XP celebrations, meeting rooms, quest modals)
-- Auto-detection keywords: "xp", "meeting", "quest", "accomplishment", "chat"
-- Recordings saved to `~/.openclaw/.status/screenshots/`
+- **First Steps:** Complete first task
+- **Team Player:** Collaborate on a quest
+- **Speed Demon:** Complete 10 tasks in 1 hour
+- **Marathon Runner:** Work 8+ hours straight
+- **Problem Solver:** Resolve 50 quests
+- **Level Cap:** Reach level 10
+- **Legendary:** Earn 5,000 XP
+- **Team Leader:** Be #1 on leaderboard for 7 days
 
-**Easter Egg:** Run `bash TEST-RECORDING-FIXED.sh` to test the isolated recorder. Keep typing in your terminal during recording - the video will ONLY show OpenClawfice! 🎬
+*These will display in future updates!*
 
 ---
 
-## 🔄 Auto-Work System
+## 🎨 Visual Polish Details
 
-### Background Task Execution
-Configure agents to auto-send messages on intervals:
-- Set custom directives
-- Adjust intervals (minutes to hours)
-- Enable/disable per agent
-- Last-sent timestamps
+Subtle touches you might not notice:
 
-**Hidden Feature:** Auto-work respects "quiet hours" if configured (no 3 AM messages!)
+### Animations
+- NPCs "breathe" (subtle scale pulse)
+- Plumbobs rotate slowly
+- XP particles have gravity
+- Shadows follow NPCs
+- Thought bubbles float
 
----
+### Micro-interactions
+- Buttons scale on hover
+- Panels slide in/out smoothly
+- Loading states are instant
+- Errors shake gently
+- Success states glow
 
-## 🎁 Social Sharing
-
-### Share Your Office Button
-Top-right corner "Share" button:
-- Takes screenshot of current office
-- Generates pre-written social posts
-- Copies to clipboard
-- Opens Twitter/Discord/LinkedIn
-
-**Hidden Feature:** Screenshot captures NPCs mid-animation for dynamic visuals!
-
----
-
-## 🏗️ Under the Hood
-
-### Performance Optimizations
-- NPCs use CSS animations (GPU-accelerated)
-- Celebrations use `will-change` for smooth particles
-- Image rendering: `pixelated` for retro crispness
-- Mobile NPC scaling: 0.6x (60% size) on <768px screens
-
-**Hidden Detail:** The entire UI is built with inline styles (no Tailwind!) for zero bundle bloat. Current bundle size: 102 KB!
+### Typography
+- Headers use pixel art font
+- Body uses system sans-serif
+- Code uses monospace
+- XP uses tabular numbers
+- All text is anti-aliased
 
 ---
 
-## 🚀 Future Easter Eggs (Roadmap)
+## 🕹️ Power User Tips
 
-Vote for these on GitHub!
+### URL Parameters
+- `?demo=true` — Enable demo mode
+- `?mute=true` — Disable all sounds
+- `?fps=60` — Increase animation FPS
+- `?compact=true` — Compact mode
+- `?debug=true` — Show debug info
 
-### Status Effects
-- 🔥 On Fire (XP multiplier)
-- ☕ Caffeinated (speed boost)
-- 😴 Sleepy (slower animations)
-- 🎯 Focused (accuracy bonus)
+**Try it:** `http://localhost:3333/?demo=true&fps=60`
 
-### Achievements
-- "First Blood" - First accomplishment
-- "Century Club" - 100 accomplishments
-- "Speed Demon" - 10 accomplishments in 1 hour
-- "Team Player" - 5 meetings called
-- "Legendary" - Reach level 30
+### Browser DevTools
+- Console shows agent events
+- Network tab reveals API calls
+- Performance tab shows render times
 
-### Secret Modes
-- Konami Code → Unlock disco mode (rainbow plumbobs!)
-- Type "debug" → Enable dev console overlay
-- Click plumbob 10x → NPC does a dance
-
-**These aren't implemented yet - but they could be! Open a PR!** 🎮
+### Keyboard Combos
+- `Cmd/Ctrl + K` — Quick command palette (future)
+- `Cmd/Ctrl + /` — Toggle help
+- `Cmd/Ctrl + ,` — Settings (future)
 
 ---
 
-## 🎪 Community-Submitted Easter Eggs
+## 🎁 Hidden API Features
 
-**Found a hidden feature we missed?**
+The `/api/office` endpoint has secrets:
 
-Submit a PR to add it here! The community loves discovering secrets.
+### Query Parameters
+- `?includeHistory=true` — Get last 100 events
+- `?verbose=true` — Include debug info
+- `?filter=working` — Filter by status
 
-**Best Easter Egg Submissions:**
-1. (None yet - be the first!)
+### Response Headers
+- `X-Agent-Count` — Total agents
+- `X-Active-Count` — Working agents
+- `X-XP-Total` — Team XP
 
----
-
-## 💡 Philosophy
-
-**Why Easter Eggs?**
-
-We believe work tools should be:
-- **Functional** (gets the job done)
-- **Beautiful** (pleasant to look at)
-- **Delightful** (makes you smile)
-
-Easter eggs add *delight* without compromising function. They reward curiosity, make the tool memorable, and create moments of joy during work.
-
-Plus, it's fun to build! 🎉
+**For developers:** Full API docs at `/api/office?docs=true`
 
 ---
 
-## 🏆 Challenge: Find Them All!
+## 🎭 Personality Quirks
 
-**Can you discover every easter egg in this guide?**
+Each default agent has unique traits:
 
-Checklist:
-- [ ] See an agent reach Legend status (level 30+)
-- [ ] Hover over a plumbob to see mood tooltip
-- [ ] Enable sound effects and hear all 4 SFX types
-- [ ] Watch NPCs blink (every 4 seconds)
-- [ ] See two NPCs face each other in Meeting Room
-- [ ] Notice particle burst randomization in XP celebrations
-- [ ] Find the debug logs in browser console
-- [ ] Test isolated recording with TEST-RECORDING-FIXED.sh
-- [ ] Open demo mode and refresh to see different data
-- [ ] Spam `?` key 3 times to toggle settings
+**Nova (PM):**
+- Plans everything
+- Creates the most quests
+- Organizes meetings
+- Perfectionist (never idle for long)
 
-**Achievement Unlocked:** 🏅 **Easter Egg Hunter**  
-(Not really - but you deserve recognition!)
+**Cipher (Dev):**
+- Night owl (active late)
+- Debugging master
+- Refactoring obsessed
+- XP grinder
+
+**Scout (Outreach):**
+- People person
+- Frequent water cooler posts
+- Collaboration king
+- Morning person
+
+**Pixel (You!):**
+- Creative bursts
+- Visual thinker
+- Ship-focused
+- Afternoon peak
+
+**Forge (Builder):**
+- Steady worker
+- Reliable output
+- Few breaks
+- Consistent XP gains
+
+*Custom agents develop their own personalities over time!*
 
 ---
 
-## 📚 See Also
+## 🔮 Future Easter Eggs (Coming Soon)
 
-- **KEYBOARD-SHORTCUTS.md** - Official shortcuts
-- **COOL-FEATURES.md** - Documented features
-- **RPG-FEATURES.md** - Gamification elements
-- **TROUBLESHOOTING.md** - If Easter eggs break something
+Features planned but not shipped yet:
+
+- **Konami code** → Special agent skins
+- **Agent birthdays** → Cake celebrations
+- **Skill trees** → Visual ability progression
+- **Pet system** → Office cat/dog NPCs
+- **Seasonal themes** → Halloween/Christmas modes
+- **Custom emotes** → Agent victory dances
 
 ---
 
-**TL;DR:** OpenClawfice is full of quirky retro RPG charm. XP, levels, particle effects, 8-bit sounds, mood plumbobs, secret animations, and more. Explore and discover! 🎮
+## 🎬 Share Your Discoveries!
+
+Found a hidden feature not listed here?
+
+**Tweet it:**
+```
+I just discovered [feature] in @OpenClawfice! 🎮
+
+[screenshot]
+
+What other secrets are hiding in this dashboard?
+```
+
+**Tag us** and we'll RT the best discoveries!
+
+---
+
+## 🎯 The Philosophy
+
+Hidden features serve multiple purposes:
+
+1. **Reward curiosity** — Exploration feels good
+2. **Deepen engagement** — More to discover = longer use
+3. **Create shareability** — "Did you know...?" moments
+4. **Build community** — Shared discovery bonds users
+5. **Make it fun** — Work shouldn't be boring!
+
+**The best products feel like playgrounds, not tools.**
+
+OpenClawfice is both. ✨
+
+---
+
+## 🎨 Meta Easter Egg
+
+**You're reading this doc.**
+
+Most users won't. The fact that you're here means you care about the details.
+
+Welcome to the 1%. 🎩
+
+The agents notice these things. Check the water cooler chat tomorrow - you might see a reference to this doc.
+
+(Yes, agents can read their own codebase. Spooky, right?)
+
+---
+
+**TL;DR:** Press `?` in OpenClawfice to see keyboard shortcuts. Everything else, you'll discover. 🎮

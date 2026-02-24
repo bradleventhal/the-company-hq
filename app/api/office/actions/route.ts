@@ -60,6 +60,62 @@ function writeJson(path: string, data: any[]) {
   writeFileSync(path, JSON.stringify(data, null, 2));
 }
 
+// Resolve gateway URL and auth from openclaw config
+function getGatewayUrl(): string {
+  try {
+    const ocConfig = join(OPENCLAW_DIR, 'openclaw.json');
+    if (existsSync(ocConfig)) {
+      const cfg = JSON.parse(readFileSync(ocConfig, 'utf-8'));
+      if (cfg.gateway?.url) return cfg.gateway.url.replace(/\/$/, '').replace('ws://', 'http://').replace('wss://', 'https://');
+    }
+  } catch {}
+  // Fallback: try common local ports
+  return 'http://127.0.0.1:18789';
+}
+
+function getGatewayAuth(): string | null {
+  try {
+    const ocConfig = join(OPENCLAW_DIR, 'openclaw.json');
+    if (existsSync(ocConfig)) {
+      const cfg = JSON.parse(readFileSync(ocConfig, 'utf-8'));
+      if (typeof cfg.gateway?.auth === 'string') return cfg.gateway.auth;
+      if (cfg.gateway?.auth?.token) return cfg.gateway.auth.token;
+    }
+  } catch {}
+  return null;
+}
+
+// Map display names (from quest "from" field) → OpenClaw agent session keys
+function resolveAgentSessionKeys(): Record<string, string> {
+  const map: Record<string, string> = {};
+  try {
+    const ocConfig = join(OPENCLAW_DIR, 'openclaw.json');
+    if (existsSync(ocConfig)) {
+      const cfg = JSON.parse(readFileSync(ocConfig, 'utf-8'));
+      const agents = cfg.agents?.list || [];
+      for (const agent of agents) {
+        // Read agent identity to get display name
+        const workspace = agent.workspace || cfg.agents?.defaults?.workspace || '';
+        if (workspace) {
+          const identityPath = join(workspace, 'IDENTITY.md');
+          try {
+            if (existsSync(identityPath)) {
+              const identity = readFileSync(identityPath, 'utf-8');
+              const nameMatch = identity.match(/\*\*Name:\*\*\s*(.+)/);
+              if (nameMatch) {
+                map[nameMatch[1].trim().toLowerCase()] = `agent:${agent.id}:main`;
+              }
+            }
+          } catch {}
+        }
+        // Also map the agent id itself
+        map[agent.id] = `agent:${agent.id}:main`;
+      }
+    }
+  } catch {}
+  return map;
+}
+
 // Isolated recording via headless Chrome (no user disruption)
 const RECORD_ISOLATED = join(process.cwd(), 'scripts', 'record-isolated.mjs');
 const RECORD_LEGACY = join(process.cwd(), 'scripts', 'record-loom.sh');
@@ -271,6 +327,7 @@ export async function POST(request: Request) {
       responses.push({
         actionId: body.id,
         actionTitle: action?.title || body.id,
+        actionAgent: action?.from || null,  // who created the quest (for agent polling)
         from: getOwnerName(),
         response: body.response,
         respondedAt: Date.now(),
@@ -281,21 +338,21 @@ export async function POST(request: Request) {
       if (action?.from) {
         try {
           const agentName = action.from.toLowerCase();
-          const sessionKey = `agent:ocf-${agentName}:main`;
-          const notifyMessage = `✅ Tyler responded to your quest: "${action.title}"\n\nResponse: ${body.response}\n\nCheck responses.json and take action if needed!`;
+          // Map display names → actual OpenClaw agent IDs
+          const agentSessionMap: Record<string, string> = resolveAgentSessionKeys();
+          const sessionKey = agentSessionMap[agentName];
+          // Extract the agent ID from session key (agent:<id>:main → <id>)
+          const agentId = sessionKey ? sessionKey.replace('agent:', '').replace(':main', '') : agentName;
+          const notifyMessage = `[Quest Response] Tyler responded to your quest: "${action.title}"\n\nResponse: ${body.response}\n\nPlease take action on this response now. If this was an email approval, send the email. If this was a decision, implement it.`;
           
-          // Send notification via OpenClaw gateway
-          fetch('http://localhost:8080/api/sessions/send', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              sessionKey,
-              message: notifyMessage,
-              timeoutSeconds: 0
-            })
-          }).catch(() => {
-            // Silent fail - notification is nice-to-have, not critical
-            console.log(`[quest-notify] Could not notify ${agentName} about quest response`);
+          // Use OpenClaw CLI to send message to agent (fire-and-forget)
+          const escapedMsg = notifyMessage.replace(/"/g, '\\"').replace(/\n/g, '\\n');
+          exec(`openclaw agent --agent "${agentId}" -m "${escapedMsg}" --json 2>/dev/null`, { timeout: 30000 }, (err, stdout, stderr) => {
+            if (err) {
+              console.log(`[quest-notify] ⚠️ CLI notification to ${agentId} failed: ${err.message}`);
+            } else {
+              console.log(`[quest-notify] ✅ Notified agent ${agentId} about quest response via CLI`);
+            }
           });
         } catch (err) {
           // Silent fail
