@@ -107,6 +107,9 @@ export default function HomePage() {
   const [showBoot, setShowBoot] = useState(false);
   const [nowMs, setNowMs] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [partyMode, setPartyMode] = useState(false);
+  const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+  const konamiProgress = useRef<string[]>([]);
 
   useEffect(() => {
     const seen = sessionStorage.getItem('openclawfice-boot-seen');
@@ -116,6 +119,24 @@ export default function HomePage() {
     }
     if (localStorage.getItem('openclawfice-sfx') === 'on') setSfxEnabled(true);
   }, []);
+
+  // Konami code listener
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      konamiProgress.current.push(e.key);
+      if (konamiProgress.current.length > konamiCode.length) {
+        konamiProgress.current.shift();
+      }
+      if (konamiProgress.current.join(',') === konamiCode.join(',')) {
+        setPartyMode(true);
+        sfx.play('levelUp');
+        setTimeout(() => setPartyMode(false), 3000);
+        konamiProgress.current = [];
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [sfx]);
 
   useEffect(() => {
     setNowMs(Date.now());
@@ -888,6 +909,12 @@ export default function HomePage() {
         href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
         rel="stylesheet"
       />
+      <style>{`
+        @keyframes npcPartyJump {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-20px); }
+        }
+      `}</style>
 
       {/* Retro Boot Sequence */}
       {showBoot && <BootSequence onComplete={() => setShowBoot(false)} />}
@@ -1323,6 +1350,7 @@ export default function HomePage() {
                       onClick={() => { sfx.play('click'); setSelectedAgent(a); }}
                       forceThought={activeThought && activeThought.agentId === a.id ? activeThought.text : null}
                       hasCelebration={celebrations.some(c => c.agentId === a.id)}
+                      partyMode={partyMode}
                     />
                   </div>
                 ))
@@ -1422,6 +1450,7 @@ export default function HomePage() {
                         onClick={() => { sfx.play('click'); setSelectedAgent(a); }}
                         forceThought={activeThought && activeThought.agentId === a.id ? activeThought.text : null}
                         hasCelebration={celebrations.some(c => c.agentId === a.id)}
+                        partyMode={partyMode}
                       />
                     </div>
                   ))

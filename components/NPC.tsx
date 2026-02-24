@@ -160,13 +160,14 @@ function Plumbob({ mood, agent }: { mood: Mood; agent?: Agent }) {
 
 // === Main NPC Component ===
 
-export function NPC({ agent, size = 1, onClick, forceThought, flipped, hasCelebration }: {
+export function NPC({ agent, size = 1, onClick, forceThought, flipped, hasCelebration, partyMode }: {
   agent: Agent;
   size?: number;
   onClick?: () => void;
   forceThought?: string | null;
   flipped?: boolean;
   hasCelebration?: boolean;
+  partyMode?: boolean;
 }) {
   const s = 4 * size;
   const displayThought = forceThought || agent.thought;
@@ -237,7 +238,7 @@ export function NPC({ agent, size = 1, onClick, forceThought, flipped, hasCelebr
           height: s * 10,
           imageRendering: 'pixelated' as any,
           position: 'relative',
-          animation: 'npcBob 2s ease-in-out infinite',
+          animation: partyMode ? 'npcPartyJump 0.5s ease-in-out infinite' : 'npcBob 2s ease-in-out infinite',
           ...(flipped ? { transform: 'scaleX(-1)' } : {}),
         }}>
         {/* Hair */}
