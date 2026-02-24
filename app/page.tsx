@@ -122,6 +122,48 @@ function generateAgentDefaults(id: string) {
   };
 }
 
+// Prettify raw task strings for display (sanitize shell commands, truncate junk)
+function prettifyTask(task: string): string {
+  if (!task) return '';
+  let t = task.trim();
+  
+  // Strip markdown bold/headers
+  t = t.replace(/\*\*/g, '').replace(/^#+\s*/gm, '');
+  
+  // If it starts with a tool/command prefix, clean it
+  if (/^(exec|read|write|edit|browser|web_search|web_fetch|memory_search|sessions_send|tts):/i.test(t)) {
+    const colonIdx = t.indexOf(':');
+    const rest = t.slice(colonIdx + 1).trim();
+    // If the rest is a shell command, try to extract meaning
+    if (rest.startsWith('cd ') || rest.startsWith('ls ') || rest.startsWith('cat ') ||
+        rest.startsWith('grep ') || rest.startsWith('curl ') || rest.startsWith('sleep ') ||
+        rest.startsWith('find ') || rest.startsWith('npx ') || rest.startsWith('git ') ||
+        rest.includes('&&') || rest.includes('|')) {
+      // Extract the most meaningful part
+      const parts = rest.split('&&').map(p => p.trim());
+      const meaningful = parts.find(p => !p.startsWith('cd ') && !p.startsWith('sleep ') && !p.startsWith('echo '));
+      if (meaningful) {
+        t = meaningful.split('|')[0].trim();
+        if (t.length > 60) t = t.slice(0, 57) + '...';
+      } else {
+        return 'Running commands...';
+      }
+    } else {
+      t = rest;
+    }
+  }
+  
+  // Truncate overly long strings
+  if (t.length > 80) t = t.slice(0, 77) + '...';
+  
+  // If it still looks like code/commands, give a generic label
+  if (t.match(/[{}\[\]<>\\|;]/) && t.length > 30) {
+    return 'Working on code...';
+  }
+  
+  return t;
+}
+
 // Generate quirky RPG-style mood messages
 function getQuirkyMoodMessage(agent: Agent): string {
   const { mood, status, task } = agent;
@@ -2526,7 +2568,7 @@ export default function HomePage() {
                           textOverflow: 'ellipsis',
                           cursor: 'pointer',
                         }}>
-                          {a.task}
+                          {prettifyTask(a.task)}
                         </div>
                         {expandedTask === a.id && (
                           <div onClick={(e) => e.stopPropagation()} style={{
