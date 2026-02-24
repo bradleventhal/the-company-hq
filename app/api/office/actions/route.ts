@@ -4,6 +4,7 @@ import { join } from 'path';
 import { homedir } from 'os';
 import { exec } from 'child_process';
 import { findRelatedFile } from '../../../../lib/file-finder';
+import { requireAuth } from '../../../../lib/auth';
 
 const OPENCLAW_DIR = join(homedir(), '.openclaw');
 const STATUS_DIR = join(OPENCLAW_DIR, '.status');
@@ -284,6 +285,10 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  // Require authentication for POST operations
+  const authError = requireAuth(request);
+  if (authError) return authError;
+
   ensureStatusDir();
 
   try {

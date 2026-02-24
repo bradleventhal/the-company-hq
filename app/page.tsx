@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useDemoMode } from '../hooks/useDemoMode';
 import { useRetroSFX } from '../hooks/useRetroSFX';
+import { useAuthenticatedFetch } from '../hooks/useAuthenticatedFetch';
 import type { Agent, AgentStatus, Mood, PendingAction, Accomplishment, ChatMessage } from '../components/types';
 import { randomColor, generateAgentDefaults, prettifyTask, formatInterval } from '../components/utils';
 import { NPC } from '../components/NPC';
@@ -20,6 +21,15 @@ import { DemoTour } from '../components/DemoTour';
 export default function HomePage() {
   const { isDemoMode, getApiPath } = useDemoMode();
   const sfx = useRetroSFX();
+  const authenticatedFetch = useAuthenticatedFetch();
+  
+  // Wrapper for POST requests that adds auth in non-demo mode
+  const secureFetch = async (url: string, options: RequestInit = {}) => {
+    if (isDemoMode || options.method !== 'POST') {
+      return fetch(url, options);
+    }
+    return authenticatedFetch(url, options);
+  };
   const [agents, setAgents] = useState<Agent[]>([]);
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
   const [time, setTime] = useState(new Date());
@@ -601,14 +611,14 @@ export default function HomePage() {
       const ownerName = agents.find(a => a.id === '_owner')?.name || 'You';
 
       // Add user message to water cooler chat so agents see it and respond
-      fetch('/api/office/chat', {
+      secureFetch('/api/office/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type: 'user_message', from: ownerName, text: groupMessage }),
       }).catch(() => {});
 
       // Send to all agents (broadcast)
-      const res = await fetch('/api/office/message', {
+      const res = await secureFetch('/api/office/message', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
@@ -635,7 +645,7 @@ export default function HomePage() {
   const handleTemplateSelect = async (quest: any) => {
     try {
       // Add the cloned quest to actions
-      const res = await fetch('/api/office/actions', {
+      const res = await secureFetch('/api/office/actions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type: 'add', action: quest }),
@@ -2119,7 +2129,7 @@ export default function HomePage() {
         if (!action) return null;
         const priorityColors: Record<string, string> = { high: '#ef4444', medium: '#f59e0b', low: '#6366f1' };
         const respondAction = async (response: string) => {
-          await fetch('/api/office/actions', {
+          await secureFetch('/api/office/actions', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ type: 'respond_action', id: action.id, response }),
