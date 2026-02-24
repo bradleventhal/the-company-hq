@@ -1804,6 +1804,34 @@ export default function HomePage() {
     }
   }, [accomplishments, agents]);
 
+  // Demo mode: trigger random celebrations periodically for visual delight
+  useEffect(() => {
+    if (!isDemoMode || agents.length === 0) return;
+    const triggerRandomCelebration = () => {
+      const randomAgent = agents[Math.floor(Math.random() * agents.length)];
+      if (!randomAgent) return;
+      setCelebrations(prev => {
+        // Max 2 concurrent celebrations
+        if (prev.length >= 2) return prev;
+        return [...prev, { agentId: randomAgent.id, timestamp: Date.now() }];
+      });
+      setTimeout(() => {
+        setCelebrations(prev =>
+          prev.filter(c => c.agentId !== randomAgent.id || Date.now() - c.timestamp > 1500)
+        );
+      }, 1500);
+    };
+    // First one after 8 seconds, then every 12-20 seconds
+    const firstTimeout = setTimeout(triggerRandomCelebration, 8000);
+    const interval = setInterval(() => {
+      triggerRandomCelebration();
+    }, 12000 + Math.random() * 8000);
+    return () => {
+      clearTimeout(firstTimeout);
+      clearInterval(interval);
+    };
+  }, [isDemoMode, agents]);
+
   const loadArchive = async (reset = false) => {
     setArchiveLoading(true);
     try {
