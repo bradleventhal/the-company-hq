@@ -17,6 +17,7 @@ import { ShareCard } from '../components/ShareCard';
 import { Celebration } from '../components/Celebration';
 import { AchievementToastContainer, AchievementToastData } from '../components/AchievementToast';
 import { DemoTour } from '../components/DemoTour';
+import { BootSequence } from '../components/BootSequence';
 
 export default function HomePage() {
   const { isDemoMode, getApiPath } = useDemoMode();
@@ -78,6 +79,14 @@ export default function HomePage() {
   const [sfxEnabled, setSfxEnabled] = useState(() => typeof window !== 'undefined' ? localStorage.getItem('openclawfice-sfx') === 'on' : false);
   const [screenSize, setScreenSize] = useState<'mobile' | 'tablet' | 'desktop'>('desktop');
   const [githubStars, setGithubStars] = useState<number | null>(null);
+  const [showBoot, setShowBoot] = useState(() => {
+    // Only show boot sequence on first visit (not every page load)
+    if (typeof window === 'undefined') return false;
+    const seen = sessionStorage.getItem('openclawfice-boot-seen');
+    if (seen) return false;
+    sessionStorage.setItem('openclawfice-boot-seen', 'true');
+    return true;
+  });
 
   useEffect(() => {
     const i = setInterval(() => setTime(new Date()), 1000);
@@ -767,6 +776,9 @@ export default function HomePage() {
         href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
         rel="stylesheet"
       />
+
+      {/* Retro Boot Sequence */}
+      {showBoot && <BootSequence onComplete={() => setShowBoot(false)} />}
 
       {/* Demo Mode Banner */}
       {isDemoMode && <DemoBanner />}

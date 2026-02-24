@@ -20,7 +20,10 @@ export async function getAuthToken(): Promise<string> {
       throw new Error('Failed to fetch auth token');
     }
     const data = await res.json();
-    cachedToken = data.token;
+    cachedToken = data.token || null;
+    if (!cachedToken) {
+      throw new Error('Auth token was empty');
+    }
     return cachedToken;
   } catch (err) {
     console.error('Failed to load auth token:', err);
