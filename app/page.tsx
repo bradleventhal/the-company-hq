@@ -108,7 +108,7 @@ export default function HomePage() {
             // Trigger XP celebration
             if (agent) {
               setCelebrations(prev => [...prev, { agentId: agent, timestamp: Date.now() }]);
-              sfx.playXP();
+              sfx.play('achievement');
             }
             break;
           
