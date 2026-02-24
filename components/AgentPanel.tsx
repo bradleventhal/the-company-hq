@@ -168,11 +168,42 @@ export function AgentPanel({ agent, onClose, autowork, onAutoworkUpdate, onStop,
       </div>
 
       <div style={{
-        color: agent.color,
-        fontSize: 11,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
         marginBottom: 16,
       }}>
-        {agent.emoji} {agent.role}
+        <div style={{
+          color: agent.color,
+          fontSize: 11,
+        }}>
+          {agent.emoji} {agent.role}
+        </div>
+        <button
+          onClick={() => {
+            navigator.clipboard.writeText(agent.id);
+            // Show brief feedback
+            const btn = document.activeElement as HTMLButtonElement;
+            if (btn) {
+              const orig = btn.textContent;
+              btn.textContent = '✓';
+              setTimeout(() => { btn.textContent = orig; }, 1500);
+            }
+          }}
+          style={{
+            background: '#1e293b',
+            border: '1px solid #334155',
+            borderRadius: 6,
+            padding: '4px 8px',
+            color: '#94a3b8',
+            fontSize: 9,
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+          }}
+          title={`Copy agent ID: ${agent.id}`}
+        >
+          📋 Copy ID
+        </button>
       </div>
 
       {/* Stop Button */}

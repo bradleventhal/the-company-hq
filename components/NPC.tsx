@@ -8,28 +8,39 @@ import { randomColor, getQuirkyMoodMessage } from './utils';
 
 // === NPC Visual Trait System ===
 
-type HairStyle = 'classic' | 'spiky' | 'long' | 'mohawk' | 'bald' | 'afro' | 'bob' | 'ponytail';
+type HairStyle = 'classic' | 'spiky' | 'long' | 'bald' | 'afro' | 'bob' | 'ponytail';
 type Accessory = 'none' | 'glasses' | 'headphones' | 'cap' | 'earring';
 
 // Generate unique NPC visual traits from agent ID (deterministic)
 function getNpcTraits(id: string) {
-  // Multiple independent hashes for uncorrelated trait selection
-  const hash1 = id.split('').reduce((a, b) => ((a << 5) - a) + b.charCodeAt(0), 0) >>> 0;
-  const hash2 = id.split('').reduce((a, b) => ((a << 7) + a) ^ b.charCodeAt(0), 5381) >>> 0;
-  const hash3 = id.split('').reduce((a, b) => a * 31 + b.charCodeAt(0), 7) >>> 0;
+  // Different deterministic mix to produce a fresh trait distribution.
+  let seed = 2166136261;
+  for (let i = 0; i < id.length; i++) {
+    seed ^= id.charCodeAt(i);
+    seed = Math.imul(seed, 16777619);
+  }
 
-  const skinTones = ['#e8c4a0', '#f5d6b8', '#d4a574', '#c68c53', '#a0673c', '#7b4b2a', '#f0dcc8', '#e0b896'];
-  const hairColors = ['#4a3728', '#1a1a2e', '#8b4513', '#d4a017', '#c0392b', '#2c3e50', '#7f8c8d', '#e8dacc', '#5c2d91', '#2ecc71'];
-  const hairStyles: HairStyle[] = ['classic', 'spiky', 'long', 'mohawk', 'bald', 'afro', 'bob', 'ponytail'];
-  const accessories: Accessory[] = ['none', 'glasses', 'headphones', 'cap', 'earring', 'none'];
-  const pantsColors = ['#334155', '#1e293b', '#3b4252', '#4c566a', '#2d3748', '#1a202c', '#374151', '#2e1065'];
+  const next = () => {
+    seed ^= seed << 13;
+    seed ^= seed >>> 17;
+    seed ^= seed << 5;
+    return seed >>> 0;
+  };
+
+  const pick = <T,>(list: T[]) => list[next() % list.length];
+
+  const skinTones = ['#f3d6bf', '#e8c1a0', '#d8a67f', '#bf875d', '#9f6947', '#7f4e34', '#f1cdb6', '#c7906a'];
+  const hairColors = ['#111827', '#2b2a28', '#6b3f2a', '#84563c', '#b37a4c', '#b91c1c', '#1d4ed8', '#334155', '#cbd5e1'];
+  const hairStyles: HairStyle[] = ['classic', 'spiky', 'long', 'bald', 'afro', 'bob', 'ponytail'];
+  const accessories: Accessory[] = ['none', 'none', 'glasses', 'headphones', 'cap', 'earring'];
+  const pantsColors = ['#1f2937', '#0f172a', '#334155', '#374151', '#3f3f46', '#1e3a8a', '#14532d', '#4c1d95'];
 
   return {
-    skinColor: id === '_owner' ? '#d4a574' : skinTones[hash1 % skinTones.length],
-    hairColor: hairColors[hash2 % hairColors.length],
-    hairStyle: id === '_owner' ? 'classic' : hairStyles[hash3 % hairStyles.length],
-    accessory: id === '_owner' ? 'none' : accessories[(hash1 + hash2) % accessories.length],
-    pantsColor: pantsColors[hash3 % pantsColors.length],
+    skinColor: pick(skinTones),
+    hairColor: pick(hairColors),
+    hairStyle: pick(hairStyles),
+    accessory: pick(accessories),
+    pantsColor: pick(pantsColors),
   };
 }
 
@@ -49,9 +60,10 @@ function NpcHair({ style, s, hairColor }: { style: HairStyle; s: number; hairCol
         <div style={{ position: 'absolute', top: s * 1.5, left: s * 6.6, width: s * 1.2, height: s * 4, background: hairColor, borderRadius: `0 0 ${s * 0.5}px ${s * 0.5}px` }} />
       </>);
     case 'mohawk':
-      return (
-        <div style={{ position: 'absolute', top: -s * 0.8, left: s * 2.8, width: s * 2.5, height: s * 3, background: hairColor, borderRadius: `${s * 1.5}px ${s * 1.5}px ${s * 0.3}px ${s * 0.3}px` }} />
-      );
+      return (<>
+        <div style={{ position: 'absolute', top: -s * 0.6, left: s * 3.1, width: s * 1.8, height: s * 2.8, background: hairColor, borderRadius: `${s * 0.9}px ${s * 0.9}px ${s * 0.2}px ${s * 0.2}px` }} />
+        <div style={{ position: 'absolute', top: s * 0.2, left: s * 2.7, width: s * 2.6, height: s * 1.1, background: hairColor, borderRadius: `${s * 0.6}px ${s * 0.6}px ${s * 0.25}px ${s * 0.25}px`, opacity: 0.9 }} />
+      </>);
     case 'bald':
       return (
         <div style={{ position: 'absolute', top: s * 0.8, left: s * 1.2, width: s * 5.6, height: s * 1, background: hairColor, opacity: 0.3, borderRadius: `${s * 1}px ${s * 1}px 0 0` }} />

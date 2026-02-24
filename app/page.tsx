@@ -18,6 +18,8 @@ import { Celebration } from '../components/Celebration';
 import { AchievementToastContainer, AchievementToastData } from '../components/AchievementToast';
 import { DemoTour } from '../components/DemoTour';
 import { BootSequence } from '../components/BootSequence';
+import { MeetingRoom } from '../components/MeetingRoom';
+import { AutoworkBanner } from '../components/AutoworkBanner';
 
 
 function Clock() {
@@ -867,7 +869,9 @@ export default function HomePage() {
   const baseFontSize = isMobile ? 10 : isTablet ? 9 : 8;
   const headerFontSize = isMobile ? 12 : 14;
   const workRoomSingleRowCapacity = isMobile ? 2 : isTablet ? 3 : 4;
-  const isSingleWorkRow = working.length > 0 && working.length <= workRoomSingleRowCapacity;
+  const estimatedWorkRows = Math.max(1, Math.ceil(Math.max(working.length, 1) / workRoomSingleRowCapacity));
+  const isSingleWorkRow = estimatedWorkRows === 1;
+  const isDoubleWorkRow = estimatedWorkRows === 2;
 
   return (
     <div style={{
@@ -1218,7 +1222,7 @@ export default function HomePage() {
             borderColor="#166534"
             roomType="work"
             dataTour="work-room"
-            style={{ flex: isSingleWorkRow ? '0 0 auto' : '1 1 auto' }}
+            style={{ flex: isSingleWorkRow || isDoubleWorkRow ? '0 0 auto' : '1 1 auto' }}
           >
             <div style={{
               display: 'flex',
@@ -1226,7 +1230,7 @@ export default function HomePage() {
               gap: 24,
               justifyContent: 'center',
               padding: '12px 0 4px',
-              minHeight: isSingleWorkRow ? 56 : 80,
+              minHeight: isSingleWorkRow ? 92 : isDoubleWorkRow ? 112 : 80,
             }}>
               {working.length > 0 ? (
                 working.map((a, idx) => (
@@ -1299,276 +1303,26 @@ export default function HomePage() {
           )}
 
           {/* MEETING ROOM — only appears when meeting.active = true, hidden in demo */}
-          {meeting.active && !isDemoMode && (
-            <Room
-              title="Meeting Room"
-              icon="🤝"
-              color="#1a0a2e"
-              borderColor="#7c3aed"
-              roomType="meeting"
-              style={{
-                flex: '0 0 auto',
-                animation: 'fadeSlideIn 0.5s ease-out',
+          {!isDemoMode && (
+            <MeetingRoom
+              meeting={meeting}
+              agents={agents}
+              nowMs={nowMs}
+              npcSize={npcSize}
+              isMobile={isMobile}
+              celebrations={celebrations}
+              onEndMeeting={async () => {
+                try {
+                  const res = await secureFetch(getApiPath("/api/office/meeting"), { method: "DELETE" });
+                  if (res.ok) setMeeting({ active: false });
+                } catch (err) {
+                  console.error("Failed to end meeting:", err);
+                }
               }}
-            >
-              <div style={{ padding: '12px 12px 16px' }}>
-                {/* Topic */}
-                <div style={{
-                  textAlign: 'center',
-                  marginBottom: 8,
-                  fontSize: 11,
-                  color: '#c4b5fd',
-                  fontWeight: 600,
-                  lineHeight: 1.4,
-                  padding: '0 8px',
-                }}>
-                  {meeting.topic || 'Discussion in progress...'}
-                </div>
-
-                {/* Side-by-side: left = participants + controls, right = transcript */}
-                <div style={{
-                  display: isMobile ? 'block' : 'flex',
-                  gap: 12,
-                  alignItems: 'stretch',
-                }}>
-                  {/* Left column — participants & controls */}
-                  <div style={{
-                    flex: '0 0 auto',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    minWidth: isMobile ? undefined : 140,
-                  }}>
-                    {/* Progress indicators */}
-                    <div style={{
-                      display: 'flex',
-                      justifyContent: 'center',
-                      gap: 8,
-                      marginBottom: 10,
-                      flexWrap: 'wrap',
-                    }}>
-                      <div style={{
-                        background: 'rgba(124,58,237,0.15)',
-                        border: '1px solid rgba(124,58,237,0.4)',
-                        borderRadius: 6,
-                        padding: '3px 8px',
-                        fontSize: 8,
-                        color: '#a78bfa',
-                        fontFamily: '"Press Start 2P", monospace',
-                      }}>
-                        Round {meeting.currentRound}/{meeting.maxRounds}
-                      </div>
-                      <div style={{
-                        background: 'rgba(124,58,237,0.15)',
-                        border: '1px solid rgba(124,58,237,0.4)',
-                        borderRadius: 6,
-                        padding: '3px 8px',
-                        fontSize: 8,
-                        color: '#a78bfa',
-                        fontFamily: '"Press Start 2P", monospace',
-                      }}>
-                        {(() => {
-                          const startedAt = meeting.startedAt || nowMs;
-                          const elapsed = Math.max(0, nowMs - startedAt);
-                          const mins = Math.floor(elapsed / 60000);
-                          const secs = Math.floor((elapsed % 60000) / 1000);
-                          return `${mins}:${secs.toString().padStart(2, '0')} elapsed`;
-                        })()}
-                      </div>
-                    </div>
-
-                    {/* Participants */}
-                    <div style={{
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'flex-end',
-                      gap: isMobile ? 16 : 20,
-                      flexWrap: 'wrap',
-                      marginBottom: 10,
-                    }}>
-                      {meeting.participants && meeting.participants.map((pId, idx) => {
-                        const agent = agents.find(a => a.id === pId);
-                        if (!agent) return null;
-                        const flipped = idx % 2 === 1;
-                        return (
-                          <div key={pId} style={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            animation: `npcEntrance 0.5s ease-out ${idx * 0.12}s both`,
-                          }}>
-                            <NPC
-                              agent={agent}
-                              size={npcSize * 0.75}
-                              onClick={() => { sfx.play('click'); setSelectedAgent(agent); }}
-                              flipped={flipped}
-                              hasCelebration={celebrations.some(c => c.agentId === agent.id)}
-                            />
-                          </div>
-                        );
-                      })}
-                    </div>
-
-                    {/* End Meeting Button */}
-                    <button
-                      onClick={async () => {
-                        try {
-                          const res = await secureFetch(getApiPath('/api/office/meeting'), {
-                            method: 'DELETE',
-                          });
-                          if (res.ok) {
-                            sfx.play('close');
-                            setMeeting({ active: false });
-                          }
-                        } catch (err) {
-                          console.error('Failed to end meeting:', err);
-                        }
-                      }}
-                      style={{
-                        background: 'rgba(239,68,68,0.15)',
-                        border: '1px solid rgba(239,68,68,0.3)',
-                        color: '#fca5a5',
-                        padding: '5px 10px',
-                        borderRadius: 6,
-                        fontSize: 9,
-                        fontFamily: '"Press Start 2P", monospace',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s',
-                        marginTop: 'auto',
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.background = 'rgba(239,68,68,0.25)';
-                        e.currentTarget.style.borderColor = 'rgba(239,68,68,0.5)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background = 'rgba(239,68,68,0.15)';
-                        e.currentTarget.style.borderColor = 'rgba(239,68,68,0.3)';
-                      }}
-                    >
-                      End Meeting
-                    </button>
-                  </div>
-
-                  {/* Right column — transcript */}
-                  {(() => {
-                    const transcript = meeting.transcript || [];
-                    const hasTranscript = transcript.length > 0;
-                    const agentColors: Record<string, string> = {};
-                    const colorPalette = ['#c4b5fd', '#a78bfa', '#f0abfc', '#67e8f9', '#86efac', '#fcd34d', '#fca5a5', '#fdba74'];
-                    (meeting.participants || []).forEach((p, i) => {
-                      agentColors[p.toLowerCase()] = colorPalette[i % colorPalette.length];
-                    });
-                    agents.forEach((a) => {
-                      if (!agentColors[a.name.toLowerCase()]) {
-                        const idx = a.id.split('').reduce((s: number, c: string) => s + c.charCodeAt(0), 0) % colorPalette.length;
-                        agentColors[a.name.toLowerCase()] = colorPalette[idx];
-                      }
-                      if (!agentColors[a.id.toLowerCase()]) {
-                        agentColors[a.id.toLowerCase()] = agentColors[a.name.toLowerCase()];
-                      }
-                    });
-
-                    return hasTranscript ? (
-                      <div style={{
-                        flex: 1,
-                        minWidth: 0,
-                        background: 'rgba(15,5,30,0.6)',
-                        border: '1px solid rgba(124,58,237,0.2)',
-                        borderRadius: 8,
-                        padding: '8px',
-                        maxHeight: isMobile ? 160 : 200,
-                        overflowY: 'auto',
-                        marginTop: isMobile ? 8 : 0,
-                      }}>
-                        {transcript.map((entry, idx) => {
-                          const showRoundHeader = idx === 0 || entry.round !== transcript[idx - 1].round;
-                          const agentKey = entry.agent.toLowerCase();
-                          const agentColor = agentColors[agentKey] || '#c4b5fd';
-                          const displayAgent = agents.find(a => a.id === agentKey || a.name.toLowerCase() === agentKey);
-                          const agentName = displayAgent?.name || entry.agent;
-
-                          return (
-                            <React.Fragment key={idx}>
-                              {showRoundHeader && (
-                                <div style={{
-                                  textAlign: 'center',
-                                  fontSize: 7,
-                                  color: '#7c3aed',
-                                  fontFamily: '"Press Start 2P", monospace',
-                                  padding: '4px 0 6px',
-                                  opacity: 0.7,
-                                  borderTop: idx > 0 ? '1px solid rgba(124,58,237,0.15)' : 'none',
-                                  marginTop: idx > 0 ? 6 : 0,
-                                }}>
-                                  — Round {entry.round} —
-                                </div>
-                              )}
-                              <div style={{
-                                display: 'flex',
-                                gap: 6,
-                                marginBottom: 6,
-                                alignItems: 'flex-start',
-                                animation: idx === transcript.length - 1 ? 'fadeSlideIn 0.3s ease-out' : undefined,
-                              }}>
-                                <div style={{
-                                  width: 6,
-                                  height: 6,
-                                  borderRadius: '50%',
-                                  background: agentColor,
-                                  flexShrink: 0,
-                                  marginTop: 4,
-                                  boxShadow: `0 0 4px ${agentColor}44`,
-                                }} />
-                                <div style={{ flex: 1, minWidth: 0 }}>
-                                  <span style={{
-                                    fontFamily: '"Press Start 2P", monospace',
-                                    fontSize: 7,
-                                    color: agentColor,
-                                    marginRight: 4,
-                                  }}>
-                                    {agentName}
-                                  </span>
-                                  <span style={{
-                                    fontSize: isMobile ? 9 : 10,
-                                    color: '#e2d9f3',
-                                    lineHeight: 1.4,
-                                    wordBreak: 'break-word' as const,
-                                  }}>
-                                    {entry.message}
-                                  </span>
-                                </div>
-                              </div>
-                            </React.Fragment>
-                          );
-                        })}
-                      </div>
-                    ) : meeting.lastMessage ? (
-                      <div style={{
-                        flex: 1,
-                        background: 'rgba(124,58,237,0.1)',
-                        border: '1px solid rgba(124,58,237,0.25)',
-                        color: '#c4b5fd',
-                        padding: '6px 10px',
-                        borderRadius: 8,
-                        fontSize: isMobile ? 9 : 10,
-                        textAlign: 'center',
-                        lineHeight: 1.4,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        marginTop: isMobile ? 8 : 0,
-                      }}>
-                        {meeting.lastMessage.length > 120 
-                          ? meeting.lastMessage.slice(0, 117) + '...' 
-                          : meeting.lastMessage}
-                      </div>
-                    ) : null;
-                  })()}
-                </div>
-              </div>
-            </Room>
+              onSelectAgent={setSelectedAgent}
+              onPlaySound={sfx.play}
+            />
           )}
-
           {/* LOUNGE + QUEST LOG */}
           <div style={{
             display: 'grid',
@@ -2691,97 +2445,28 @@ export default function HomePage() {
       )}
 
       {/* Pending Auto-Work Changes Banner */}
-      {Object.keys(pendingAutowork).length > 0 && (
-        <div style={{
-          position: 'fixed',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          zIndex: 200,
-          background: 'linear-gradient(to right, #1e1b4b, #312e81)',
-          borderTop: '2px solid #6366f1',
-          padding: '12px 20px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 16,
-          animation: 'fadeSlideIn 0.3s ease-out',
-          boxShadow: '0 -4px 20px rgba(99,102,241,0.3)',
-        }}>
-          <div style={{ flex: 1 }}>
-            <div style={{
-              fontSize: 11, fontWeight: 700, color: '#e0e7ff',
-              fontFamily: '"Press Start 2P", monospace',
-              marginBottom: 4,
-            }}>
-              ⚠ WORKSPACE RESTART REQUIRED
-            </div>
-            <div style={{ fontSize: 11, color: '#a5b4fc', lineHeight: 1.5 }}>
-              {Object.entries(pendingAutowork).map(([agentId, changes]) => {
-                const agentName = agents.find(a => a.id === agentId)?.name || agentId;
-                const parts: string[] = [];
-                if (changes.enabled !== undefined) parts.push(changes.enabled ? 'enable auto-work' : 'disable auto-work');
-                if (changes.intervalMs !== undefined) parts.push(`interval → ${formatInterval(changes.intervalMs)}`);
-                if (changes.directive !== undefined) parts.push('updated directive');
-                return `${agentName}: ${parts.join(', ')}`;
-              }).join(' · ')}
-            </div>
-          </div>
-          <button
-            onClick={() => setPendingAutowork({})}
-            style={{
-              background: 'transparent',
-              border: '1px solid #475569',
-              borderRadius: 8,
-              padding: '8px 16px',
-              color: '#94a3b8',
-              fontSize: 10,
-              cursor: 'pointer',
-              fontFamily: '"Press Start 2P", monospace',
-            }}
-          >
-            DISCARD
-          </button>
-          <button
-            onClick={async () => {
-              const entries = Object.entries(pendingAutowork);
-              try {
-                for (const [agentId, changes] of entries) {
-                  await secureFetch('/api/office/autowork', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ agentId, ...changes }),
-                  });
-                }
-                // Merge into live policies
-                setAutoworkPolicies(prev => {
-                  const next = { ...prev };
-                  for (const [agentId, changes] of entries) {
-                    next[agentId] = { ...(next[agentId] || { enabled: false, intervalMs: 600_000, directive: '', lastSentAt: 0 }), ...changes };
-                  }
-                  return next;
-                });
-                setPendingAutowork({});
-              } catch {
-                alert('Failed to apply changes');
-              }
-            }}
-            style={{
-              background: '#6366f1',
-              border: 'none',
-              borderRadius: 8,
-              padding: '8px 20px',
-              color: '#fff',
-              fontSize: 10,
-              cursor: 'pointer',
-              fontFamily: '"Press Start 2P", monospace',
-              boxShadow: '0 2px 8px rgba(99,102,241,0.4)',
-            }}
-          >
-            APPLY & RESTART
-          </button>
-        </div>
-      )}
-
+      <AutoworkBanner
+        pendingAutowork={pendingAutowork}
+        agents={agents}
+        onDiscard={() => setPendingAutowork({})}
+        onApply={async (entries) => {
+          for (const [agentId, changes] of entries) {
+            await secureFetch("/api/office/autowork", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ agentId, ...changes }),
+            });
+          }
+          setAutoworkPolicies(prev => {
+            const next = { ...prev };
+            for (const [agentId, changes] of entries) {
+              next[agentId] = { ...(next[agentId] || { enabled: false, intervalMs: 600_000, directive: "", lastSentAt: 0 }), ...changes };
+            }
+            return next;
+          });
+          setPendingAutowork({});
+        }}
+      />
       <style jsx global>{`
         @keyframes npcBob {
           0%,
