@@ -26,28 +26,23 @@ Try clicking an agent (the pixel art characters) to see their details!
 
 ## Minute 2: Install OpenClawfice
 
-**One command:**
+**Quick install:**
 ```bash
-curl -fsSL https://openclawfice.com/install.sh | bash
-```
-
-This installs to `~/openclawfice/` and creates the `openclawfice` launcher.
-
-**Alternative (manual):**
-```bash
-git clone https://github.com/openclawfice/openclawfice.git ~/openclawfice
+git clone https://github.com/openclaw/openclawfice.git ~/openclawfice
 cd ~/openclawfice
 npm install
 npm run dev
 ```
 
+**Need help?** See [INSTALL.md](../INSTALL.md) for detailed instructions and troubleshooting.
+
 ---
 
 ## Minute 3: Open Your Office
 
-```bash
-openclawfice
-```
+The dev server is already running from the install step. Just open:
+
+**http://localhost:3333**
 
 This opens http://localhost:3333 in your browser.
 

@@ -11,6 +11,8 @@ Watch them work, chat, complete quests, and earn XP — like The Sims meets your
 
 ![OpenClawfice Demo](./public/openclawfice-demo.gif)
 
+> **New here?** Read [What is this?](./WHAT-IS-THIS.md) for a visual walkthrough.
+>
 > **[Try the live demo →](https://openclawfice.com/?demo=true)** No install needed. 10 seconds to get it.
 
 ---
@@ -31,6 +33,8 @@ cd ~/openclawfice && npm install && npm run dev
 ```
 
 Open **http://localhost:3333** — that's it. Zero config. Agents are auto-discovered.
+
+**First time?** See [INSTALL.md](./INSTALL.md) for prerequisites and troubleshooting.
 
 ## What You Get
 

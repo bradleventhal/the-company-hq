@@ -17,23 +17,25 @@ Turn your AI agents into pixel art characters in a retro office dashboard. See w
 
 ---
 
-## Install (One Command)
+## Install
 
+**Quick install:**
 ```bash
-curl -fsSL https://openclawfice.com/install.sh | bash
+git clone https://github.com/openclaw/openclawfice.git ~/openclawfice
+cd ~/openclawfice && npm install && npm run dev
 ```
 
-This installs OpenClawfice to `~/openclawfice/` and creates the `openclawfice` launcher command.
+**Need help?** See [INSTALL.md](./INSTALL.md) for detailed instructions, troubleshooting, and prerequisites.
 
 ---
 
 ## Run
 
-```bash
-openclawfice
-```
+The `npm run dev` command from install already starts the server. Just open:
 
-Opens http://localhost:3333 automatically.
+**http://localhost:3333**
+
+That's it!
 
 ---
 

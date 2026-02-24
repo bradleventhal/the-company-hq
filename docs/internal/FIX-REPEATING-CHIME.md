@@ -23,10 +23,12 @@ If you want to keep the demo running for testing:
 - Each new message triggers `sfx.play('message', 5000)` with 5-second debounce
 - Since messages appear faster than the debounce, you hear it repeatedly
 
-## Long-Term Fix (If Needed)
-If you want demo mode without the sound spam, we can:
-1. Increase message debounce from 5s to 20s (longer than message interval)
-2. Disable message sounds entirely in demo mode
-3. Make demo mode chat silent by default
+## Permanent Fix Applied ✅
 
-Let me know if you want any of these changes!
+I've disabled message notification sounds in demo mode. The change:
+- **Real mode**: Message sounds play normally (with 5s debounce)
+- **Demo mode**: Message sounds are silent (no chimes from simulated chat)
+
+This means demo mode can run without being annoying, while real usage still gets useful notifications.
+
+**To apply the fix**: Just refresh your browser tab. The updated code will stop the chimes immediately.
