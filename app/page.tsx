@@ -337,18 +337,23 @@ export default function HomePage() {
   }, []);
 
   // Poll actions/accomplishments every 5s (initial load handled above)
+  const lastActionsJson = useRef('');
   useEffect(() => {
     const fetchActions = async () => {
       try {
         const res = await secureFetch(getApiPath('/api/office/actions'));
         const data = await res.json();
-        if (data.actions) setPendingActions(data.actions);
-        if (data.accomplishments) setAccomplishments(data.accomplishments);
+        const json = JSON.stringify(data);
+        if (json !== lastActionsJson.current) {
+          lastActionsJson.current = json;
+          if (data.actions) setPendingActions(data.actions);
+          if (data.accomplishments) setAccomplishments(data.accomplishments);
+        }
       } catch {}
       try {
         const ar = await secureFetch(getApiPath('/api/office/actions') + '?archiveOffset=0&limit=0');
         const ad = await ar.json();
-        if (typeof ad.archiveTotal === 'number') setArchiveTotal(ad.archiveTotal);
+        if (typeof ad.archiveTotal === 'number') setArchiveTotal(prev => prev === ad.archiveTotal ? prev : ad.archiveTotal);
       } catch {}
     };
     const i = setInterval(fetchActions, 5000);
