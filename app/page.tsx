@@ -777,6 +777,30 @@ export default function HomePage() {
           }}>
             {agents.length} {isMobile ? 'ag' : 'agents'}
           </span>
+          {!isMobile && (
+            <a
+              href="https://github.com/openclawfice/openclawfice/blob/main/SECURITY.md"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 4,
+                fontSize: 8,
+                color: '#10b981',
+                textDecoration: 'none',
+                padding: '2px 6px',
+                background: '#10b98110',
+                border: '1px solid #10b98130',
+                borderRadius: 4,
+                marginLeft: 8,
+              }}
+              title="Security verified & malware scanned"
+            >
+              <span>🛡️</span>
+              <span>VERIFIED</span>
+            </a>
+          )}
         </div>
         <div style={{
           display: 'flex',
