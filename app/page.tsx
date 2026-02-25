@@ -1229,6 +1229,22 @@ export default function HomePage() {
           >
             ↻
           </button>
+          <a
+            href="/help"
+            style={{
+              background: 'none',
+              border: 'none',
+              color: theme.textMuted,
+              cursor: 'pointer',
+              fontSize: 14,
+              padding: '2px 4px',
+              textDecoration: 'none',
+              display: 'inline-block',
+            }}
+            title="Help & Guide"
+          >
+            ❓
+          </a>
           <button
             onClick={() => { sfx.play('open'); setShowSettings(true); }}
             style={{
