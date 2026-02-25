@@ -12,6 +12,10 @@
 - **[Workflows](WORKFLOWS.md)** — Common workflows and patterns
 - **[Use Cases](USE-CASES.md)** — Real-world examples
 - **[UI Guide](UI-GUIDE.md)** — Understanding the interface
+
+## Viral Features (Share & Show Off)
+- **[Go Viral Playbook](GO-VIRAL-PLAYBOOK.md)** 🚀 — Complete guide to getting 1,000+ people to see your setup (7-day launch plan)
+- **[Agent Trading Cards](AGENT-TRADING-CARDS.md)** 🎴 — Pokemon-style shareable cards for your agents
 - **[Viral Templates](VIRAL-TEMPLATES.md)** — Copy-paste social media posts (Twitter, Discord, LinkedIn, Reddit, HN)
 
 ## For Agents

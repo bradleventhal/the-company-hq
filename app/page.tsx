@@ -662,8 +662,9 @@ export default function HomePage() {
       if (lastSeenChatCount > 0 && !isDemoMode) sfx.play('message', 5000);
       setLastSeenChatCount(chatLog.length);
       const lastMsg = chatLog[chatLog.length - 1];
-      if (lastMsg) {
-        const match = agents.find(a => a.name.toLowerCase() === lastMsg.from.toLowerCase());
+      if (lastMsg && typeof lastMsg.from === 'string') {
+        const from = lastMsg.from.toLowerCase();
+        const match = agents.find(a => typeof a.name === 'string' && a.name.toLowerCase() === from);
         if (match) {
           setActiveThought({ agentId: match.id, text: `💭 ${lastMsg.text}` });
           setTimeout(() => setActiveThought(null), 8000);
