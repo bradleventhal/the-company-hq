@@ -22,6 +22,7 @@ import { MeetingRoom } from '../components/MeetingRoom';
 import { AutoworkBanner } from '../components/AutoworkBanner';
 import { CallMeetingModal } from '../components/CallMeetingModal';
 import { AccomplishmentDetailModal } from '../components/AccomplishmentDetailModal';
+import { OfficeEvents } from '../components/OfficeEvents';
 
 
 function Clock({ color }: { color: string }) {
@@ -1033,6 +1034,22 @@ export default function HomePage() {
           >
             🏆
           </a>
+          <a
+            href="/stats"
+            style={{
+              background: 'none',
+              border: 'none',
+              color: theme.textMuted,
+              cursor: 'pointer',
+              fontSize: 14,
+              padding: '2px 4px',
+              textDecoration: 'none',
+              display: 'inline-block',
+            }}
+            title="Office Stats"
+          >
+            📊
+          </a>
           <button
             onClick={() => setShowShareModal(true)}
             style={{
@@ -1950,7 +1967,7 @@ export default function HomePage() {
 
         </div>
 
-        {/* RIGHT COLUMN: Water Cooler Chat */}
+        {/* RIGHT COLUMN: Office Feed + Water Cooler Chat */}
         <div style={{
           display: 'flex',
           flexDirection: 'column',
@@ -1959,6 +1976,29 @@ export default function HomePage() {
           overflow: isMobile ? 'visible' : 'hidden',
           maxHeight: isMobile ? '400px' : undefined,
         }}>
+          {/* Office Events Feed */}
+          {agents.length > 0 && (
+            <div style={{
+              background: theme.bgSecondary,
+              border: '2px solid #1e293b',
+              borderRadius: 12,
+              padding: '8px 10px',
+              flexShrink: 0,
+            }}>
+              <OfficeEvents
+                agents={agents}
+                intervalMs={40000}
+                maxVisible={3}
+                theme={{
+                  text: theme.text,
+                  textDim: theme.textDim,
+                  bgSecondary: theme.bgSecondary,
+                  border: '#1e293b',
+                }}
+              />
+            </div>
+          )}
+
           <div data-tour="water-cooler" style={{
             background: theme.bgSecondary,
             border: '2px solid #44320a',

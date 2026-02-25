@@ -13,3 +13,5 @@ export { TemplateGallery } from './TemplateGallery';
 export { DemoBanner } from './DemoBanner';
 export { ShareModal } from './ShareModal';
 export { ActivityHeatmap } from './ActivityHeatmap';
+export { OfficeEvents } from './OfficeEvents';
+export type { OfficeEvent } from './OfficeEvents';
