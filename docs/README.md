@@ -13,6 +13,9 @@
 - **[Use Cases](USE-CASES.md)** — Real-world examples
 - **[UI Guide](UI-GUIDE.md)** — Understanding the interface
 
+## Productivity Features
+- **[Stats Dashboard](STATS-DASHBOARD.md)** 📊 — Track XP, streaks, agent leaderboards, and 7-day activity charts
+
 ## Viral Features (Share & Show Off)
 - **[Go Viral Playbook](GO-VIRAL-PLAYBOOK.md)** 🚀 — Complete guide to getting 1,000+ people to see your setup (7-day launch plan)
 - **[Agent Trading Cards](AGENT-TRADING-CARDS.md)** 🎴 — Pokemon-style shareable cards for your agents

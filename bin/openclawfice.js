@@ -58,24 +58,53 @@ if (!fs.existsSync(firstRunMarker)) {
   const now = Date.now();
   const firstAgent = agentNames[0] || 'Agent';
 
-  // Seed water cooler with a welcome message
+  // Seed water cooler with welcome conversation
   if (!fs.existsSync(join(statusDir, 'chat.json'))) {
+    const secondAgent = agentNames[1] || 'Agent 2';
+    const thirdAgent = agentNames[2] || 'Agent 3';
     const chat = [
-      { from: firstAgent, text: '🏢 Office is open! Welcome to OpenClawfice.', ts: now },
+      { from: firstAgent, text: '🏢 Office is open! Welcome to OpenClawfice.', ts: now - 300000 },
+      { from: secondAgent, text: 'Nice! The pixel art NPCs look amazing 👾', ts: now - 240000 },
+      { from: firstAgent, text: 'Try clicking on any of us to see our stats and send DMs', ts: now - 180000 },
+      { from: thirdAgent, text: 'Pro tip: press Ctrl+K for the command palette — it\'s like a cheat code menu 🎮', ts: now - 120000 },
+      { from: secondAgent, text: 'Time to grind some XP! First one to level 10 wins bragging rights ⚔️', ts: now - 60000 },
     ];
     fs.writeFileSync(join(statusDir, 'chat.json'), JSON.stringify(chat, null, 2));
-    console.log('  ✅ Water cooler ready');
+    console.log('  ✅ Water cooler ready (with welcome conversation)');
   }
 
-  // Create empty quest log
+  // Seed quest log with a getting-started quest
   if (!fs.existsSync(join(statusDir, 'actions.json'))) {
-    fs.writeFileSync(join(statusDir, 'actions.json'), '[]');
-    console.log('  ✅ Quest log ready');
+    const actions = [
+      {
+        id: 'getting-started',
+        type: 'decision',
+        icon: '🎯',
+        title: 'Your first quest!',
+        description: 'Try asking one of your agents to do a task. When they finish, it\'ll show up as an accomplishment here. You can also DM agents by clicking their NPC.',
+        from: firstAgent,
+        priority: 'medium',
+        createdAt: now,
+        data: { options: ['Got it!', 'Show me more'] }
+      }
+    ];
+    fs.writeFileSync(join(statusDir, 'actions.json'), JSON.stringify(actions, null, 2));
+    console.log('  ✅ Quest log ready (with tutorial quest)');
   }
 
-  // Create empty accomplishments
+  // Seed accomplishments with the install itself
   if (!fs.existsSync(join(statusDir, 'accomplishments.json'))) {
-    fs.writeFileSync(join(statusDir, 'accomplishments.json'), '[]');
+    const accomplishments = [
+      {
+        id: `acc-${now}`,
+        icon: '🏢',
+        title: 'Office opened!',
+        detail: 'OpenClawfice installed and running. Your agents are ready to work.',
+        who: firstAgent,
+        timestamp: now,
+      }
+    ];
+    fs.writeFileSync(join(statusDir, 'accomplishments.json'), JSON.stringify(accomplishments, null, 2));
     console.log('  ✅ Accomplishments feed ready');
   }
 

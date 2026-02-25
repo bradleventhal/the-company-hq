@@ -24,7 +24,6 @@ import { AutoworkBanner } from '../components/AutoworkBanner';
 import { CallMeetingModal } from '../components/CallMeetingModal';
 import { AccomplishmentDetailModal } from '../components/AccomplishmentDetailModal';
 import { OfficeEvents } from '../components/OfficeEvents';
-import { OnboardingModal } from '../components/OnboardingModal';
 import { CommandPalette } from '../components/CommandPalette';
 import { AgentCard } from '../components/AgentCard';
 
@@ -109,7 +108,6 @@ export default function HomePage() {
   const [showSettings, setShowSettings] = useState(false);
   const [sfxEnabled, setSfxEnabled] = useState(false);
   const [darkMode, setDarkMode] = useState(true); // Default to dark mode
-  const [showOnboarding, setShowOnboarding] = useState(false);
   const [screenSize, setScreenSize] = useState<'mobile' | 'tablet' | 'desktop'>('desktop');
   const [githubStars, setGithubStars] = useState<number | null>(null);
   const [showBoot, setShowBoot] = useState(false);
@@ -135,14 +133,6 @@ export default function HomePage() {
       setDarkMode(false);
     }
 
-    // Show onboarding on first visit (after boot sequence)
-    const onboardingDismissed = localStorage.getItem('openclawfice-onboarding-dismissed');
-    if (!onboardingDismissed) {
-      // Wait for boot sequence to finish
-      setTimeout(() => {
-        setShowOnboarding(true);
-      }, seen ? 500 : 3500);
-    }
   }, []);
 
   // Konami code listener
@@ -2759,15 +2749,6 @@ export default function HomePage() {
           isDemoMode={isDemoMode}
         />
       )}
-      {/* Onboarding Modal */}
-      <OnboardingModal
-        isVisible={showOnboarding}
-        onDismiss={() => {
-          setShowOnboarding(false);
-          localStorage.setItem('openclawfice-onboarding-dismissed', 'true');
-          sfx.play('click');
-        }}
-      />
       <AchievementToastContainer
         toasts={achievementToasts}
         onDismiss={(id) => setAchievementToasts(prev => prev.filter(t => t.id !== id))}
