@@ -15,8 +15,8 @@ import { CooldownTimer, linkifyFiles, Stat } from '../components/CooldownTimer';
 import { TemplateGallery } from '../components/TemplateGallery';
 import { DemoBanner } from '../components/DemoBanner';
 import { CustomizeDemo } from '../components/CustomizeDemo';
-import { DailyChallenge } from '../components/DailyChallenge';
-import { OnboardingModal } from '../components/OnboardingModal';
+import { NPCParticles } from '../components/NPCParticles';
+import { ActivityHeatmap } from '../components/ActivityHeatmap';
 import { ShareCard } from '../components/ShareCard';
 import { Celebration } from '../components/Celebration';
 import { AchievementToastContainer, AchievementToastData } from '../components/AchievementToast';
@@ -114,10 +114,6 @@ export default function HomePage() {
   const [screenSize, setScreenSize] = useState<'mobile' | 'tablet' | 'desktop'>('desktop');
   const [githubStars, setGithubStars] = useState<number | null>(null);
   const [showBoot, setShowBoot] = useState(false);
-  const [showOnboarding, setShowOnboarding] = useState(() => {
-    if (typeof window === 'undefined') return false;
-    return !localStorage.getItem('openclawfice-onboarded');
-  });
   const [nowMs, setNowMs] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [partyMode, setPartyMode] = useState(false);
@@ -1563,14 +1559,25 @@ export default function HomePage() {
                         )}
                       </div>
                     )}
-                    <NPC
-                      agent={a}
-                      size={npcSize}
-                      onClick={() => { sfx.play('click'); setSelectedAgent(a); }}
-                      forceThought={activeThought && activeThought.agentId === a.id ? activeThought.text : null}
-                      hasCelebration={celebrations.some(c => c.agentId === a.id)}
-                      partyMode={partyMode}
-                    />
+                    <div style={{ position: 'relative' }}>
+                      <NPC
+                        agent={a}
+                        size={npcSize}
+                        onClick={() => { sfx.play('click'); setSelectedAgent(a); }}
+                        forceThought={activeThought && activeThought.agentId === a.id ? activeThought.text : null}
+                        hasCelebration={celebrations.some(c => c.agentId === a.id)}
+                        partyMode={partyMode}
+                      />
+                      <div style={{ position: 'absolute', inset: -10, pointerEvents: 'none', zIndex: 0 }}>
+                        <NPCParticles
+                          agentStatus={a.status as 'working' | 'idle'}
+                          agentMood={a.mood as any}
+                          agentRole={a.role}
+                          width={Math.round(64 * npcSize) + 20}
+                          height={Math.round(64 * npcSize) + 20}
+                        />
+                      </div>
+                    </div>
                   </div>
                 ))
               ) : (
@@ -1702,12 +1709,6 @@ export default function HomePage() {
                 )}
               </div>
             </Room>
-
-            {/* Daily Challenge — RPG-style daily quest for retention */}
-            <DailyChallenge getApiPath={getApiPath} onCelebration={() => {
-              setCelebrations(prev => [...prev, { agentId: '_daily', timestamp: Date.now() }]);
-              setTimeout(() => setCelebrations(prev => prev.filter(c => c.agentId !== '_daily')), 1500);
-            }} />
 
             <Room title="Quest Log" icon="⚔️" color="#0a0a1f" borderColor="#4f46e5" dataTour="quest-log">
               <div style={{
@@ -1912,6 +1913,11 @@ export default function HomePage() {
               overflowY: 'auto',
               flex: 1,
             }}>
+              {/* Activity Heatmap — GitHub-style contribution grid */}
+              {accomplishments.length > 0 && (
+                <ActivityHeatmap accomplishments={[...accomplishments, ...archivedAccomplishments]} theme={theme} />
+              )}
+
               {accomplishments.length > 0 ? (
                 Object.entries(groupedAccomplishments).map(([dateLabel, accs]) => (
                   <div key={dateLabel}>
@@ -2822,15 +2828,6 @@ export default function HomePage() {
         onOpenTemplates={() => setShowTemplateGallery(true)}
         isDarkMode={darkMode}
         sfxEnabled={sfx.enabled.current}
-      />
-
-      {/* Onboarding modal for first-time users */}
-      <OnboardingModal
-        isVisible={showOnboarding && !isDemoMode}
-        onDismiss={() => {
-          setShowOnboarding(false);
-          localStorage.setItem('openclawfice-onboarded', 'true');
-        }}
       />
 
       {/* Demo mode: customize agent names */}
