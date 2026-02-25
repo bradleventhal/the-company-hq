@@ -179,54 +179,378 @@ export const DEMO_QUESTS = [
   },
 ];
 
+// Spread accomplishments over 30 days with realistic patterns
+// - Active streak: last 7 days (today back to 6 days ago)
+// - Some busy days (3-5 accomplishments), some light (1-2), some gaps
+// - Creates impressive heatmap: ~45 total, 7-day streak
+const now = Date.now();
+const dayMs = 24 * 60 * 60 * 1000;
+
 export const DEMO_ACCOMPLISHMENTS = [
+  // TODAY - 3 accomplishments (end of active streak)
   {
     id: 'demo-acc-1',
-    icon: '🚀',
-    title: 'Shipped v2.0 Dashboard',
-    detail: 'New UI with dark mode and real-time updates',
-    who: 'Forge',
-    timestamp: Date.now() - 14400000,
-  },
-  {
-    id: 'demo-acc-2',
-    icon: '✅',
-    title: 'Fixed critical auth bug',
-    detail: 'Session tokens now refresh correctly — 0 reports since fix',
-    who: 'Lens',
-    timestamp: Date.now() - 10800000,
-  },
-  {
-    id: 'demo-acc-3',
-    icon: '📊',
-    title: 'Sprint planning complete',
-    detail: '14 stories estimated, 3 spikes identified, roadmap updated',
-    who: 'Nova',
-    timestamp: Date.now() - 7200000,
-  },
-  {
-    id: 'demo-acc-4',
-    icon: '🎨',
-    title: 'New design system deployed',
-    detail: '42 tokens, 8 components, auto dark-mode support',
-    who: 'Pixel',
-    timestamp: Date.now() - 3600000,
-  },
-  {
-    id: 'demo-acc-5',
-    icon: '⚡',
-    title: 'API latency cut 60%',
-    detail: 'Added response caching + connection pooling',
-    who: 'Cipher',
-    timestamp: Date.now() - 5400000,
-  },
-  {
-    id: 'demo-acc-6',
     icon: '📝',
     title: 'API docs fully generated',
     detail: 'OpenAPI spec + interactive playground live at /docs',
     who: 'Forge',
-    timestamp: Date.now() - 1800000,
+    timestamp: now - 1800000, // 30 min ago
+  },
+  {
+    id: 'demo-acc-2',
+    icon: '🎨',
+    title: 'New design system deployed',
+    detail: '42 tokens, 8 components, auto dark-mode support',
+    who: 'Pixel',
+    timestamp: now - 3600000, // 1 hour ago
+  },
+  {
+    id: 'demo-acc-3',
+    icon: '⚡',
+    title: 'API latency cut 60%',
+    detail: 'Added response caching + connection pooling',
+    who: 'Cipher',
+    timestamp: now - 5400000, // 1.5 hours ago
+  },
+
+  // YESTERDAY (day -1) - 4 accomplishments
+  {
+    id: 'demo-acc-4',
+    icon: '📊',
+    title: 'Sprint planning complete',
+    detail: '14 stories estimated, 3 spikes identified, roadmap updated',
+    who: 'Nova',
+    timestamp: now - dayMs - 3600000,
+  },
+  {
+    id: 'demo-acc-5',
+    icon: '✅',
+    title: 'Fixed critical auth bug',
+    detail: 'Session tokens now refresh correctly — 0 reports since fix',
+    who: 'Lens',
+    timestamp: now - dayMs - 7200000,
+  },
+  {
+    id: 'demo-acc-6',
+    icon: '🚀',
+    title: 'Shipped v2.0 Dashboard',
+    detail: 'New UI with dark mode and real-time updates',
+    who: 'Forge',
+    timestamp: now - dayMs - 10800000,
+  },
+  {
+    id: 'demo-acc-7',
+    icon: '🔒',
+    title: 'Security audit passed',
+    detail: 'Zero critical vulnerabilities, 2 minor fixes deployed',
+    who: 'Cipher',
+    timestamp: now - dayMs - 14400000,
+  },
+
+  // DAY -2 - 5 accomplishments (busiest day)
+  {
+    id: 'demo-acc-8',
+    icon: '🎯',
+    title: 'User research synthesis',
+    detail: 'Interviewed 12 users, identified 3 key pain points',
+    who: 'Nova',
+    timestamp: now - 2 * dayMs - 3600000,
+  },
+  {
+    id: 'demo-acc-9',
+    icon: '⚙️',
+    title: 'CI/CD pipeline optimized',
+    detail: 'Build time down from 8min to 3min',
+    who: 'Cipher',
+    timestamp: now - 2 * dayMs - 7200000,
+  },
+  {
+    id: 'demo-acc-10',
+    icon: '🧪',
+    title: 'Test coverage at 87%',
+    detail: 'Added 42 unit tests, 8 integration tests',
+    who: 'Lens',
+    timestamp: now - 2 * dayMs - 10800000,
+  },
+  {
+    id: 'demo-acc-11',
+    icon: '💡',
+    title: 'Onboarding flow redesigned',
+    detail: '3 screens, 60% faster time-to-first-value',
+    who: 'Pixel',
+    timestamp: now - 2 * dayMs - 14400000,
+  },
+  {
+    id: 'demo-acc-12',
+    icon: '🔧',
+    title: 'Database query optimization',
+    detail: 'Most common queries now <10ms response time',
+    who: 'Forge',
+    timestamp: now - 2 * dayMs - 18000000,
+  },
+
+  // DAY -3 - 2 accomplishments
+  {
+    id: 'demo-acc-13',
+    icon: '📱',
+    title: 'Mobile responsive polish',
+    detail: 'All breakpoints tested, looks great on iPhone and Android',
+    who: 'Pixel',
+    timestamp: now - 3 * dayMs - 7200000,
+  },
+  {
+    id: 'demo-acc-14',
+    icon: '📈',
+    title: 'Analytics dashboard live',
+    detail: 'Real-time metrics for MAU, retention, and feature adoption',
+    who: 'Forge',
+    timestamp: now - 3 * dayMs - 14400000,
+  },
+
+  // DAY -4 - 3 accomplishments
+  {
+    id: 'demo-acc-15',
+    icon: '🎨',
+    title: 'Dark mode refinements',
+    detail: 'Improved contrast ratios, smoother transitions',
+    who: 'Pixel',
+    timestamp: now - 4 * dayMs - 5400000,
+  },
+  {
+    id: 'demo-acc-16',
+    icon: '🐛',
+    title: 'Fixed notification race condition',
+    detail: 'No more duplicate notifications on rapid updates',
+    who: 'Lens',
+    timestamp: now - 4 * dayMs - 10800000,
+  },
+  {
+    id: 'demo-acc-17',
+    icon: '📝',
+    title: 'Product roadmap updated',
+    detail: 'Q2 priorities set, stakeholder buy-in achieved',
+    who: 'Nova',
+    timestamp: now - 4 * dayMs - 16200000,
+  },
+
+  // DAY -5 - 4 accomplishments
+  {
+    id: 'demo-acc-18',
+    icon: '🚀',
+    title: 'WebSocket real-time sync',
+    detail: 'Agents update live without refresh — feels instant',
+    who: 'Forge',
+    timestamp: now - 5 * dayMs - 3600000,
+  },
+  {
+    id: 'demo-acc-19',
+    icon: '⚡',
+    title: 'CDN edge caching enabled',
+    detail: 'Cache hit rate at 94%, global latency <50ms',
+    who: 'Cipher',
+    timestamp: now - 5 * dayMs - 7200000,
+  },
+  {
+    id: 'demo-acc-20',
+    icon: '✅',
+    title: 'Accessibility review complete',
+    detail: '98/100 score, all critical issues resolved',
+    who: 'Lens',
+    timestamp: now - 5 * dayMs - 10800000,
+  },
+  {
+    id: 'demo-acc-21',
+    icon: '🎯',
+    title: 'Competitor analysis',
+    detail: 'Identified 5 feature gaps where we can differentiate',
+    who: 'Nova',
+    timestamp: now - 5 * dayMs - 14400000,
+  },
+
+  // DAY -6 - 2 accomplishments (start of streak)
+  {
+    id: 'demo-acc-22',
+    icon: '🔐',
+    title: 'OAuth integration complete',
+    detail: 'Google and GitHub login working flawlessly',
+    who: 'Forge',
+    timestamp: now - 6 * dayMs - 7200000,
+  },
+  {
+    id: 'demo-acc-23',
+    icon: '💎',
+    title: 'Component library polished',
+    detail: '24 components, full TypeScript, Storybook docs',
+    who: 'Pixel',
+    timestamp: now - 6 * dayMs - 14400000,
+  },
+
+  // DAY -8 (gap on day -7) - 3 accomplishments
+  {
+    id: 'demo-acc-24',
+    icon: '🎉',
+    title: 'Beta launch successful',
+    detail: '500 signups in first 24 hours, 89% activation rate',
+    who: 'Nova',
+    timestamp: now - 8 * dayMs - 5400000,
+  },
+  {
+    id: 'demo-acc-25',
+    icon: '🔧',
+    title: 'Error monitoring integrated',
+    detail: 'Sentry catching errors before users report them',
+    who: 'Cipher',
+    timestamp: now - 8 * dayMs - 10800000,
+  },
+  {
+    id: 'demo-acc-26',
+    icon: '🧪',
+    title: 'Load testing passed',
+    detail: '1000 concurrent users, zero degradation',
+    who: 'Lens',
+    timestamp: now - 8 * dayMs - 16200000,
+  },
+
+  // DAY -10 (gap on day -9) - 2 accomplishments
+  {
+    id: 'demo-acc-27',
+    icon: '📊',
+    title: 'Metrics dashboard built',
+    detail: 'Real-time KPIs for the whole team to track',
+    who: 'Forge',
+    timestamp: now - 10 * dayMs - 7200000,
+  },
+  {
+    id: 'demo-acc-28',
+    icon: '🎨',
+    title: 'Empty states designed',
+    detail: 'Friendly illustrations for first-time users',
+    who: 'Pixel',
+    timestamp: now - 10 * dayMs - 14400000,
+  },
+
+  // DAY -12 (gap on day -11) - 1 accomplishment
+  {
+    id: 'demo-acc-29',
+    icon: '🚀',
+    title: 'Production deploy automated',
+    detail: 'One command to ship — zero downtime',
+    who: 'Cipher',
+    timestamp: now - 12 * dayMs - 10800000,
+  },
+
+  // DAY -15 (gaps -13, -14) - 4 accomplishments
+  {
+    id: 'demo-acc-30',
+    icon: '📝',
+    title: 'API documentation written',
+    detail: 'Every endpoint documented with examples',
+    who: 'Nova',
+    timestamp: now - 15 * dayMs - 3600000,
+  },
+  {
+    id: 'demo-acc-31',
+    icon: '⚙️',
+    title: 'Database migrations set up',
+    detail: 'Schema versioning with automatic rollback',
+    who: 'Forge',
+    timestamp: now - 15 * dayMs - 7200000,
+  },
+  {
+    id: 'demo-acc-32',
+    icon: '🎯',
+    title: 'Feature prioritization complete',
+    detail: 'RICE scoring applied to backlog',
+    who: 'Nova',
+    timestamp: now - 15 * dayMs - 10800000,
+  },
+  {
+    id: 'demo-acc-33',
+    icon: '🔍',
+    title: 'Code review standards defined',
+    detail: 'PR template and checklist for consistency',
+    who: 'Lens',
+    timestamp: now - 15 * dayMs - 14400000,
+  },
+
+  // DAY -18 (gaps -16, -17) - 2 accomplishments
+  {
+    id: 'demo-acc-34',
+    icon: '🎨',
+    title: 'Design tokens established',
+    detail: 'Colors, spacing, typography all systematized',
+    who: 'Pixel',
+    timestamp: now - 18 * dayMs - 7200000,
+  },
+  {
+    id: 'demo-acc-35',
+    icon: '🔒',
+    title: 'Authentication system built',
+    detail: 'JWT-based auth with refresh tokens',
+    who: 'Forge',
+    timestamp: now - 18 * dayMs - 14400000,
+  },
+
+  // DAY -22 (gaps -19, -20, -21) - 3 accomplishments
+  {
+    id: 'demo-acc-36',
+    icon: '📊',
+    title: 'Product strategy deck',
+    detail: 'Vision, mission, and 12-month roadmap',
+    who: 'Nova',
+    timestamp: now - 22 * dayMs - 5400000,
+  },
+  {
+    id: 'demo-acc-37',
+    icon: '⚡',
+    title: 'Performance baseline set',
+    detail: 'Lighthouse score 95+, TTI <2 seconds',
+    who: 'Cipher',
+    timestamp: now - 22 * dayMs - 10800000,
+  },
+  {
+    id: 'demo-acc-38',
+    icon: '🧪',
+    title: 'Testing framework configured',
+    detail: 'Jest + React Testing Library ready',
+    who: 'Lens',
+    timestamp: now - 22 * dayMs - 16200000,
+  },
+
+  // DAY -25 (gaps -23, -24) - 2 accomplishments
+  {
+    id: 'demo-acc-39',
+    icon: '🎨',
+    title: 'Initial mockups approved',
+    detail: 'Core flows designed and validated',
+    who: 'Pixel',
+    timestamp: now - 25 * dayMs - 7200000,
+  },
+  {
+    id: 'demo-acc-40',
+    icon: '🔧',
+    title: 'Project scaffolded',
+    detail: 'Next.js + TypeScript + ESLint configured',
+    who: 'Forge',
+    timestamp: now - 25 * dayMs - 14400000,
+  },
+
+  // DAY -28 (gaps -26, -27) - 2 accomplishments
+  {
+    id: 'demo-acc-41',
+    icon: '📝',
+    title: 'Requirements gathered',
+    detail: 'User stories and acceptance criteria defined',
+    who: 'Nova',
+    timestamp: now - 28 * dayMs - 10800000,
+  },
+  {
+    id: 'demo-acc-42',
+    icon: '🎯',
+    title: 'Project kickoff complete',
+    detail: 'Team aligned on vision and first sprint',
+    who: 'Nova',
+    timestamp: now - 28 * dayMs - 18000000,
   },
 ];
 
