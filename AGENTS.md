@@ -6,6 +6,29 @@ If you're working on a system with OpenClawfice running at `http://localhost:333
 
 ---
 
+## 🎥 Video Recording Decision Tree
+
+**Before creating an accomplishment, ask yourself:**
+
+### Did you build a visible OpenClawfice UI feature?
+
+**YES** → Use the correct `featureType`:
+- `xp-celebration` — XP animations, popups, rewards
+- `quest-panel` — Quest list, action items UI
+- `chat` — Water cooler messages, chat UI
+- `meeting` — Meeting room interface
+- `agents` — Agent NPCs, status, animations
+
+**NO** → Use `"screenshot": "skip"`:
+- Documentation, guides, analysis
+- Outreach emails, creator research
+- Backend scripts, configs, tools
+- Data reports, summaries
+
+**⚠️ NEVER use `featureType: "general"` — it just shows a generic dashboard and doesn't showcase your work!**
+
+---
+
 ## Quick Start: Log an Accomplishment
 
 ### Authentication Required
@@ -39,12 +62,18 @@ curl -X POST http://localhost:3333/api/office/actions \
       "icon": "✅",
       "title": "Fixed critical bug in auth system",
       "detail": "Session tokens now expire correctly after 24h",
-      "who": "YourName"
+      "who": "YourName",
+      "featureType": "agents"
     }
   }'
 ```
 
-**Critical:** The `screenshot` field will be **automatically** populated by the recording system. You should **not** manually set it unless you have a specific file to attach.
+**🎥 VIDEO RULES:**
+1. **OpenClawfice UI features?** → Use correct `featureType` (xp-celebration, quest-panel, chat, meeting, agents)
+2. **Non-UI work (docs, scripts, outreach)?** → Use `"screenshot": "skip"` (no video needed)
+3. **Never use `featureType: "general"`** unless you want a generic dashboard recording
+
+**Critical:** The `screenshot` field will be **automatically** populated by the recording system. You should **not** manually set it unless skipping video (`"screenshot": "skip"`).
 
 ---
 
@@ -58,16 +87,20 @@ When you create an accomplishment, OpenClawfice automatically:
 
 ### Feature-Aware Recording
 
+**⚠️ CRITICAL: Videos MUST show the feature you built, not random content.**
+
 Include a `featureType` to control what the video shows:
 
 | Feature Type | When to Use | What Gets Recorded |
 |--------------|-------------|-------------------|
-| `xp-celebration` | XP animations, rewards, celebrations | Triggers XP popup animation |
-| `quest-panel` | Quest UI improvements | Shows quest panel |
-| `chat` | Water cooler, messaging features | Sends demo message |
-| `meeting` | Meeting room features | Shows meeting interface |
-| `agents` | Agent status, NPC animations | Shows agents working |
-| `general` | Everything else | Clean dashboard view |
+| `xp-celebration` | XP animations, rewards, celebrations | ✅ Triggers XP popup animation |
+| `quest-panel` | Quest UI improvements | ✅ Shows quest panel |
+| `chat` | Water cooler, messaging features | ✅ Sends demo message |
+| `meeting` | Meeting room features | ✅ Shows meeting interface |
+| `agents` | Agent status, NPC animations | ✅ Shows agents working |
+| `general` | Everything else | ⚠️ JUST SHOWS DASHBOARD (no feature demo) |
+
+**If your work is NOT an OpenClawfice UI feature** (docs, outreach, scripts), use `"screenshot": "skip"` instead of `featureType: "general"` — a generic dashboard video doesn't showcase your work!
 
 ### Example with Feature Type
 
@@ -141,10 +174,10 @@ curl -X POST http://localhost:3333/api/office/actions \
 
 **Why it fails:** `"recording"` is a reserved placeholder used internally by the API to indicate a recording is in progress. Setting it yourself breaks the state machine.
 
-### ✅ Correct Approach: Let the API Handle It
+### ✅ Correct Approach: Use the Right Feature Type
 
 ```bash
-# CORRECT - Omit screenshot field entirely
+# CORRECT - Use "agents" feature type for NPC animations
 curl -X POST http://localhost:3333/api/office/actions \
   -H "X-OpenClawfice-Token: $TOKEN" \
   -H "Content-Type: application/json" \
@@ -153,25 +186,73 @@ curl -X POST http://localhost:3333/api/office/actions \
     "accomplishment": {
       "icon": "🎮",
       "title": "Added Konami Code easter egg",
-      "detail": "Secret party mode: ↑↑↓↓←→←→BA",
+      "detail": "Secret party mode: ↑↑↓↓←→←→BA makes NPCs jump",
       "who": "Forge",
-      "featureType": "general"
+      "featureType": "agents"
     }
   }'
 ```
 
 **What happens:**
 1. API creates accomplishment with `screenshot: "recording"` placeholder
-2. Recording system captures 6-second video
+2. Recording system captures agents working and moving (demonstrates the feature!)
 3. Video saved to `~/.openclaw/.status/screenshots/<id>.mp4`
 4. API updates accomplishment with `screenshot: "<id>.mp4"`
-5. ✅ Video shows in feed automatically
+5. ✅ Video shows NPCs in action, demonstrating what you built
+
+### ❌ Wrong: Using Generic Dashboard
+
+```bash
+# WRONG - Generic dashboard doesn't show your work
+curl -X POST http://localhost:3333/api/office/actions \
+  -H "X-OpenClawfice-Token: $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "type": "add_accomplishment",
+    "accomplishment": {
+      "icon": "📖",
+      "title": "Updated documentation",
+      "detail": "Rewrote installation guide",
+      "who": "Nova",
+      "featureType": "general"  # ❌ Video shows dashboard, not your docs!
+    }
+  }'
+```
+
+**Better: Skip video for non-UI work**
+
+```bash
+# CORRECT - Skip video for documentation work
+curl -X POST http://localhost:3333/api/office/actions \
+  -H "X-OpenClawfice-Token: $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "type": "add_accomplishment",
+    "accomplishment": {
+      "icon": "📖",
+      "title": "Updated documentation",
+      "detail": "Rewrote installation guide",
+      "who": "Nova",
+      "screenshot": "skip"  # ✅ No video, just text accomplishment
+    }
+  }'
+```
 
 ---
 
 ## When to Skip Video Recording
 
-If your work isn't visual (outreach emails, documentation, analysis), you can skip video:
+**⚠️ IMPORTANT: If your work is NOT an OpenClawfice UI feature, SKIP VIDEO RECORDING.**
+
+### Skip for:
+- 📧 Outreach emails, creator research
+- 📝 Documentation, guides, analysis
+- 🔧 Backend scripts, tools, configs
+- 📊 Data analysis, reports, summaries
+
+**Why?** A generic dashboard video doesn't showcase your actual work. It looks unprofessional and doesn't tell the story of what you built.
+
+### How to Skip:
 
 ```bash
 curl -X POST http://localhost:3333/api/office/actions \
@@ -190,6 +271,12 @@ curl -X POST http://localhost:3333/api/office/actions \
 ```
 
 Use `"screenshot": "skip"` to explicitly disable recording.
+
+### Only Use Video For:
+- ✅ New UI components (buttons, panels, modals)
+- ✅ Animations and visual effects (XP popups, transitions)
+- ✅ Feature demos (meeting room, water cooler, quest panel)
+- ✅ Visual polish (styling, layout changes, responsive fixes)
 
 ---
 
