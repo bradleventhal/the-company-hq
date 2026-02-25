@@ -635,6 +635,16 @@ export const DEMO_CHAT_MESSAGES = [
   { from: 'Lens', text: 'Accessibility audit: 98/100. The 2% is a color contrast edge case Pixel is fixing' },
   { from: 'Pixel', text: 'Every pixel in this UI was placed with intention. And some with caffeine' },
   { from: 'Cipher', text: 'Logs show 99.97% uptime this month. The 0.03% was a DNS hiccup' },
+  { from: 'Lens', text: 'Forge, your variable names are getting dangerously close to poetry' },
+  { from: 'Forge', text: 'I name my variables like I\'m leaving breadcrumbs for my future self' },
+  { from: 'Pixel', text: 'Unpopular opinion: loading spinners should be cute, not just circular' },
+  { from: 'Nova', text: 'If I see one more "we need to talk about our tech stack" message I\'m calling a meeting about meetings' },
+  { from: 'Cipher', text: 'Just realized we\'ve been running on AWS free tier this whole time. Whoops 😅' },
+  { from: 'Lens', text: 'Breaking: I found a bug that only happens on Tuesdays. I\'m not kidding' },
+  { from: 'Pixel', text: 'The button hover animation took me 2 hours. It\'s 0.3 seconds long. Worth it' },
+  { from: 'Forge', text: 'Update: the Tuesday bug was my system clock being 2 days fast. Crisis averted' },
+  { from: 'Nova', text: 'Team velocity chart looks like a rollercoaster. The good kind, not the scary kind' },
+  { from: 'Cipher', text: 'Pro tip: if you ssh into production on a Friday, you\'re legally required to stay online all weekend' },
 ];
 
 // Task pool for agent status simulation
