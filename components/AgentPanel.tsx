@@ -71,33 +71,6 @@ export function AgentPanel({ agent, onClose, autowork, onAutoworkUpdate, onStop,
   const [sending, setSending] = useState(false);
   const [sentConfirm, setSentConfirm] = useState(false);
   const [lastSent, setLastSent] = useState('');
-  const [logEntries, setLogEntries] = useState<{ ts: string; role: string; type: string; content: string; toolName?: string }[]>([]);
-  const [logLoading, setLogLoading] = useState(true);
-  const [logCollapsed, setLogCollapsed] = useState<Record<number, boolean>>({});
-  const logRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    const fetchLogs = async () => {
-      try {
-        const res = await secureFetch(`/api/office/logs?agentId=${encodeURIComponent(agent.id)}&limit=80`);
-        if (!res.ok || cancelled) return;
-        const data = await res.json();
-        if (!cancelled) {
-          setLogEntries(data.entries || []);
-          setLogLoading(false);
-          setTimeout(() => {
-            if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight;
-          }, 50);
-        }
-      } catch {
-        if (!cancelled) setLogLoading(false);
-      }
-    };
-    fetchLogs();
-    const interval = setInterval(fetchLogs, 5000);
-    return () => { cancelled = true; clearInterval(interval); };
-  }, [agent.id]);
 
   const sendDM = async () => {
     if (!dmMessage.trim() || sending) return;
@@ -367,98 +340,6 @@ export function AgentPanel({ agent, onClose, autowork, onAutoworkUpdate, onStop,
           </div>
         );
       })()}
-
-      {/* Activity Log */}
-      <div style={{
-        background: '#1e293b',
-        borderRadius: 8,
-        padding: 12,
-        marginBottom: 16,
-        border: '1px solid #334155',
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-          <div style={{ fontSize: 9, color: '#64748b', textTransform: 'uppercase' as const, fontFamily: '"Press Start 2P", monospace' }}>
-            📋 Activity Log
-          </div>
-          <span style={{ fontSize: 8, color: '#475569' }}>
-            {logEntries.length} entries
-          </span>
-        </div>
-        <div
-          ref={logRef}
-          style={{
-            maxHeight: 400,
-            overflowY: 'auto',
-            fontSize: 11,
-            lineHeight: '16px',
-            fontFamily: 'ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace',
-          }}
-        >
-          {logLoading && (
-            <div style={{ color: '#475569', fontStyle: 'italic', padding: '8px 0' }}>Loading...</div>
-          )}
-          {!logLoading && logEntries.length === 0 && (
-            <div style={{ color: '#475569', fontStyle: 'italic', padding: '8px 0' }}>No activity yet</div>
-          )}
-          {!logLoading && logEntries.map((e, i) => {
-            const isCollapsed = logCollapsed[i] !== undefined ? logCollapsed[i] : e.content.length > 300;
-            const icon = e.role === 'assistant'
-              ? (e.type === 'tool_use' ? '🔧' : '🤖')
-              : e.role === 'user' ? '👤' : '📎';
-            const labelColor = e.role === 'assistant'
-              ? (e.type === 'tool_use' ? '#a78bfa' : '#93c5fd')
-              : e.role === 'user' ? '#fbbf24' : '#64748b';
-            const label = e.role === 'assistant'
-              ? (e.type === 'tool_use' ? (e.toolName || 'tool') : 'assistant')
-              : e.role === 'user' ? 'user' : 'result';
-            const ts = e.ts ? new Date(e.ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '';
-            const displayContent = isCollapsed ? e.content.slice(0, 200) + '...' : e.content;
-            const canCollapse = e.content.length > 300;
-
-            return (
-              <div key={i} style={{
-                borderBottom: '1px solid rgba(51,65,85,0.3)',
-                padding: '6px 0',
-              }}>
-                <div style={{
-                  display: 'flex', alignItems: 'center', gap: 4, marginBottom: 3,
-                }}>
-                  <span>{icon}</span>
-                  <span style={{ color: labelColor, fontSize: 9, fontWeight: 600, textTransform: 'uppercase' }}>{label}</span>
-                  {e.toolName && <span style={{ color: '#64748b', fontSize: 9 }}>({e.toolName})</span>}
-                  <span style={{ marginLeft: 'auto', color: '#334155', fontSize: 8 }}>{ts}</span>
-                </div>
-                <div
-                  onClick={canCollapse ? () => setLogCollapsed(prev => ({ ...prev, [i]: !isCollapsed })) : undefined}
-                  style={{
-                    color: e.role === 'tool' ? '#94a3b8' : '#cbd5e1',
-                    whiteSpace: 'pre-wrap',
-                    wordBreak: 'break-word',
-                    fontSize: 10,
-                    cursor: canCollapse ? 'pointer' : 'default',
-                    maxHeight: isCollapsed ? 60 : undefined,
-                    overflow: 'hidden',
-                  }}
-                >
-                  {displayContent}
-                </div>
-                {canCollapse && (
-                  <button
-                    onClick={() => setLogCollapsed(prev => ({ ...prev, [i]: !isCollapsed }))}
-                    style={{
-                      background: 'none', border: 'none', color: '#6366f1',
-                      fontSize: 9, cursor: 'pointer', padding: '2px 0',
-                      fontFamily: 'inherit',
-                    }}
-                  >
-                    {isCollapsed ? `▸ show all (${e.content.length} chars)` : '▾ collapse'}
-                  </button>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </div>
 
       {/* Auto-Work */}
       {agent.id !== '_owner' && (
