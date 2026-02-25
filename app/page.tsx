@@ -22,7 +22,6 @@ import { MeetingRoom } from '../components/MeetingRoom';
 import { AutoworkBanner } from '../components/AutoworkBanner';
 import { CallMeetingModal } from '../components/CallMeetingModal';
 import { AccomplishmentDetailModal } from '../components/AccomplishmentDetailModal';
-import { ActivityHeatmap } from '../components/ActivityHeatmap';
 
 
 function Clock({ color }: { color: string }) {
@@ -1916,11 +1915,6 @@ export default function HomePage() {
               )}
             </div>
           </div>
-
-          {/* Activity Heatmap */}
-          {!isMobile && (
-            <ActivityHeatmap accomplishments={[...accomplishments, ...archivedAccomplishments]} theme={theme} />
-          )}
         </div>
 
         {/* RIGHT COLUMN: Water Cooler Chat */}
