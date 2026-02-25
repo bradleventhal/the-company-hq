@@ -127,16 +127,25 @@ let lastRecordingStarted = 0;
 function detectFeatureType(title: string, detail: string = ''): string {
   const text = `${title} ${detail}`.toLowerCase();
   
+  // Explicit skip markers (docs, outreach, analysis, etc.)
+  if (text.match(/\b(docs?|documentation|guide|readme|changelog|install|setup)\b/i)) return 'skip';
+  if (text.match(/\b(email|outreach|creator|campaign|message sent|drafted)\b/i)) return 'skip';
+  if (text.match(/\b(analysis|research|audit|review|report|summary)\b/i)) return 'skip';
+  if (text.match(/\b(playbook|strategy|plan|roadmap)\b/i)) return 'skip';
+  
   // UI features — these have specific demo triggers that show the feature
   if (text.match(/\bxp\b|experience|level|celebration|animation|points/i)) return 'xp';
   if (text.match(/meeting|collaborate|discussion|sync|call/i)) return 'meeting';
   if (text.match(/quest|modal|decision|approval/i)) return 'quest';
   if (text.match(/water[- ]?cooler|chat|conversation/i)) return 'watercooler';
   if (text.match(/accomplishment|achievement|feed|completed/i)) return 'accomplishment';
+  if (text.match(/\b(ui|interface|component|button|panel|page|route|screen)\b/i)) return 'general';
+  if (text.match(/\b(feature|shipped|built|added|created|implemented)\b/i)) return 'general';
+  if (text.match(/\b(fix|fixed|bug|issue|error)\b/i)) return 'general';
+  if (text.match(/\b(dark mode|theme|styling|layout|design)\b/i)) return 'general';
   
-  // Non-UI work — skip recording (a generic dashboard recording is misleading)
-  // These accomplishments don't have a visual feature to demo
-  return 'skip';
+  // Default: record dashboard view (conservative - record rather than miss)
+  return 'general';
 }
 
 function triggerRecording(accomplishmentId: string, title: string, who: string, detail: string = '') {
