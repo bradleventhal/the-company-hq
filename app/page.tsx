@@ -2174,7 +2174,7 @@ export default function HomePage() {
                   </div>
                 </div>
               )}
-              {chatLog.slice(-12).map((m, i) => {
+              {chatLog.filter(m => m.from && m.text).slice(-12).map((m, i) => {
                 const isOwner = agents.find(a => a.id === '_owner' && a.name === m.from);
                 const agentColor = isOwner ? '#f59e0b' : (agents.find(a => a.name === m.from)?.color || '#94a3b8');
                 return (

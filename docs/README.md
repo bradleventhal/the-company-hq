@@ -35,9 +35,10 @@
 - **[Security](SECURITY.md)** — Security model and practices
 - **[Security FAQ](SECURITY-FAQ.md)** — Common security questions
 
-## Contributing
+## Community & Contributing
+- **[Community Guide](COMMUNITY.md)** 🌟 — Why contribute, how to get started, recognition & rewards
 - **[GitHub Setup](GITHUB-SETUP.md)** — How to launch the public GitHub repo (2 minutes)
-- **[Good First Issues](GOOD-FIRST-ISSUES.md)** — Where to start contributing
+- **[Good First Issues](GOOD-FIRST-ISSUES.md)** — Where to start contributing (pre-written beginner tasks)
 - **[Testing Guide](TESTING-GUIDE.md)** — How to test changes
 - **[Roadmap](ROADMAP.md)** — What's planned next
 
