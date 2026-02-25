@@ -16,7 +16,6 @@ import { TemplateGallery } from '../components/TemplateGallery';
 import { DemoBanner } from '../components/DemoBanner';
 import { CustomizeDemo } from '../components/CustomizeDemo';
 import { NPCParticles } from '../components/NPCParticles';
-import { ActivityHeatmap } from '../components/ActivityHeatmap';
 import { ShareCard } from '../components/ShareCard';
 import { Celebration } from '../components/Celebration';
 import { AchievementToastContainer, AchievementToastData } from '../components/AchievementToast';
@@ -1913,11 +1912,6 @@ export default function HomePage() {
               overflowY: 'auto',
               flex: 1,
             }}>
-              {/* Activity Heatmap — GitHub-style contribution grid */}
-              {accomplishments.length > 0 && (
-                <ActivityHeatmap accomplishments={[...accomplishments, ...archivedAccomplishments]} theme={theme} />
-              )}
-
               {accomplishments.length > 0 ? (
                 Object.entries(groupedAccomplishments).map(([dateLabel, accs]) => (
                   <div key={dateLabel}>
