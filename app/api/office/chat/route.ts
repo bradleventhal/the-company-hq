@@ -226,10 +226,12 @@ export async function POST(request: Request) {
     const config = readOfficeConfig();
     const waterCoolerConfig = config.waterCooler || {};
 
-    // Allow adding a user message to the chat (validate from/text are non-empty strings)
-    if (body.type === 'user_message' && typeof body.from === 'string' && body.from.trim() && typeof body.text === 'string' && body.text.trim()) {
+    // Allow adding a user message to the chat (accept from/text or agent/message, validate non-empty)
+    const chatFrom = body.from || body.agent;
+    const chatText = body.text || body.message;
+    if (body.type === 'user_message' && typeof chatFrom === 'string' && chatFrom.trim() && typeof chatText === 'string' && chatText.trim()) {
       const chat = readChat();
-      chat.push({ from: body.from, text: body.text, ts: Date.now() });
+      chat.push({ from: chatFrom.trim(), text: chatText.trim(), ts: Date.now() });
       const maxMessages = waterCoolerConfig.maxMessages || 50;
       writeFileSync(CHAT_FILE, JSON.stringify(chat.slice(-maxMessages), null, 2));
       return NextResponse.json({ success: true });

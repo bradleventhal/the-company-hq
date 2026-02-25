@@ -1,6 +1,6 @@
 # 📚 OpenClawfice Documentation
 
-**🚀 Ready to launch?** See **[Launch Day Checklist](LAUNCH-DAY-CHECKLIST.md)** (10-minute go/no-go verification)
+**🚀 Ready to launch?** See **[Launch Day Checklist](LAUNCH-DAY-CHECKLIST.md)** (10-minute go/no-go) + **[Visual Quality Checklist](VISUAL-QUALITY-CHECKLIST.md)** (30-minute QA)
 
 ---
 

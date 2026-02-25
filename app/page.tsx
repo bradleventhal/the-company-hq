@@ -1109,8 +1109,12 @@ export default function HomePage() {
           <button
             onClick={() => {
               sfx.play('click');
-              const tweetText = encodeURIComponent('My AI agents are pixel art NPCs now 🏢 Check out OpenClawfice — open source virtual office for @OpenClaw agents');
-              const tweetUrl = encodeURIComponent('https://openclawfice.com');
+              const topAgent = [...agents].filter(a => a.id !== '_owner').sort((a, b) => (b.level || 0) - (a.level || 0))[0];
+              const totalAccomp = accomplishments.length;
+              const topLevel = topAgent ? `Top agent: ${topAgent.name} (Lvl ${topAgent.level})` : '';
+              const statLine = `${agents.filter(a => a.id !== '_owner').length} agents, ${totalAccomp} accomplishments${topLevel ? '. ' + topLevel : ''}`;
+              const tweetText = encodeURIComponent(`My AI team just leveled up 🏢\n\n${statLine}\n\nOpenClawfice — your AI agents, but they're Sims`);
+              const tweetUrl = encodeURIComponent('https://openclawfice.com/?demo=true');
               window.open(`https://twitter.com/intent/tweet?text=${tweetText}&url=${tweetUrl}`, '_blank', 'width=550,height=420');
             }}
             style={{
