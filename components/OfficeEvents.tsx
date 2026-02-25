@@ -148,57 +148,55 @@ export function OfficeEvents({
   const [entering, setEntering] = useState<string | null>(null);
   const [exiting, setExiting] = useState<string | null>(null);
   const seedRef = useRef(Math.floor(Math.random() * 10000));
+  const agentsRef = useRef(agents);
+  const startedRef = useRef(false);
   const textColor = theme.text || '#e2e8f0';
   const dimColor = theme.textDim || '#64748b';
 
-  // Generate events periodically
-  useEffect(() => {
-    if (agents.length === 0) return;
+  // Keep agents ref fresh without restarting timers
+  useEffect(() => { agentsRef.current = agents; }, [agents]);
 
-    // Generate first event quickly (3-8s after load)
-    const initialDelay = 3000 + Math.random() * 5000;
-    const firstTimer = setTimeout(() => {
+  // Generate events periodically — stable effect that doesn't depend on agent reference
+  useEffect(() => {
+    if (agents.length === 0 || startedRef.current) return;
+    startedRef.current = true;
+
+    const addEvent = () => {
+      const currentAgents = agentsRef.current;
+      if (currentAgents.length === 0) return;
       seedRef.current++;
-      const evt = generateEvent(agents, seedRef.current);
+      const evt = generateEvent(currentAgents, seedRef.current);
       if (evt) {
         setEntering(evt.id);
-        setEvents(prev => [evt, ...prev].slice(0, maxVisible + 2));
+        setEvents(prev => {
+          const updated = [evt, ...prev];
+          if (updated.length > maxVisible) {
+            const exitId = updated[maxVisible]?.id;
+            if (exitId) setExiting(exitId);
+            setTimeout(() => {
+              setExiting(null);
+              setEvents(p => p.slice(0, maxVisible));
+            }, 300);
+          }
+          return updated.slice(0, maxVisible + 1);
+        });
         setTimeout(() => setEntering(null), 400);
       }
-    }, initialDelay);
+    };
 
-    // Then regular interval with some jitter (±20%)
-    const interval = setInterval(() => {
-      const jitter = intervalMs * 0.2;
-      const delay = Math.random() * jitter * 2;
-      setTimeout(() => {
-        seedRef.current++;
-        const evt = generateEvent(agents, seedRef.current);
-        if (evt) {
-          setEntering(evt.id);
-          setEvents(prev => {
-            const updated = [evt, ...prev];
-            // Mark oldest for exit animation
-            if (updated.length > maxVisible) {
-              const exitId = updated[maxVisible]?.id;
-              if (exitId) setExiting(exitId);
-              setTimeout(() => {
-                setExiting(null);
-                setEvents(p => p.slice(0, maxVisible));
-              }, 300);
-            }
-            return updated.slice(0, maxVisible + 1);
-          });
-          setTimeout(() => setEntering(null), 400);
-        }
-      }, delay);
-    }, intervalMs);
+    // Generate first event quickly (2-5s after load)
+    const firstTimer = setTimeout(addEvent, 2000 + Math.random() * 3000);
+
+    // Then regular interval
+    const interval = setInterval(addEvent, intervalMs);
 
     return () => {
       clearTimeout(firstTimer);
       clearInterval(interval);
+      startedRef.current = false;
     };
-  }, [agents, intervalMs, maxVisible]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [agents.length > 0, intervalMs, maxVisible]);
 
   if (events.length === 0) return null;
 
@@ -206,10 +204,16 @@ export function OfficeEvents({
     <div
       data-tour="office-events"
       style={{
+        background: theme.bgSecondary || 'rgba(15,23,42,0.6)',
+        border: `2px solid ${theme.border || '#1e293b'}`,
+        borderRadius: 12,
+        padding: '8px 10px',
+        flexShrink: 0,
         display: 'flex',
         flexDirection: 'column',
         gap: 4,
         overflow: 'hidden',
+        animation: 'eventContainerIn 0.4s ease-out',
       }}
     >
       {/* Header */}
@@ -284,6 +288,18 @@ export function OfficeEvents({
       })}
 
       <style jsx>{`
+        @keyframes eventContainerIn {
+          0% {
+            opacity: 0;
+            transform: translateY(-10px);
+            max-height: 0;
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0);
+            max-height: 300px;
+          }
+        }
         @keyframes eventSlideIn {
           0% {
             opacity: 0;

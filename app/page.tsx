@@ -1978,25 +1978,17 @@ export default function HomePage() {
         }}>
           {/* Office Events Feed */}
           {agents.length > 0 && (
-            <div style={{
-              background: theme.bgSecondary,
-              border: '2px solid #1e293b',
-              borderRadius: 12,
-              padding: '8px 10px',
-              flexShrink: 0,
-            }}>
-              <OfficeEvents
-                agents={agents}
-                intervalMs={40000}
-                maxVisible={3}
-                theme={{
-                  text: theme.text,
-                  textDim: theme.textDim,
-                  bgSecondary: theme.bgSecondary,
-                  border: '#1e293b',
-                }}
-              />
-            </div>
+            <OfficeEvents
+              agents={agents}
+              intervalMs={40000}
+              maxVisible={3}
+              theme={{
+                text: theme.text,
+                textDim: theme.textDim,
+                bgSecondary: theme.bgSecondary,
+                border: '#1e293b',
+              }}
+            />
           )}
 
           <div data-tour="water-cooler" style={{
