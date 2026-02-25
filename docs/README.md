@@ -22,6 +22,7 @@
 - **[Stats Dashboard](STATS-DASHBOARD.md)** 📊 — Track XP, streaks, agent leaderboards, and 7-day activity charts
 
 ## Viral Features (Share & Show Off)
+- **[Viral Features Roadmap](VIRAL-FEATURES-ROADMAP.md)** 🎯 — Next wave of shareable features (team GIFs, battles, tours, badges)
 - **[Go Viral Playbook](GO-VIRAL-PLAYBOOK.md)** 🚀 — Complete guide to getting 1,000+ people to see your setup (7-day launch plan)
 - **[Agent Trading Cards](AGENT-TRADING-CARDS.md)** 🎴 — Pokemon-style shareable cards for your agents
 - **[Viral Templates](VIRAL-TEMPLATES.md)** — Copy-paste social media posts (Twitter, Discord, LinkedIn, Reddit, HN)
