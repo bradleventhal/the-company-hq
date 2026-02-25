@@ -15,3 +15,5 @@ export { ShareModal } from './ShareModal';
 export { ActivityHeatmap } from './ActivityHeatmap';
 export { OfficeEvents } from './OfficeEvents';
 export type { OfficeEvent } from './OfficeEvents';
+export { CommandPalette } from './CommandPalette';
+export type { CommandAction } from './CommandPalette';

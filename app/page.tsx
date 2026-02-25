@@ -23,6 +23,7 @@ import { AutoworkBanner } from '../components/AutoworkBanner';
 import { CallMeetingModal } from '../components/CallMeetingModal';
 import { AccomplishmentDetailModal } from '../components/AccomplishmentDetailModal';
 import { OfficeEvents } from '../components/OfficeEvents';
+import { CommandPalette } from '../components/CommandPalette';
 
 
 function Clock({ color }: { color: string }) {
@@ -110,6 +111,7 @@ export default function HomePage() {
   const [nowMs, setNowMs] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [partyMode, setPartyMode] = useState(false);
+  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
   const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
   const konamiProgress = useRef<string[]>([]);
 
@@ -145,6 +147,27 @@ export default function HomePage() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [sfx]);
+
+  // Command palette keyboard shortcut (Ctrl+K / Cmd+K / `/")
+  useEffect(() => {
+    const handleCmdK = (e: KeyboardEvent) => {
+      // Ctrl+K or Cmd+K
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        setCommandPaletteOpen(prev => !prev);
+        return;
+      }
+      // "/" key when not typing in an input
+      if (e.key === '/' && !commandPaletteOpen) {
+        const tag = (e.target as HTMLElement)?.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || (e.target as HTMLElement)?.isContentEditable) return;
+        e.preventDefault();
+        setCommandPaletteOpen(true);
+      }
+    };
+    window.addEventListener('keydown', handleCmdK);
+    return () => window.removeEventListener('keydown', handleCmdK);
+  }, [commandPaletteOpen]);
 
   useEffect(() => {
     setNowMs(Date.now());
@@ -1221,6 +1244,30 @@ export default function HomePage() {
           >
             {sfxEnabled ? '🔊' : '🔇'}
           </button>
+          {!isMobile && (
+            <button
+              onClick={() => { sfx.play('open'); setCommandPaletteOpen(true); }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 4,
+                background: 'rgba(99,102,241,0.08)',
+                border: '1px solid rgba(99,102,241,0.2)',
+                borderRadius: 6,
+                color: '#6366f1',
+                cursor: 'pointer',
+                fontSize: 9,
+                fontFamily: '"Press Start 2P", monospace',
+                padding: '3px 8px',
+                transition: 'background 0.15s',
+              }}
+              title="Command Palette (⌘K)"
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(99,102,241,0.15)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(99,102,241,0.08)'; }}
+            >
+              ⌘K
+            </button>
+          )}
           <button
             onClick={() => {
               const next = !darkMode;
@@ -2668,6 +2715,31 @@ export default function HomePage() {
         onDismiss={(id) => setAchievementToasts(prev => prev.filter(t => t.id !== id))}
       />
       <DemoTour isDemoMode={isDemoMode} />
+
+      {/* Command Palette (Ctrl+K / Cmd+K / "/") */}
+      <CommandPalette
+        open={commandPaletteOpen}
+        onClose={() => setCommandPaletteOpen(false)}
+        agents={agents}
+        onSelectAgent={(agent) => { sfx.play('open'); setSelectedAgent(agent); }}
+        onToggleDarkMode={() => {
+          setDarkMode(prev => {
+            const next = !prev;
+            localStorage.setItem('openclawfice-dark-mode', String(next));
+            return next;
+          });
+        }}
+        onToggleSFX={() => {
+          const newVal = !sfx.enabled.current;
+          sfx.setEnabled(newVal);
+        }}
+        onOpenSettings={() => setShowSettings(true)}
+        onOpenShare={() => setShowShareModal(true)}
+        onCallMeeting={() => { sfx.play('meetingStart'); setShowCallMeeting(true); }}
+        onOpenTemplates={() => setShowTemplateGallery(true)}
+        isDarkMode={darkMode}
+        sfxEnabled={sfx.enabled.current}
+      />
     </div>
   );
 }
