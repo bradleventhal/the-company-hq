@@ -183,6 +183,35 @@ export default function LandingPage() {
           </a>
         </div>
 
+        {/* Quick install command */}
+        <div
+          onClick={() => {
+            navigator.clipboard.writeText('curl -fsSL https://openclawfice.com/install.sh | bash');
+          }}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 10,
+            marginTop: 24,
+            padding: '10px 20px',
+            background: theme.cardBg,
+            border: `1px solid ${theme.cardBorder}`,
+            borderRadius: 8,
+            fontFamily: 'monospace',
+            fontSize: 13,
+            color: theme.successMuted,
+            cursor: 'pointer',
+            transition: 'border-color 0.2s',
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.borderColor = theme.accent}
+          onMouseLeave={(e) => e.currentTarget.style.borderColor = theme.cardBorder}
+          title="Click to copy"
+        >
+          <span style={{ color: theme.textDim }}>$</span>
+          <span>curl -fsSL openclawfice.com/install.sh | bash</span>
+          <span style={{ color: theme.textDim, fontSize: 11 }}>📋</span>
+        </div>
+
         {/* Social proof */}
         {stars !== null && stars > 0 && (
           <div style={{
@@ -211,8 +240,9 @@ export default function LandingPage() {
           boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
         }}>
           <img
-            src="/screenshot.png"
-            alt="OpenClawfice Dashboard"
+            src="/openclawfice-demo.gif"
+            alt="OpenClawfice Dashboard — pixel art agents working in a virtual office"
+            loading="eager"
             style={{ width: '100%', display: 'block' }}
           />
         </div>
