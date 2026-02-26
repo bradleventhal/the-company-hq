@@ -51,13 +51,14 @@ function SkillBadge({ skill }: { skill: Skill }) {
   );
 }
 
-export function AgentPanel({ agent, onClose, autowork, onAutoworkUpdate, onStop, pendingChanges }: {
+export function AgentPanel({ agent, onClose, autowork, onAutoworkUpdate, onStop, pendingChanges, activityLog = [] }: {
   agent: Agent;
   onClose: () => void;
   autowork?: { enabled: boolean; intervalMs: number; directive: string; lastSentAt: number };
   onAutoworkUpdate?: (agentId: string, patch: Partial<{ enabled: boolean; intervalMs: number; directive: string }>) => void;
   onStop?: (agentId: string) => void;
   pendingChanges?: Partial<{ enabled: boolean; intervalMs: number; directive: string }>;
+  activityLog?: Array<{ t: string; who: string; text: string }>;
 }) {
   const secureFetch = useAuthenticatedFetch();
   const { getApiPath } = useDemoMode();
@@ -511,6 +512,44 @@ export function AgentPanel({ agent, onClose, autowork, onAutoworkUpdate, onStop,
           </div>
         </div>
       )}
+
+      {/* Activity Log for this agent */}
+      <div style={{ marginBottom: 16 }}>
+        <div style={{
+          fontSize: 9,
+          color: '#64748b',
+          textTransform: 'uppercase',
+          marginBottom: 8,
+          fontFamily: '"Press Start 2P", monospace',
+        }}>
+          Activity Log
+        </div>
+        <div style={{
+          background: '#0f172a',
+          borderRadius: 6,
+          padding: '8px 10px',
+          maxHeight: 120,
+          overflowY: 'auto',
+          fontSize: 9,
+        }}>
+          {activityLog.filter(e => e.who === agent.name).length > 0 ? (
+            activityLog.filter(e => e.who === agent.name).slice(0, 10).map((entry, i) => (
+              <div key={`log-${i}`} style={{ display: 'flex', gap: 6, paddingBottom: 4, opacity: Math.max(0.5, 1 - i * 0.1) }}>
+                <span style={{ color: '#64748b', whiteSpace: 'nowrap', fontSize: 8, flexShrink: 0 }}>
+                  {entry.t}
+                </span>
+                <span style={{ color: '#e2e8f0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {entry.text}
+                </span>
+              </div>
+            ))
+          ) : (
+            <div style={{ color: '#64748b', fontSize: 8, fontStyle: 'italic' }}>
+              No recent activity
+            </div>
+          )}
+        </div>
+      </div>
 
       <div style={{ marginBottom: 16 }}>
         <div style={{
