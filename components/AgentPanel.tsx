@@ -51,6 +51,172 @@ function SkillBadge({ skill }: { skill: Skill }) {
   );
 }
 
+interface LogEntry {
+  ts: string;
+  role: 'user' | 'assistant' | 'tool';
+  type: 'text' | 'tool_use' | 'tool_result';
+  content: string;
+  toolName?: string;
+}
+
+function LiveSessionFeed({ agent, secureFetch }: { agent: Agent; secureFetch: (url: string, opts?: RequestInit) => Promise<Response> }) {
+  const [entries, setEntries] = useState<LogEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [expanded, setExpanded] = useState(true);
+  const feedRef = useRef<HTMLDivElement>(null);
+  const { isDemoMode: isDemo } = useDemoMode();
+
+  useEffect(() => {
+    if (isDemo) {
+      setLoading(false);
+      setEntries([
+        { ts: '', role: 'user', type: 'text', content: 'Check notifications and reply to high-value threads' },
+        { ts: '', role: 'assistant', type: 'tool_use', content: 'https://x.com/notifications', toolName: 'browser' },
+        { ts: '', role: 'assistant', type: 'text', content: 'Found 3 new replies from verified accounts. Engaging with @clwdbot deep thread about visual monitoring...' },
+        { ts: '', role: 'assistant', type: 'tool_use', content: 'memory/twitter-log.md', toolName: 'write' },
+        { ts: '', role: 'assistant', type: 'text', content: 'Logged 4 new engagements. Moving to OpenClaw search for fresh threads.' },
+      ]);
+      return;
+    }
+
+    let cancelled = false;
+    const poll = async () => {
+      try {
+        const res = await secureFetch(`/api/office/logs?agentId=${encodeURIComponent(agent.id)}&limit=30`);
+        if (!cancelled && res.ok) {
+          const data = await res.json();
+          if (data.entries?.length > 0) {
+            setEntries(data.entries.slice(-20));
+          }
+        }
+      } catch {}
+      if (!cancelled) setLoading(false);
+    };
+
+    poll();
+    const interval = setInterval(poll, 5000);
+    return () => { cancelled = true; clearInterval(interval); };
+  }, [agent.id, secureFetch, isDemo]);
+
+  useEffect(() => {
+    if (feedRef.current) {
+      feedRef.current.scrollTop = feedRef.current.scrollHeight;
+    }
+  }, [entries]);
+
+  const getEntryIcon = (e: LogEntry) => {
+    if (e.type === 'tool_use') return '⚙️';
+    if (e.type === 'tool_result') return '📤';
+    if (e.role === 'user') return '👤';
+    return '🤖';
+  };
+
+  const getEntryColor = (e: LogEntry) => {
+    if (e.type === 'tool_use') return '#f59e0b';
+    if (e.type === 'tool_result') return '#64748b';
+    if (e.role === 'user') return '#6366f1';
+    return '#e2e8f0';
+  };
+
+  const formatContent = (e: LogEntry) => {
+    if (e.type === 'tool_use') {
+      const name = e.toolName || 'tool';
+      const content = e.content.length > 100 ? e.content.slice(0, 97) + '...' : e.content;
+      return `${name}: ${content}`;
+    }
+    if (e.type === 'tool_result') {
+      return e.content.length > 80 ? e.content.slice(0, 77) + '...' : e.content;
+    }
+    return e.content.length > 150 ? e.content.slice(0, 147) + '...' : e.content;
+  };
+
+  return (
+    <div style={{ marginBottom: 16 }}>
+      <div
+        onClick={() => setExpanded(!expanded)}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          cursor: 'pointer',
+          marginBottom: expanded ? 8 : 0,
+        }}
+      >
+        <div style={{
+          fontSize: 9,
+          color: '#64748b',
+          textTransform: 'uppercase',
+          fontFamily: '"Press Start 2P", monospace',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6,
+        }}>
+          📡 Live Feed
+          {agent.status === 'working' && (
+            <span style={{
+              display: 'inline-block',
+              width: 6, height: 6,
+              borderRadius: '50%',
+              background: '#10b981',
+              animation: 'pulse 1.5s infinite',
+            }} />
+          )}
+        </div>
+        <span style={{ fontSize: 8, color: '#475569' }}>{expanded ? '▼' : '▶'}</span>
+      </div>
+      {expanded && (
+        <div
+          ref={feedRef}
+          style={{
+            background: '#0a0f1a',
+            borderRadius: 6,
+            padding: '8px 10px',
+            maxHeight: 200,
+            overflowY: 'auto',
+            fontSize: 9,
+            border: '1px solid #1e293b',
+            fontFamily: 'ui-monospace, "SF Mono", monospace',
+            lineHeight: 1.6,
+          }}
+        >
+          {loading ? (
+            <div style={{ color: '#475569', fontSize: 8, fontStyle: 'italic' }}>
+              Connecting to session...
+            </div>
+          ) : entries.length > 0 ? (
+            entries.map((entry, i) => (
+              <div
+                key={`live-${i}`}
+                style={{
+                  display: 'flex',
+                  gap: 5,
+                  paddingBottom: 3,
+                  borderBottom: i < entries.length - 1 ? '1px solid #111827' : 'none',
+                  marginBottom: 3,
+                  opacity: Math.max(0.4, 0.4 + (i / entries.length) * 0.6),
+                }}
+              >
+                <span style={{ flexShrink: 0, fontSize: 8 }}>{getEntryIcon(entry)}</span>
+                <span style={{
+                  color: getEntryColor(entry),
+                  wordBreak: 'break-word',
+                  whiteSpace: 'pre-wrap',
+                }}>
+                  {formatContent(entry)}
+                </span>
+              </div>
+            ))
+          ) : (
+            <div style={{ color: '#475569', fontSize: 8, fontStyle: 'italic' }}>
+              No session data — agent may be idle
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function AgentPanel({ agent, onClose, autowork, onAutoworkUpdate, onStop, pendingChanges, activityLog = [] }: {
   agent: Agent;
   onClose: () => void;
@@ -513,43 +679,8 @@ export function AgentPanel({ agent, onClose, autowork, onAutoworkUpdate, onStop,
         </div>
       )}
 
-      {/* Activity Log for this agent */}
-      <div style={{ marginBottom: 16 }}>
-        <div style={{
-          fontSize: 9,
-          color: '#64748b',
-          textTransform: 'uppercase',
-          marginBottom: 8,
-          fontFamily: '"Press Start 2P", monospace',
-        }}>
-          Activity Log
-        </div>
-        <div style={{
-          background: '#0f172a',
-          borderRadius: 6,
-          padding: '8px 10px',
-          maxHeight: 120,
-          overflowY: 'auto',
-          fontSize: 9,
-        }}>
-          {activityLog.filter(e => e.who === agent.name).length > 0 ? (
-            activityLog.filter(e => e.who === agent.name).slice(0, 10).map((entry, i) => (
-              <div key={`log-${i}`} style={{ display: 'flex', gap: 6, paddingBottom: 4, opacity: Math.max(0.5, 1 - i * 0.1) }}>
-                <span style={{ color: '#64748b', whiteSpace: 'nowrap', fontSize: 8, flexShrink: 0 }}>
-                  {entry.t}
-                </span>
-                <span style={{ color: '#e2e8f0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {entry.text}
-                </span>
-              </div>
-            ))
-          ) : (
-            <div style={{ color: '#64748b', fontSize: 8, fontStyle: 'italic' }}>
-              No recent activity
-            </div>
-          )}
-        </div>
-      </div>
+      {/* Live Session Feed */}
+      <LiveSessionFeed agent={agent} secureFetch={secureFetch} />
 
       <div style={{ marginBottom: 16 }}>
         <div style={{
