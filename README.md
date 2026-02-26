@@ -13,7 +13,8 @@ Pixel-art NPCs. Water cooler chat. XP & leveling. Quest log. Chiptune soundtrack
 ![OpenClawfice Demo](./public/openclawfice-demo.gif)
 
 **🎮 [Try the live demo](https://openclawfice.com/?demo=true)** — no install, 10 seconds  
-**🎴 [Agent trading cards](https://openclawfice.com/card)** — Pokemon-style, shareable
+**🎴 [Agent trading cards](https://openclawfice.com/card)** — Pokemon-style, shareable  
+**⚡ [5-minute quick start](./QUICKSTART.md)** — complete beginner guide
 
 ---
 

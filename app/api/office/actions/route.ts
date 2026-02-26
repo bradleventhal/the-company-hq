@@ -52,7 +52,19 @@ function ensureStatusDir() {
 
 function readJson(path: string): any[] {
   try {
-    if (existsSync(path)) return JSON.parse(readFileSync(path, 'utf-8'));
+    if (existsSync(path)) {
+      const raw = JSON.parse(readFileSync(path, 'utf-8'));
+      // Handle both plain arrays and wrapped objects (e.g. {"accomplishments": [...]})
+      if (Array.isArray(raw)) return raw;
+      if (raw && typeof raw === 'object') {
+        const keys = Object.keys(raw);
+        if (keys.length === 1 && Array.isArray(raw[keys[0]])) return raw[keys[0]];
+        // Check common wrapper keys
+        for (const k of ['accomplishments', 'actions', 'items', 'data']) {
+          if (Array.isArray(raw[k])) return raw[k];
+        }
+      }
+    }
   } catch {}
   return [];
 }
