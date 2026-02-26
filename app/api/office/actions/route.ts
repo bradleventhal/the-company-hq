@@ -11,7 +11,9 @@ const STATUS_DIR = join(OPENCLAW_DIR, '.status');
 const ACTIONS_FILE = join(STATUS_DIR, 'actions.json');
 const ACCOMPLISHMENTS_FILE = join(STATUS_DIR, 'accomplishments.json');
 const ACCOMPLISHMENTS_ARCHIVE = join(STATUS_DIR, 'accomplishments-archive.jsonl');
+const ACTIVITY_FILE = join(STATUS_DIR, 'activity.json');
 const RESPONSES_FILE = join(STATUS_DIR, 'responses.json');
+const MAX_ACTIVITY_ENTRIES = 50;
 
 const CONFIG_PATHS = [
   join(process.cwd(), 'openclawfice.config.json'),
@@ -443,11 +445,39 @@ export async function POST(request: Request) {
       });
       writeJson(ACCOMPLISHMENTS_FILE, trimAccomplishments(accomplishments));
 
+      // Auto-log to activity feed
+      try {
+        const activity = readJson(ACTIVITY_FILE);
+        const now = new Date();
+        activity.unshift({
+          t: now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }),
+          who: a.who || 'Agent',
+          text: `✅ ${a.title || 'Completed a task'}`,
+        });
+        writeJson(ACTIVITY_FILE, activity.slice(0, MAX_ACTIVITY_ENTRIES));
+      } catch {}
+
       // Auto-record a loom-style video if no screenshot was provided
       if (!a.screenshot) {
         triggerRecording(accId, a.title || 'Accomplishment', a.who || 'Agent', a.detail || '');
       }
 
+      return NextResponse.json({ success: true });
+    }
+
+    // Add activity log entry
+    if (body.type === 'add_activity') {
+      const activity = readJson(ACTIVITY_FILE);
+      const entry = body.activity || body;
+      const now = new Date();
+      const timeStr = entry.t || now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+      activity.unshift({
+        t: timeStr,
+        who: entry.who || 'Agent',
+        text: entry.text || entry.title || '',
+      });
+      // Keep only the most recent entries
+      writeJson(ACTIVITY_FILE, activity.slice(0, MAX_ACTIVITY_ENTRIES));
       return NextResponse.json({ success: true });
     }
 
