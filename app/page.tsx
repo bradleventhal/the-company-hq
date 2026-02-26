@@ -759,7 +759,7 @@ export default function HomePage() {
       chatTargetRef.current = 0;
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chatLogLen, config.waterCooler?.frequency, config.waterCooler?.enabled]);
+  }, [chatLogLen, agents.length, config.waterCooler?.frequency, config.waterCooler?.enabled]);
 
   // Countdown tick — only re-renders when value actually changes
   useEffect(() => {
