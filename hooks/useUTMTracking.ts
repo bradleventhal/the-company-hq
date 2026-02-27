@@ -1,41 +1,31 @@
 'use client';
 
 import { useEffect } from 'react';
+import { track } from '../lib/track';
 
 /**
- * Captures UTM parameters from the URL and sends them to the analytics API.
- * Call once in the root layout or main page component.
+ * Captures UTM parameters and tracks page views.
+ * Call once in the main page component.
+ * 
+ * Sends to both:
+ * - Vercel Analytics (prod, automatic)
+ * - Local JSONL log (/api/analytics/track, for localhost users)
  */
 export function useUTMTracking() {
   useEffect(() => {
     try {
-      const params = new URLSearchParams(window.location.search);
-      const utm_source = params.get('utm_source');
-      const utm_medium = params.get('utm_medium');
-      const utm_campaign = params.get('utm_campaign');
-      const utm_content = params.get('utm_content');
+      // Track page view — UTM params are captured automatically by track()
+      track('page_view');
 
-      // Only track if there are UTM params or it's a demo/install page visit
-      const page = window.location.pathname;
-      const isTrackedPage = page === '/install' || page === '/demo' || page === '/';
-      const hasUTM = utm_source || utm_campaign;
-
-      if (!hasUTM && !isTrackedPage) return;
-
-      fetch('/api/analytics', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          page,
-          utm_source: utm_source || undefined,
-          utm_medium: utm_medium || undefined,
-          utm_campaign: utm_campaign || undefined,
-          utm_content: utm_content || undefined,
-          referrer: document.referrer || undefined,
-        }),
-      }).catch(() => {
-        // Silent fail - analytics should never break the app
-      });
+      // Detect return visitors
+      const lastVisit = localStorage.getItem('ocf-last-visit');
+      if (lastVisit) {
+        const daysSince = (Date.now() - parseInt(lastVisit)) / (1000 * 60 * 60 * 24);
+        if (daysSince >= 1) {
+          track('return_visit', { daysSinceLastVisit: Math.floor(daysSince) });
+        }
+      }
+      localStorage.setItem('ocf-last-visit', Date.now().toString());
     } catch {
       // Ignore
     }

@@ -57,7 +57,9 @@ interface AgentInfo {
   role?: string;
   vibe?: string;
   creature?: string;
-  identity?: string; // full IDENTITY.md text for soul injection
+  soul?: string;      // SOUL.md — personality, approach, boundaries
+  heartbeat?: string;  // HEARTBEAT.md — current priorities and real work context
+  memory?: string;     // MEMORY.md excerpt — long-term knowledge (truncated)
   status: string;
   task?: string;
 }
@@ -142,12 +144,13 @@ function discoverAgents(): AgentInfo[] {
       let role: string | undefined;
       let vibe: string | undefined;
       let creature: string | undefined;
-      let identity: string | undefined;
+      let soul: string | undefined;
+      let heartbeat: string | undefined;
+      let memory: string | undefined;
       try {
         const idPath = join(ws, 'IDENTITY.md');
         if (existsSync(idPath)) {
           const txt = readFileSync(idPath, 'utf-8');
-          identity = txt;
           const nm = txt.match(/[-*]*\s*\*\*Name:\*\*\s*(.+)/);
           if (nm) name = nm[1].trim();
           const rm = txt.match(/[-*]*\s*\*\*Role:\*\*\s*(.+)/);
@@ -157,6 +160,18 @@ function discoverAgents(): AgentInfo[] {
           const cm = txt.match(/[-*]*\s*\*\*Creature:\*\*\s*(.+)/);
           if (cm) creature = cm[1].trim();
         }
+      } catch {}
+      try {
+        const soulPath = join(ws, 'SOUL.md');
+        if (existsSync(soulPath)) soul = readFileSync(soulPath, 'utf-8').slice(0, 1500);
+      } catch {}
+      try {
+        const hbPath = join(ws, 'HEARTBEAT.md');
+        if (existsSync(hbPath)) heartbeat = readFileSync(hbPath, 'utf-8').slice(0, 1500);
+      } catch {}
+      try {
+        const memPath = join(ws, 'MEMORY.md');
+        if (existsSync(memPath)) memory = readFileSync(memPath, 'utf-8').slice(0, 1500);
       } catch {}
 
       let status = 'idle';
@@ -178,7 +193,7 @@ function discoverAgents(): AgentInfo[] {
         }
       } catch {}
 
-      result.push({ id: agent.id, name, role, vibe, creature, identity, status, task });
+      result.push({ id: agent.id, name, role, vibe, creature, soul, heartbeat, memory, status, task });
     }
   } catch {}
   return result;
