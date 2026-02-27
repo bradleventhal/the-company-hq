@@ -222,7 +222,7 @@ async function generate() {
   await new Promise(r => setTimeout(r, 1000));
   
   const screenshot = await page.screenshot({ type: 'png' });
-  writeFileSync('/Users/tylerbot/clawd-openclawfice/openclawfice/public/og-image.png', screenshot);
+  writeFileSync(new URL('../public/og-image.png', import.meta.url).pathname, screenshot);
   
   console.log('OG image generated!');
   console.log('Size:', screenshot.length, 'bytes');

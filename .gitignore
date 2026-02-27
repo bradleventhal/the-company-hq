@@ -31,6 +31,21 @@ openclawfice.config.json
 # First-run marker (per-user)
 .openclawfice-init
 
+# Agent strategy/marketing files (live in agent workspace, not the repo)
+docs/internal/
+docs/viral/
+twitter-metrics/
+memory/
+*-HANDOFF-*.md
+*-VALIDATION-*.md
+*-CHECKLIST*.md
+LAUNCH-*.md
+*-LAUNCH*.md
+TYLER-*.md
+STATUS.md
+PENDING-*.md
+POST-LAUNCH-*.md
+
 # Vercel
 .vercel
 
