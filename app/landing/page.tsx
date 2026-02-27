@@ -1,12 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useReferralTracking } from '../../hooks/useReferralTracking';
 
 /**
  * Landing Page - Viral-friendly marketing page
  * Optimized for social sharing and conversion
  */
 export default function LandingPage() {
+  useReferralTracking();
   const [stars, setStars] = useState<number | null>(null);
   const [darkMode, setDarkMode] = useState(true);
 

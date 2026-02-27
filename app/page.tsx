@@ -6,6 +6,7 @@ import { useRetroSFX } from '../hooks/useRetroSFX';
 import { useChiptune } from '../hooks/useChiptune';
 import { useAuthenticatedFetch } from '../hooks/useAuthenticatedFetch';
 import { useUTMTracking } from '../hooks/useUTMTracking';
+import { useReferralTracking } from '../hooks/useReferralTracking';
 import { track } from '../lib/track';
 import type { Agent, AgentStatus, Mood, PendingAction, Accomplishment, ChatMessage } from '../components/types';
 import { randomColor, generateAgentDefaults, prettifyTask, formatInterval } from '../components/utils';
@@ -58,6 +59,7 @@ export default function HomePage() {
 
   const { isDemoMode, getApiPath } = useDemoMode();
   useUTMTracking();
+  useReferralTracking();
   const sfx = useRetroSFX();
   const music = useChiptune();
   const authenticatedFetch = useAuthenticatedFetch();
