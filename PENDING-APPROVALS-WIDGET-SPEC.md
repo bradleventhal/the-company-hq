@@ -1,337 +1,291 @@
-# Pending Approvals Widget - Spec
+# Pending Approvals Widget - Feature Spec
 
-**Problem:** Scout has 4 outreach emails waiting on Tyler approval. Decision velocity is the bottleneck. Tyler can't see what's waiting.
+**Problem:** Scout has 4 outreach emails ready (samspov 8 days old, Daniel K 70+ hrs, Reek G 14 hrs left, Jack 7+ days old). Tyler can't see what's waiting on him, so decisions age and freshness windows expire.
 
-**Solution:** Surface Scout's waiting-on-Tyler items in the Quest Log so decisions get visibility before freshness expires.
-
----
-
-## User Story
-
-**As Tyler**, I want to see Scout's pending approval items in my office Quest Log, so I can make decisions quickly before leads go cold.
-
-**Acceptance Criteria:**
-- Pending items show in Quest Log with "NEEDS APPROVAL" tag
-- Items show age (how long waiting)
-- Click opens detail with context
-- Can approve/reject from widget
-- Expired items flagged red (>48hrs)
+**Solution:** Add a "Pending Approvals" widget to the quest board that surfaces items waiting on Tyler's decision.
 
 ---
 
 ## Design
 
-### Quest Log Addition
+### Location
+Quest board sidebar, above or below existing quests
 
-Add new section at TOP of Quest Log (above regular quests):
+### Visual Style
+- Retro terminal aesthetic (matches existing quest board)
+- Red/orange color for urgency indicators
+- Terminal green (#00ff41) for text
+- Time remaining in countdown format
 
-```
-┌─────────────────────────────────────┐
-│ 🔔 Pending Approvals (4)            │
-├─────────────────────────────────────┤
-│ 🔴 samspov email (8 days old)       │
-│ 🟡 Daniel K text (70hrs)            │
-│ 🟡 Reek G call script (14hrs left)  │
-│ 🟢 Jack call script (23hrs left)    │
-└─────────────────────────────────────┘
-```
+### Data Source
+**Option 1:** Read from Scout's memory files directly
+- `~/agents/outreach/memory/pending-approvals.json`
+- Scout maintains this file when creating drafts
+- OpenClawfice reads it like it reads sessions.json
 
-### Color Coding
-- 🔴 Red: >48hrs (expired, urgent)
-- 🟡 Yellow: 24-48hrs (warning)
-- 🟢 Green: <24hrs (fresh)
+**Option 2:** New API endpoint `/api/office/approvals`
+- Returns structured approval requests from all agents
+- Agents post approval requests via API
+- More scalable but requires more infrastructure
 
-### Expanded View
-
-Click item → Modal opens:
-
-```
-┌────────────────────────────────────────┐
-│ Pending Approval: samspov email        │
-├────────────────────────────────────────┤
-│ From: Scout                            │
-│ Created: 8 days ago                    │
-│ Expires: Already expired (URGENT)     │
-│                                        │
-│ Context:                               │
-│ • Creator: @samspov                    │
-│ • Followers: 1.9M                      │
-│ • Avg views: 7M                        │
-│ • Projected ROI: 868-1,515%            │
-│ • Deal: $2-3K                          │
-│                                        │
-│ Preview:                               │
-│ [First 200 chars of email draft...]   │
-│                                        │
-│ [View Full Draft] [Approve] [Reject]  │
-└────────────────────────────────────────┘
-```
+**Recommendation:** Start with Option 1 (file-based) for speed, migrate to Option 2 later if needed.
 
 ---
 
-## API Design
-
-### GET /api/approvals
-
-Returns pending items from Scout (and other agents in future):
-
-```typescript
-{
-  approvals: [
-    {
-      id: "approval-123",
-      from: "Scout",
-      type: "outreach_email",
-      title: "samspov email",
-      context: {
-        creator: "@samspov",
-        followers: "1.9M",
-        projected_roi: "868-1,515%",
-        deal: "$2-3K"
-      },
-      draft: "Full email text here...",
-      created_at: "2026-02-19T10:00:00Z",
-      expires_at: "2026-02-21T10:00:00Z", // 48hrs
-      status: "pending" | "approved" | "rejected",
-      urgency: "expired" | "warning" | "fresh"
-    }
-  ]
-}
-```
-
-### POST /api/approvals/:id/approve
-
-Approves item, triggers Scout to send:
-
-```typescript
-{
-  action: "approve",
-  note: "optional feedback"
-}
-```
-
-### POST /api/approvals/:id/reject
-
-Rejects item, notifies Scout:
-
-```typescript
-{
-  action: "reject",
-  reason: "optional"
-}
-```
-
----
-
-## Data Source
-
-### Option 1: Scout's Workspace Files
-Scout maintains `~/agents/outreach/pending-approvals.json`:
+## Data Schema
 
 ```json
 {
   "approvals": [
     {
-      "id": "samspov-email-001",
-      "type": "outreach_email",
-      "title": "samspov email",
-      "file": "~/clawd-outreach/DRAFT-SAMSPOV-EMAIL.md",
-      "created": "2026-02-19T10:00:00Z",
-      "context": {...}
+      "id": "scout-samspov-email",
+      "type": "email_approval",
+      "title": "samspov outreach email",
+      "from": "Scout",
+      "priority": "high",
+      "createdAt": 1771500000000,
+      "expiresAt": null,
+      "context": "Creator with 208K followers, $24.6K/mo potential",
+      "action": "Review and approve email draft",
+      "draftPath": "~/clawd-outreach/drafts/samspov-email.md"
+    },
+    {
+      "id": "scout-reek-g-call",
+      "type": "phone_call",
+      "title": "Reek G phone call",
+      "from": "Scout",
+      "priority": "critical",
+      "createdAt": 1772100000000,
+      "expiresAt": 1772200000000,
+      "context": "$1,800/month recurring deal, said 'Let's do it!'",
+      "action": "Call 954-605-8368 before 7-day mark",
+      "timeRemaining": "14 hours"
     }
   ]
 }
 ```
 
-### Option 2: OpenClaw Quests API
-Use existing quest system, add `needsApproval: true` flag
-
-### Recommendation: Option 1
-- Simpler to implement
-- Doesn't pollute quest system
-- Scout controls the data
-- Easy to extend to other agents
-
 ---
 
-## Implementation Steps
+## UI Mockup (ASCII)
 
-### Phase 1: Backend (30 min)
-1. Create `/api/approvals` route
-2. Read Scout's pending-approvals.json
-3. Calculate urgency based on age
-4. Return structured data
-
-### Phase 2: Frontend Widget (45 min)
-1. Add "Pending Approvals" section to Quest Log
-2. Fetch from `/api/approvals` every 30s
-3. Render with color coding
-4. Show count badge
-
-### Phase 3: Approval Actions (1hr)
-1. Create approval modal
-2. Wire up approve/reject buttons
-3. POST to API
-4. Notify Scout (via agent message or file write)
-5. Update UI instantly
-
----
-
-## Scout Integration
-
-### How Scout Uses This
-
-**Creating an Approval:**
-```bash
-# Scout writes to pending-approvals.json
-cat >> ~/agents/outreach/pending-approvals.json << 'EOF'
-{
-  "id": "new-email-001",
-  "type": "outreach_email",
-  "title": "New creator pitch",
-  "file": "~/clawd-outreach/DRAFT-NEW-CREATOR.md",
-  "created": "2026-02-27T10:00:00Z",
-  "expires": "2026-02-29T10:00:00Z",
-  "context": {
-    "creator": "@example",
-    "deal": "$5K"
-  }
-}
-EOF
-```
-
-**Receiving Approval:**
-```bash
-# Option A: Scout polls ~/agents/outreach/approvals-status.json
-# Option B: Scout receives agent message
-# Option C: File flag appears in draft directory
-```
-
-**Sending After Approval:**
-```bash
-# Scout checks approval, sends email, archives draft
-if grep -q "approved" approvals-status.json; then
-  # Send email
-  # Archive draft
-  # Remove from pending
-fi
-```
-
----
-
-## UI/UX Details
-
-### Empty State
 ```
 ┌─────────────────────────────────────┐
-│ 🔔 Pending Approvals (0)            │
+│ 🔔 PENDING APPROVALS (4)            │
 ├─────────────────────────────────────┤
-│ No pending approvals                │
-│ Scout will notify you here when     │
-│ outreach needs review.              │
+│ ⚠️  URGENT: Reek G call (14h left)  │
+│     Scout → Call 954-605-8368       │
+│     $1.8K/mo recurring deal         │
+│     [View Details] [Mark Done]      │
+├─────────────────────────────────────┤
+│ 📧 samspov email (8 days old)       │
+│     Scout → Review draft            │
+│     208K followers, $24.6K/mo       │
+│     [View Draft] [Approve] [Reject] │
+├─────────────────────────────────────┤
+│ 📧 Daniel K email (70+ hrs)         │
+│     Scout → Missed call apology     │
+│     [View Draft] [Approve]          │
+├─────────────────────────────────────┤
+│ 📧 Jack follow-up (7 days)          │
+│     Scout → Close $3K video deal    │
+│     [View Draft] [Approve]          │
 └─────────────────────────────────────┘
 ```
 
-### Compact Mode (when >5 items)
-```
-┌─────────────────────────────────────┐
-│ 🔔 Pending Approvals (7) [View All] │
-├─────────────────────────────────────┤
-│ 🔴 3 expired                        │
-│ 🟡 2 expiring soon                  │
-│ 🟢 2 fresh                          │
-└─────────────────────────────────────┘
-```
+---
 
-### Notification Badge
-- Show count on Quest Log icon
-- Pulse animation if any expired
-- Sound effect on new approval
+## Functionality
+
+### Display
+- Show pending approvals at top of quest board
+- Sort by urgency (expiring soon → critical → high → medium → low)
+- Show time remaining for time-sensitive items
+- Show age for overdue items
+- Badge count in header (🔔 4)
+
+### Interaction
+- **View Details:** Opens modal with full context
+- **View Draft:** Opens draft file in browser or download
+- **Approve:** Sends approval back to requesting agent
+- **Reject/Skip:** Removes from pending, optionally sends rejection reason
+- **Mark Done:** Archives the approval request
+
+### Notifications
+- Auto-refresh every 10 seconds
+- Sound effect when new approval added (retro notification beep)
+- Visual pulse animation on critical items
+- Desktop notification for expiring items (< 2 hours)
+
+---
+
+## Implementation Plan
+
+### Phase 1: Basic Display (30 min)
+1. Create `PendingApprovalsWidget.tsx` component
+2. Read `~/agents/outreach/memory/pending-approvals.json`
+3. Display list in quest board sidebar
+4. Show title, from, priority, age
+5. No interactions yet (read-only)
+
+### Phase 2: Interactions (1 hour)
+1. Add "View Details" modal
+2. Add "Approve" button → writes to responses file
+3. Add "Mark Done" button → removes from pending
+4. Auto-refresh on approval action
+5. Sound effects on actions
+
+### Phase 3: Integration (30 min)
+1. Scout updates `pending-approvals.json` when creating drafts
+2. Scout reads responses and takes action
+3. Test full approval flow end-to-end
+4. Add analytics tracking (approval time, decision velocity)
+
+### Phase 4: Polish (30 min)
+1. Add time remaining countdown
+2. Add urgency indicators (red for < 24h)
+3. Add desktop notifications
+4. Add keyboard shortcuts (a = approve, s = skip)
+5. Add loading states and error handling
+
+**Total time:** ~2.5 hours
 
 ---
 
 ## Success Metrics
 
-**Before Widget:**
-- Average approval time: 8+ days
-- Leads lost to staleness: 75%
-- Scout time wasted: 4+ hours/week
+### User Experience
+- Tyler sees pending approvals without asking
+- Decision time < 5 minutes (down from hours/days)
+- Zero emails expire due to invisibility
 
-**After Widget:**
-- Target approval time: <4 hours
-- Leads lost: <10%
-- Scout time saved: 4+ hours/week
+### System Performance
+- Widget loads in < 500ms
+- Auto-refresh doesn't lag UI
+- File reads don't block page load
 
-**Key Indicator:**
-- % of approvals handled within 48hrs
-- Should be >90%
-
----
-
-## Future Enhancements
-
-### Multi-Agent Support
-- Not just Scout - any agent can request approval
-- Filter by agent
-- Bulk approve/reject
-
-### Approval Templates
-- Pre-defined approval criteria
-- Auto-approve if matches template
-- Smart routing
-
-### Reminders
-- Desktop notification if >24hrs
-- Slack/Discord ping
-- Email digest
+### Business Impact
+- Outreach velocity increases (approvals within 1 hour)
+- Fewer expired leads (< 48 hour freshness window)
+- Higher close rate (faster response = better engagement)
 
 ---
 
-## Technical Notes
+## Alternative Designs Considered
 
-### Security
-- Require auth (same as other office APIs)
-- Validate approval source (only from approved agents)
-- Rate limit approval actions
+### Option A: Toast Notifications
+**Pros:** Instant visibility, no UI changes needed  
+**Cons:** Dismissible, easy to miss, no persistent state
 
-### Performance
-- Cache approval count (update every 30s)
-- Lazy load approval details
-- Paginate if >20 items
+### Option B: Email Digest
+**Pros:** Familiar format, works outside app  
+**Cons:** Context switching, not real-time, clutters inbox
 
-### Testing
-- Mock pending-approvals.json
-- Test expired/warning/fresh states
-- Test approve/reject flow
-- Test empty state
+### Option C: Slack Integration
+**Pros:** Where Tyler already is  
+**Cons:** Requires Slack setup, another tool, fragmentation
 
----
+### Option D: Quest Board Widget (CHOSEN)
+**Pros:** Centralized, persistent, real-time, in-app  
+**Cons:** Requires UI work, only visible when dashboard open
 
-## Files to Create
-
-1. `app/api/approvals/route.ts` - Main API
-2. `app/api/approvals/[id]/approve/route.ts` - Approve action
-3. `app/api/approvals/[id]/reject/route.ts` - Reject action
-4. `components/PendingApprovals.tsx` - Widget component
-5. `components/ApprovalModal.tsx` - Detail modal
+**Why Option D wins:** Tyler already uses OpenClawfice dashboard. Adding approvals there creates a single source of truth and reduces context switching.
 
 ---
 
-## Estimated Time
+## Open Questions
 
-- Backend: 2 hours
-- Frontend: 3 hours
-- Testing: 1 hour
-- **Total: 6 hours**
+1. **File location:** Should pending-approvals.json live in Scout's workspace or in ~/.openclaw/.status/?
+   - **Recommendation:** ~/.openclaw/.status/pending-approvals.json (consistent with actions.json, accomplishments.json)
 
-**Priority:** High (blocks Scout's velocity)  
-**Difficulty:** Medium (new feature, not complex)  
-**Impact:** High (unblocks decision bottleneck)
+2. **Who writes to this file:** Scout only, or any agent?
+   - **Recommendation:** Any agent can post approval requests (future: Cipher for creative review, Forge for code review)
+
+3. **Approval response format:** How does Tyler's approval get back to Scout?
+   - **Recommendation:** Same as quest responses - write to responses.json, agent polls
+
+4. **What if Tyler approves via chat instead of button?** Scout might miss it.
+   - **Recommendation:** Train Tyler to use buttons for trackability, but also scan chat for approval keywords
+
+5. **Do we need rejection reasons?** Or just binary approve/skip?
+   - **Recommendation:** Start binary, add optional reason field later if needed
 
 ---
 
-## Ready to Build
+## Dependencies
 
-This spec is complete and ready for implementation. All requirements defined, API designed, UI mocked, success metrics set.
+### Required
+- File system access to ~/.openclaw/.status/
+- Existing quest board UI
+- Auth system (already implemented)
 
-**Next:** Assign to Forge (or Cipher if Forge is busy) for implementation.
+### Nice to Have
+- Desktop notification API
+- Analytics tracking
+- Email preview rendering
+- Diff view for draft changes
+
+---
+
+## Risks & Mitigations
+
+### Risk: Scout forgets to update pending-approvals.json
+**Mitigation:** Add validation to Scout's draft creation workflow (AGENTS.md reminder)
+
+### Risk: File read/write contention
+**Mitigation:** Use same locking strategy as actions.json (retry on failure)
+
+### Risk: Tyler ignores the widget
+**Mitigation:** Sound effects + badge count + desktop notifications for urgency
+
+### Risk: Widget clutters quest board
+**Mitigation:** Collapsible section, "Hide completed" filter, max 5 visible at once
+
+---
+
+## Next Steps
+
+1. **Nova:** Review this spec, approve or request changes
+2. **Forge:** Implement Phase 1 (basic display) once approved
+3. **Scout:** Create pending-approvals.json file with current 4 items
+4. **Cipher:** Test approval flow end-to-end
+5. **Tyler:** Use the widget for 1 week, provide feedback
+
+---
+
+## Appendix: Example Approval Flow
+
+### Step 1: Scout creates draft
+```bash
+# Scout writes email draft
+echo "..." > ~/clawd-outreach/drafts/samspov-email.md
+
+# Scout adds approval request
+curl -X POST http://localhost:3333/api/office/approvals \
+  -d '{"type":"email_approval","title":"samspov outreach email","from":"Scout","priority":"high","draftPath":"~/clawd-outreach/drafts/samspov-email.md"}'
+```
+
+### Step 2: Tyler sees widget
+- Opens OpenClawfice dashboard
+- Sees "🔔 PENDING APPROVALS (4)" widget
+- Clicks "samspov email (8 days old)"
+- Modal opens with draft preview
+
+### Step 3: Tyler approves
+- Clicks "Approve" button
+- Widget removes item from list
+- Response written to responses.json
+
+### Step 4: Scout receives approval
+- Scout polls responses.json (or gets notified via quest response)
+- Sees Tyler approved samspov email
+- Sends email immediately
+- Marks approval as complete
+
+**Total time:** < 5 minutes (down from 8 days!)
+
+---
+
+**Status:** Spec complete, awaiting Nova approval  
+**Estimated implementation:** 2.5 hours  
+**Impact:** High - unblocks Scout, increases decision velocity, prevents expired leads
