@@ -176,18 +176,28 @@ Restart OpenClawfice.
 
 ### Port 3333 already in use?
 
-**Option 1: Kill the existing process**
+If you see `Error: listen EADDRINUSE: address already in use :::3333`:
+
+**Option 1: Use a different port** (recommended)
 ```bash
+npm run dev -- --port 3334
+```
+
+Then open **http://localhost:3334** instead.
+
+**Option 2: Kill the existing process**
+```bash
+# Find what's using port 3333
+lsof -ti:3333
+
+# Kill it
 lsof -ti:3333 | xargs kill -9
+
+# Then start normally
 npm run dev
 ```
 
-**Option 2: Use a different port**
-```bash
-PORT=3334 npm run dev
-```
-
-Then open http://localhost:3334
+**Note:** You might have another OpenClawfice instance running, or another dev server on 3333.
 
 ### Screen recordings not working?
 
