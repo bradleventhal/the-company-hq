@@ -48,7 +48,7 @@ export function ChatBubble({
       lineHeight: 1.4,
       wordBreak: 'break-word',
       fontWeight: 500,
-      zIndex: 10,
+      zIndex: 100,
       whiteSpace: 'normal', // Allow wrapping
     }}>
       {message}
