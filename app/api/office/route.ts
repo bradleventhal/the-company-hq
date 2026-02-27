@@ -6,6 +6,7 @@ import { requireAuth } from '../../../lib/auth';
 
 const OPENCLAW_DIR = join(homedir(), '.openclaw');
 const OPENCLAW_CONFIG = join(OPENCLAW_DIR, 'openclaw.json');
+const OPENCLAW_BIN = join(homedir(), '.local', 'node', 'bin', 'openclaw');
 const AGENTS_DIR = join(OPENCLAW_DIR, 'agents');
 const CRON_JOBS_FILE = join(OPENCLAW_DIR, 'cron', 'jobs.json');
 const STATUS_DIR = join(OPENCLAW_DIR, '.status');
@@ -31,6 +32,38 @@ interface AgentConfig {
   sessionKey?: string;
   workingThresholdMin?: number;
   hasIdentity?: boolean;
+}
+
+/**
+ * Check OpenClaw installation status.
+ * Returns detailed diagnostic info for better error messages.
+ */
+function checkOpenClawSetup(): {
+  status: 'ok' | 'not_installed' | 'not_configured';
+  message?: string;
+  action?: string;
+  installCommand?: string;
+} {
+  // Check if OpenClaw binary exists
+  if (!existsSync(OPENCLAW_BIN)) {
+    return {
+      status: 'not_installed',
+      message: 'OpenClaw is not installed',
+      action: 'Install OpenClaw to get started',
+      installCommand: 'curl -fsSL https://openclaw.ai/install.sh | bash',
+    };
+  }
+
+  // Check if openclaw.json config exists
+  if (!existsSync(OPENCLAW_CONFIG)) {
+    return {
+      status: 'not_configured',
+      message: 'OpenClaw is installed but no agents are configured',
+      action: 'Configure at least one agent in OpenClaw',
+    };
+  }
+
+  return { status: 'ok' };
 }
 
 /**
@@ -726,10 +759,14 @@ export async function GET(request: Request) {
   const activityLog = readActivityLog();
   const chatLog = readChatLog();
 
+  // Check OpenClaw setup status for better error messages
+  const setupCheck = checkOpenClawSetup();
+
   return NextResponse.json({ 
     agents,
     activityLog,
     chatLog,
+    setupCheck,
     timestamp: new Date(now).toISOString() 
   });
 }

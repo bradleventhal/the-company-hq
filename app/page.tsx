@@ -68,6 +68,7 @@ export default function HomePage() {
   }, [isDemoMode, authenticatedFetch]);
   const [agents, setAgents] = useState<Agent[]>([]);
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
+  const [setupCheck, setSetupCheck] = useState<{status: string; message?: string; action?: string; installCommand?: string} | null>(null);
   const [hour] = useState(() => new Date().getHours());
   const [pendingActions, setPendingActions] = useState<PendingAction[]>([]);
   const [accomplishments, setAccomplishments] = useState<Accomplishment[]>([]);
@@ -276,6 +277,7 @@ export default function HomePage() {
         }
         if (data.activityLog?.length > 0) setActivityLog(data.activityLog);
         if (data.chatLog && Array.isArray(data.chatLog)) setChatLog(data.chatLog);
+        if (data.setupCheck) setSetupCheck(data.setupCheck);
       }
       if (meetingRes.status === 'fulfilled') setMeeting(meetingRes.value);
       if (actionsRes.status === 'fulfilled') {
