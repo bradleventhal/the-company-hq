@@ -32,30 +32,45 @@ npm install
 
 **This takes 30-60 seconds** depending on your internet speed.
 
-Don't worry if it looks stuck - npm is downloading packages in the background.  
-You'll see a ✅ success message when it's done.
+**What to expect:**
+- Progress bar shows package downloads
+- Warnings about deprecated packages are normal (ignore them)
+- Final line shows "added XXX packages in YYs"
+- Success message displays: "✅ OpenClawfice ready to run!"
+
+Don't worry if it looks stuck - npm is downloading packages in the background.
 
 ### Step 3: Start the server
 ```bash
 npm run dev
 ```
 
-You'll see:
+**What to expect:**
 ```
+✓ Compiled in 1.2s
 ✓ Ready in 2.1s
 ○ Local:   http://localhost:3333
 ```
 
+**If you see "EADDRINUSE" error:** Port 3333 is already in use. See [Port conflict troubleshooting](#port-3333-already-in-use) below.
+
+Leave this terminal window open - this is your server running.
+
 ### Step 4: Open it
 Open **http://localhost:3333** in your browser.
 
-**That's it.** You should see your office with agents auto-discovered from OpenClaw.
+**First time loading:**
+1. You'll see a retro loading screen (green terminal aesthetic) for 1-2 seconds
+2. Then your office appears with agents auto-discovered from OpenClaw
+3. If no OpenClaw config found, you'll see a helpful diagnostic screen with install instructions
+
+**That's it.** Your office is running!
 
 ---
 
 ## What You'll See
 
-On first launch:
+### If OpenClaw is installed and configured:
 - **Work Room & Lounge**: Two rooms where agents hang out
 - **Your agents**: Auto-detected from `~/.openclaw/openclaw.json`
 - **Status indicators**: Green plumbobs for working agents, blue for idle
@@ -63,7 +78,69 @@ On first launch:
 - **Quest Log**: Empty until agents push quests
 - **Accomplishments**: Empty until agents complete work
 
+### If OpenClaw is NOT installed yet:
+You'll see a helpful **diagnostic screen** with:
+- Terminal-style error message: "OpenClaw not installed"
+- Click-to-copy install command
+- Link to official OpenClaw installation guide
+- Clear next steps
+
+**This is expected on first run if you skipped the Prerequisites step!**
+
+### If OpenClaw is installed but no agents configured:
+You'll see a different diagnostic:
+- "No agents configured"
+- Link to OpenClaw configuration docs
+- Example config snippet you can copy
+
 **No agents showing up?** See [Troubleshooting](#troubleshooting) below.
+
+---
+
+## Common First-Time Issues
+
+### "It says OpenClaw not installed, but I just installed it!"
+**Cause:** Your shell hasn't reloaded the PATH yet.
+
+**Fix:** Open a new terminal window and check:
+```bash
+which openclaw
+# Should show: /Users/yourname/.local/node/bin/openclaw (or similar)
+```
+
+If it shows nothing, run:
+```bash
+source ~/.zshrc  # or ~/.bashrc if you use bash
+```
+
+Then restart OpenClawfice.
+
+### "Page loads but shows empty office"
+**This is normal!** It means OpenClaw is installed but no agents are configured yet.
+
+Click "Install Guide" button on the empty state screen, or see [Configure Your Agents](#1-configure-your-agents-optional) below.
+
+### "npm install fails with EACCES error"
+**Cause:** Permission issues with npm global directory.
+
+**Fix:** Don't use sudo! Instead:
+```bash
+# Fix npm permissions (macOS/Linux)
+mkdir -p ~/.npm-global
+npm config set prefix '~/.npm-global'
+echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.zshrc
+source ~/.zshrc
+```
+
+Then retry `npm install` in the openclawfice directory.
+
+### "Browser shows 'Connection refused' or won't load"
+**Cause:** Server didn't start, or you opened the wrong URL.
+
+**Check:**
+1. Is the `npm run dev` terminal still running? (If it crashed, check the error)
+2. Did you open the correct URL? Should be `http://localhost:3333`
+3. Is port 3333 available? Try `npm run dev -- --port 3334` and open `http://localhost:3334`
 
 ---
 
