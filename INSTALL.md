@@ -30,7 +30,10 @@ cd ~/openclawfice
 npm install
 ```
 
-This takes 30-60 seconds depending on your internet speed.
+**This takes 30-60 seconds** depending on your internet speed.
+
+Don't worry if it looks stuck - npm is downloading packages in the background.  
+You'll see a ✅ success message when it's done.
 
 ### Step 3: Start the server
 ```bash
