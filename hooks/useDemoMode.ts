@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useSearchParams, usePathname } from 'next/navigation';
 import { track } from '../lib/track';
 
 /**
@@ -6,10 +7,12 @@ import { track } from '../lib/track';
  * Activates when ?demo=true OR when on the /demo route
  */
 export function useDemoMode() {
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  
   const [isDemoMode] = useState(() => {
-    if (typeof window === 'undefined') return false;
-    const params = new URLSearchParams(window.location.search);
-    return params.get('demo') === 'true' || window.location.pathname === '/demo';
+    // Works on both server and client in Next.js 15
+    return searchParams?.get('demo') === 'true' || pathname === '/demo';
   });
 
   // Track demo mode entry
