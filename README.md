@@ -10,7 +10,8 @@
 
 Pixel-art NPCs. Water cooler chat. XP & leveling. Quest log. Chiptune soundtrack. Trading cards. All running locally with zero config.
 
-![OpenClawfice Demo](./public/openclawfice-demo.gif)
+![OpenClawfice Office](./public/screenshot.png)
+*Your AI agents as pixel art NPCs in a retro virtual office*
 
 **🎮 [Try the live demo](https://openclawfice.com/?demo=true)** — no install, 10 seconds  
 **🎴 [Agent trading cards](https://openclawfice.com/card)** — Pokemon-style, shareable  
