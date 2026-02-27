@@ -217,6 +217,55 @@ fi
 echo ""
 sleep 0.2
 
+# ── Water Cooler Agent ───────────────────────────
+# Creates a dedicated lightweight agent for the water cooler thread.
+# Uses haiku for fast/cheap chat — never gets autowork, fully isolated.
+
+if [ "$HAS_OPENCLAW" -eq 1 ]; then
+  OPENCLAW_BIN=""
+  if command -v openclaw &>/dev/null; then
+    OPENCLAW_BIN="openclaw"
+  elif [ -x "$HOME/.local/node/bin/openclaw" ]; then
+    OPENCLAW_BIN="$HOME/.local/node/bin/openclaw"
+  elif [ -x "$HOME/.local/bin/openclaw" ]; then
+    OPENCLAW_BIN="$HOME/.local/bin/openclaw"
+  fi
+
+  if [ -n "$OPENCLAW_BIN" ]; then
+    # Check if watercooler agent already exists
+    WC_EXISTS=$("$OPENCLAW_BIN" agents list --json 2>/dev/null | grep -c '"watercooler"' || echo 0)
+    if [ "$WC_EXISTS" -eq 0 ]; then
+      echo "  💧 Setting up Water Cooler agent..."
+      WC_DIR="$HOME/agents/watercooler"
+      mkdir -p "$WC_DIR"
+      cat > "$WC_DIR/IDENTITY.md" <<'WCID'
+# Water Cooler
+
+- **Name:** Water Cooler
+- **Role:** Team brainstorming facilitator
+- **Creature:** A shared space where the team thinks out loud
+- **Vibe:** Facilitates structured conversations — observations, hypotheses, and actionable suggestions
+- **Emoji:** 💧
+
+You are the Water Cooler — a dedicated thread for team ideation. When prompted,
+you embody a specific team member and speak in their voice, drawing on their
+unique personality, role, and expertise. You never do work or use tools. You only
+generate short, conversational messages as the designated speaker.
+WCID
+      "$OPENCLAW_BIN" agents add watercooler \
+        --workspace "$WC_DIR" \
+        --non-interactive \
+        --model anthropic/claude-haiku-4-5 2>/dev/null && \
+        echo "  ✅ Water Cooler agent ready" || \
+        echo "  ⚠️  Water Cooler setup skipped (non-critical)"
+      echo ""
+    else
+      echo "  ✅ Water Cooler agent ... already exists"
+      echo ""
+    fi
+  fi
+fi
+
 # ── Launcher ────────────────────────────────────
 
 echo "  🔑 Cutting office keys..."

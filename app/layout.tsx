@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 // All pages are dynamic — this is a real-time dashboard
 export const dynamic = 'force-dynamic';
@@ -78,6 +80,8 @@ export default function RootLayout({
       </head>
       <body style={{ margin: 0, padding: 0 }}>
         {children}
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

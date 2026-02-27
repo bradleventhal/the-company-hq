@@ -31,23 +31,12 @@ const OPENCLAW_BIN = (() => {
   return 'openclaw';
 })();
 
-// All water cooler messages go through ONE dedicated session on a dynamically
-// chosen host agent. This keeps the water cooler isolated from work threads.
-const WC_SESSION_ID = 'watercooler-room';
-const AGENT_TIMEOUT = 45;
-
-/**
- * Pick the least-busy non-owner agent as the watercooler host for this message.
- * Rotates dynamically so we don't contend with agents doing autowork.
- * The prompt carries full thread context, so changing host mid-thread is fine.
- */
-function pickHostAgent(agents: AgentInfo[]): string {
-  const npc = agents.filter(a => a.id !== '_owner');
-  if (npc.length === 0) return 'main';
-  const idle = npc.filter(a => a.status !== 'working');
-  if (idle.length > 0) return idle[Math.floor(Math.random() * idle.length)].id;
-  return npc[Math.floor(Math.random() * npc.length)].id;
-}
+// Dedicated watercooler agent — created via `openclaw agents add watercooler`.
+// Has its own workspace, session history, and uses a fast/cheap model (haiku).
+// No autowork ever touches it. Completely isolated from all work threads.
+const WC_AGENT = 'watercooler';
+const WC_SESSION_ID = 'room';
+const AGENT_TIMEOUT = 30;
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -334,7 +323,7 @@ function parseResponseText(output: string): string | null {
   return null;
 }
 
-function sendToWatercoolerThread(host: string, prompt: string): Promise<string | null> {
+function sendToWatercoolerThread(prompt: string): Promise<string | null> {
   return new Promise((resolve) => {
     let stdout = '';
     let stderr = '';
@@ -346,10 +335,10 @@ function sendToWatercoolerThread(host: string, prompt: string): Promise<string |
       resolve(result);
     };
 
-    console.log(`[watercooler] → dedicated thread (session=${WC_SESSION_ID}, host=${host}, ${prompt.length} chars)`);
+    console.log(`[watercooler] → ${WC_AGENT}:${WC_SESSION_ID} (${prompt.length} chars)`);
     const proc = spawn(OPENCLAW_BIN, [
       'agent',
-      '--agent', host,
+      '--agent', WC_AGENT,
       '--session-id', WC_SESSION_ID,
       '--thinking', 'off',
       '--timeout', String(AGENT_TIMEOUT),
@@ -434,8 +423,11 @@ export async function generateChat(): Promise<{ success: boolean; message?: any;
   if (wcConfig.enabled === false) return { success: false, error: 'disabled' };
 
   const allAgents = discoverAgents();
-  const npcAgents = allAgents.filter(a => a.id !== '_owner');
-  if (npcAgents.length < 2) return { success: false, error: 'need at least 2 agents' };
+  const teamAgents = allAgents.filter(a => a.id !== '_owner' && a.id !== WC_AGENT);
+  const idleAgents = teamAgents.filter(a => a.status !== 'working');
+  if (idleAgents.length < 2) {
+    return { success: false, error: `only ${idleAgents.length} idle agent(s) — need 2+` };
+  }
 
   const thread = state.currentThread;
   const nextPhase = thread ? PHASE_ORDER[thread.messages.length] : 'take';
@@ -446,17 +438,15 @@ export async function generateChat(): Promise<{ success: boolean; message?: any;
 
   const speaker = pickSpeakerForPhase(
     nextPhase as Phase,
-    allAgents,
+    idleAgents,
     thread || { threadId: '', phase: 'take', messages: [], participants: [] },
   );
-  if (!speaker) return { success: false, error: 'no speaker' };
+  if (!speaker) return { success: false, error: 'no idle speaker' };
 
   const accomplishments = readAccomplishments();
   const prompt = buildPrompt(nextPhase as Phase, speaker, allAgents, thread, config.mission, accomplishments);
 
-  // Pick the least-busy agent as host; prompt carries all context so host can rotate
-  const host = pickHostAgent(allAgents);
-  const reply = await sendToWatercoolerThread(host, prompt);
+  const reply = await sendToWatercoolerThread(prompt);
   if (!reply) return { success: false, error: 'agent did not respond' };
 
   const text = cleanReply(speaker.name, reply);
@@ -589,7 +579,7 @@ async function runOneTick() {
 export function startTicker(): void {
   if (state.running) return;
   state.running = true;
-  console.log(`[watercooler] Starting ticker — dedicated thread (session=${WC_SESSION_ID}, host=dynamic)`);
+  console.log(`[watercooler] Starting ticker — dedicated agent (${WC_AGENT}:${WC_SESSION_ID})`);
   scheduleNextTick();
 }
 

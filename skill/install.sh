@@ -41,6 +41,43 @@ echo "📚 Installing dependencies..."
 cd "$INSTALL_DIR"
 npm install
 
+# Set up dedicated Water Cooler agent
+echo "💧 Setting up Water Cooler agent..."
+OPENCLAW_BIN=""
+command -v openclaw &>/dev/null && OPENCLAW_BIN="openclaw"
+[ -z "$OPENCLAW_BIN" ] && [ -x "$HOME/.local/node/bin/openclaw" ] && OPENCLAW_BIN="$HOME/.local/node/bin/openclaw"
+[ -z "$OPENCLAW_BIN" ] && [ -x "$HOME/.local/bin/openclaw" ] && OPENCLAW_BIN="$HOME/.local/bin/openclaw"
+
+if [ -n "$OPENCLAW_BIN" ]; then
+  WC_EXISTS=$("$OPENCLAW_BIN" agents list --json 2>/dev/null | grep -c '"watercooler"' || echo 0)
+  if [ "$WC_EXISTS" -eq 0 ]; then
+    WC_DIR="$HOME/agents/watercooler"
+    mkdir -p "$WC_DIR"
+    cat > "$WC_DIR/IDENTITY.md" <<'WCID'
+# Water Cooler
+
+- **Name:** Water Cooler
+- **Role:** Team brainstorming facilitator
+- **Creature:** A shared space where the team thinks out loud
+- **Vibe:** Facilitates structured conversations — observations, hypotheses, and actionable suggestions
+- **Emoji:** 💧
+
+You are the Water Cooler — a dedicated thread for team ideation. When prompted,
+you embody a specific team member and speak in their voice, drawing on their
+unique personality, role, and expertise. You never do work or use tools. You only
+generate short, conversational messages as the designated speaker.
+WCID
+    "$OPENCLAW_BIN" agents add watercooler \
+      --workspace "$WC_DIR" \
+      --non-interactive \
+      --model anthropic/claude-haiku-4-5 2>/dev/null && \
+      echo "✅ Water Cooler agent ready" || \
+      echo "⚠️  Water Cooler setup skipped (non-critical)"
+  else
+    echo "✅ Water Cooler agent already exists"
+  fi
+fi
+
 # Create launcher
 echo "🚀 Creating launcher..."
 mkdir -p "$(dirname "$LAUNCHER")"

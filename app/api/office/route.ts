@@ -98,7 +98,8 @@ function discoverAgents(): AgentConfig[] {
     const agentOverrides = officeConfig.agents || {};
     const ownerConfig = officeConfig.owner || {};
     
-    const agents: AgentConfig[] = agentsList.map((agent: any) => {
+    const UTILITY_AGENTS = new Set(['watercooler']);
+    const agents: AgentConfig[] = agentsList.filter((a: any) => !UTILITY_AGENTS.has(a.id)).map((agent: any) => {
       const override = agentOverrides[agent.id] || {};
       
       // Read IDENTITY.md from agent's workspace

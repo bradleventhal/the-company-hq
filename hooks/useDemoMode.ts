@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { track } from '../lib/track';
 
 /**
  * Demo Mode Hook - Detects demo mode and returns appropriate API paths
@@ -10,6 +11,13 @@ export function useDemoMode() {
     const params = new URLSearchParams(window.location.search);
     return params.get('demo') === 'true' || window.location.pathname === '/demo';
   });
+
+  // Track demo mode entry
+  useEffect(() => {
+    if (isDemoMode) {
+      track('demo_started');
+    }
+  }, [isDemoMode]);
 
   const getApiPath = useCallback((path: string) => {
     if (!isDemoMode) return path;

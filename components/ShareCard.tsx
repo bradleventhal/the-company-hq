@@ -2,6 +2,7 @@
 
 import { useRef, useState, useCallback } from 'react';
 import type { Agent, PendingAction, Accomplishment } from './types';
+import { track } from '../lib/track';
 
 interface ShareCardProps {
   agents: Agent[];
@@ -310,6 +311,7 @@ export function ShareCard({ agents, pendingActions, accomplishments, isDemoMode,
         new ClipboardItem({ 'image/png': blob }),
       ]);
       setCopied(true);
+      track('card_shared', { type: 'clipboard' });
       setTimeout(() => setCopied(false), 2000);
     } catch {
       // Fallback: download

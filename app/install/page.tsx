@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useUTMTracking } from '../../hooks/useUTMTracking';
+import { track } from '../../lib/track';
 
 export default function InstallPage() {
   useUTMTracking();
@@ -11,6 +12,7 @@ export default function InstallPage() {
   const copyInstall = () => {
     navigator.clipboard.writeText('curl -fsSL https://openclawfice.com/install.sh | bash');
     setCopied(true);
+    track('install_copied', { source: 'install-page' });
     setTimeout(() => setCopied(false), 2000);
   };
 

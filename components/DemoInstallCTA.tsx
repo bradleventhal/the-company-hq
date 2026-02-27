@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { track } from '../lib/track';
 
 interface Props {
   delayMs?: number;
@@ -23,6 +24,7 @@ export function DemoInstallCTA({ delayMs = 30000 }: Props) {
 
     const timer = setTimeout(() => {
       setVisible(true);
+      track('cta_clicked', { action: 'shown' });
     }, delayMs);
 
     return () => clearTimeout(timer);
@@ -36,7 +38,8 @@ export function DemoInstallCTA({ delayMs = 30000 }: Props) {
   const handleCopy = () => {
     navigator.clipboard.writeText('curl -fsSL https://openclawfice.com/install.sh | bash');
     setCopied(true);
-    // Track the conversion
+    track('install_copied', { source: 'demo-cta' });
+    // Also log to local analytics API
     fetch('/api/analytics', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

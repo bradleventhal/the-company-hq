@@ -6,6 +6,7 @@ import { useRetroSFX } from '../hooks/useRetroSFX';
 import { useChiptune } from '../hooks/useChiptune';
 import { useAuthenticatedFetch } from '../hooks/useAuthenticatedFetch';
 import { useUTMTracking } from '../hooks/useUTMTracking';
+import { track } from '../lib/track';
 import type { Agent, AgentStatus, Mood, PendingAction, Accomplishment, ChatMessage } from '../components/types';
 import { randomColor, generateAgentDefaults, prettifyTask, formatInterval } from '../components/utils';
 import { NPC } from '../components/NPC';
@@ -1505,7 +1506,7 @@ export default function HomePage() {
                       <NPC
                         agent={a}
                         size={npcSize}
-                        onClick={() => { sfx.play('click'); setSelectedAgent(a); }}
+                        onClick={() => { sfx.play('click'); setSelectedAgent(a); track('npc_clicked', { agent: a.name || a.id }); }}
                         forceThought={activeThought && activeThought.agentId === a.id ? activeThought.text : null}
                         hasCelebration={celebrations.some(c => c.agentId === a.id)}
                         partyMode={partyMode}
@@ -1622,7 +1623,7 @@ export default function HomePage() {
                         <NPC
                           agent={a}
                           size={npcSize}
-                          onClick={() => { sfx.play('click'); setSelectedAgent(a); }}
+                          onClick={() => { sfx.play('click'); setSelectedAgent(a); track('npc_clicked', { agent: a.name || a.id }); }}
                           forceThought={activeThought && activeThought.agentId === a.id ? activeThought.text : null}
                           hasCelebration={celebrations.some(c => c.agentId === a.id)}
                           partyMode={partyMode}
