@@ -527,8 +527,8 @@ export async function generateChat(): Promise<{ success: boolean; message?: any;
       if (prevWords.size < 4) continue;
       const overlap = Array.from(newWords).filter(w => prevWords.has(w)).length;
       const similarity = overlap / Math.max(newWords.size, prevWords.size);
-      if (similarity > 0.7) {
-        console.log(`[watercooler] ⛔ DEDUP: rejected "${text.slice(0, 50)}…" (${(similarity * 100).toFixed(0)}% similar to "${prev.text.slice(0, 50)}…")`);
+      if (similarity > 0.55) {
+        console.log(`[watercooler] ⛔ DEDUP(55%): rejected "${text.slice(0, 40)}…" ~${(similarity * 100).toFixed(0)}% similar to "${prev.text.slice(0, 40)}…"`);
         // Abandon the current thread to break the echo cycle
         state.currentThread = null;
         return { success: false, error: `dedup: ${(similarity * 100).toFixed(0)}% similar to recent message` };
@@ -610,7 +610,7 @@ function computeDelay(): number {
     return inThreadDelay + (Math.random() - 0.5) * inThreadDelay * 0.3;
   }
 
-  return baseFreq + (Math.random() - 0.5) * baseFreq * 0.5;
+  return Math.max(10_000, baseFreq + (Math.random() - 0.5) * baseFreq * 0.5);
 }
 
 function scheduleNextTick() {
