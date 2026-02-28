@@ -195,6 +195,43 @@ export function OfficeHeader({
           📸
         </button>
 
+        {/* Export workflow (raw JSON) */}
+        <button
+          onClick={async () => {
+            sfx.play('click');
+            try {
+              const token = localStorage.getItem('openclawfice_token');
+              const res = await fetch('/api/export/workflow', {
+                headers: token ? { 'X-OpenClawfice-Token': token } : {},
+              });
+              if (!res.ok) throw new Error('Export failed');
+              const blob = await res.blob();
+              const url = window.URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `openclawfice-workflow-${Date.now()}.json`;
+              document.body.appendChild(a);
+              a.click();
+              window.URL.revokeObjectURL(url);
+              document.body.removeChild(a);
+            } catch (err) {
+              console.error('Failed to export workflow:', err);
+              alert('Failed to export workflow. Check console for details.');
+            }
+          }}
+          style={{
+            background: 'none',
+            border: 'none',
+            color: theme.textMuted,
+            cursor: 'pointer',
+            fontSize: 14,
+            padding: '2px 4px',
+          }}
+          title="Export Config (JSON)"
+        >
+          💾
+        </button>
+
         {/* Share workflow */}
         <button
           onClick={() => {
