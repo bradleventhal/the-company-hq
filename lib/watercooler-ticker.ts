@@ -36,7 +36,7 @@ const OPENCLAW_BIN = (() => {
 // No autowork ever touches it. Completely isolated from all work threads.
 const WC_AGENT = 'watercooler';
 const WC_SESSION_ID = 'room';
-const AGENT_TIMEOUT = 30;
+const AGENT_TIMEOUT = 90;
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 

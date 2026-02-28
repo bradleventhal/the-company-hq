@@ -33,6 +33,7 @@ import { CommandPalette } from '../components/CommandPalette';
 import { AgentCard } from '../components/AgentCard';
 import { ChatBubble } from '../components/ChatBubble';
 import { AgentSearchFilter } from '../components/AgentSearchFilter';
+import { DiscoveryAnimation } from '../components/DiscoveryAnimation';
 
 
 function Clock({ color }: { color: string }) {
@@ -73,6 +74,7 @@ export default function HomePage() {
   const [agents, setAgents] = useState<Agent[]>([]);
   const [filteredAgents, setFilteredAgents] = useState<Agent[]>([]);
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
+  const [showDiscovery, setShowDiscovery] = useState(false);
   const [setupCheck, setSetupCheck] = useState<{status: string; message?: string; action?: string; installCommand?: string} | null>(null);
   const [hour] = useState(() => new Date().getHours());
   const [pendingActions, setPendingActions] = useState<PendingAction[]>([]);
@@ -274,7 +276,7 @@ export default function HomePage() {
       if (officeRes.status === 'fulfilled') {
         const data = officeRes.value;
         if (data.agents) {
-          setAgents(data.agents.map((a: any) => {
+          const agentData = data.agents.map((a: any) => {
             const defaults = generateAgentDefaults(a.id);
             return {
               ...a,
@@ -285,7 +287,13 @@ export default function HomePage() {
               xp: a.xp || defaults.xp,
               level: a.level || defaults.level,
             };
-          }));
+          });
+          setAgents(agentData);
+          
+          // Trigger discovery animation on first load (if not demo and has agents)
+          if (!isDemoMode && agentData.length > 0 && !localStorage.getItem('openclawfice_discovery_seen')) {
+            setShowDiscovery(true);
+          }
         }
         if (data.activityLog?.length > 0) setActivityLog(data.activityLog);
         if (data.chatLog && Array.isArray(data.chatLog)) setChatLog(data.chatLog);
@@ -301,6 +309,11 @@ export default function HomePage() {
         setArchiveTotal(archiveRes.value.archiveTotal);
       }
       if (autoworkRes.status === 'fulfilled') setAutoworkPolicies(autoworkRes.value.policies || {});
+      
+      // Trigger discovery animation if agents were loaded and this is first run
+      if (officeRes.status === 'fulfilled' && officeRes.value.agents?.length > 0) {
+        setShowDiscovery(true);
+      }
       
       // Hide loading screen once data is loaded
       setIsInitialLoading(false);
@@ -793,7 +806,9 @@ export default function HomePage() {
 
   const agentsWithThoughts = filteredAgents.map(a => ({
     ...a,
-    thought: activeThought && activeThought.agentId === a.id ? activeThought.text : a.thought,
+    thought: activeThought && activeThought.agentId === a.id && a.status === 'working'
+      ? activeThought.text
+      : a.thought,
   }));
 
   const working = agentsWithThoughts.filter(a => a.status === 'working');
@@ -960,6 +975,14 @@ export default function HomePage() {
 
       {/* Retro Boot Sequence */}
       {showBoot && <BootSequence onComplete={() => setShowBoot(false)} />}
+
+      {/* Discovery Animation — agents light up on first run */}
+      {showDiscovery && agents.length > 0 && (
+        <DiscoveryAnimation 
+          agents={agents} 
+          onComplete={() => setShowDiscovery(false)} 
+        />
+      )}
 
       {/* Initial Loading Screen */}
       {isInitialLoading && !showBoot && (
@@ -1663,16 +1686,6 @@ export default function HomePage() {
         </div>
       )}
 
-      {/* Agent Search & Filter */}
-      {agents.length > 0 && (
-        <AgentSearchFilter
-          agents={agents}
-          onFilterChange={setFilteredAgents}
-          theme={theme}
-          isMobile={isMobile}
-        />
-      )}
-
       {/* Office Floor — only show if agents exist */}
       {agents.length > 0 && (
       <div style={{
@@ -1870,7 +1883,7 @@ export default function HomePage() {
                           ]}
                         </div>
                       )}
-                      <div style={{ position: 'relative' }}>
+                      <div style={{ position: 'relative', zIndex: 20 }}>
                         {agentChatBubbles[a.id] && (
                           <ChatBubble
                             key={`${a.id}-${agentChatBubbles[a.id].timestamp}`}
@@ -1882,7 +1895,6 @@ export default function HomePage() {
                           agent={a}
                           size={npcSize}
                           onClick={() => { sfx.play('click'); setSelectedAgent(a); track('npc_clicked', { agent: a.name || a.id }); }}
-                          forceThought={activeThought && activeThought.agentId === a.id ? activeThought.text : null}
                           hasCelebration={celebrations.some(c => c.agentId === a.id)}
                           partyMode={partyMode}
                         />
