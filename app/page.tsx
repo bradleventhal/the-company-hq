@@ -32,6 +32,7 @@ import { AccomplishmentDetailModal } from '../components/AccomplishmentDetailMod
 import { CommandPalette } from '../components/CommandPalette';
 import { AgentCard } from '../components/AgentCard';
 import { ChatBubble } from '../components/ChatBubble';
+import { AgentSearchFilter } from '../components/AgentSearchFilter';
 
 
 function Clock({ color }: { color: string }) {
@@ -70,6 +71,7 @@ export default function HomePage() {
     return authenticatedFetch(url, options);
   }, [isDemoMode, authenticatedFetch]);
   const [agents, setAgents] = useState<Agent[]>([]);
+  const [filteredAgents, setFilteredAgents] = useState<Agent[]>([]);
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
   const [setupCheck, setSetupCheck] = useState<{status: string; message?: string; action?: string; installCommand?: string} | null>(null);
   const [hour] = useState(() => new Date().getHours());
@@ -203,6 +205,11 @@ export default function HomePage() {
     const i = setInterval(() => setNowMs(Date.now()), 1000);
     return () => clearInterval(i);
   }, []);
+
+  // Initialize filteredAgents when agents change
+  useEffect(() => {
+    setFilteredAgents(agents);
+  }, [agents]);
 
   // Detect screen size for responsive layout
   useEffect(() => {
@@ -784,7 +791,7 @@ export default function HomePage() {
     }
   };
 
-  const agentsWithThoughts = agents.map(a => ({
+  const agentsWithThoughts = filteredAgents.map(a => ({
     ...a,
     thought: activeThought && activeThought.agentId === a.id ? activeThought.text : a.thought,
   }));
@@ -1654,6 +1661,16 @@ export default function HomePage() {
           <span>💡</span>
           <span>Some agents are using default names. Add <code style={{ background: theme.bgTertiary, padding: '1px 4px', borderRadius: 3 }}>IDENTITY.md</code> to their workspaces to customize!</span>
         </div>
+      )}
+
+      {/* Agent Search & Filter */}
+      {agents.length > 0 && (
+        <AgentSearchFilter
+          agents={agents}
+          onFilterChange={setFilteredAgents}
+          theme={theme}
+          isMobile={isMobile}
+        />
       )}
 
       {/* Office Floor — only show if agents exist */}

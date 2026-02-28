@@ -110,7 +110,6 @@ export function Room({
       <div style={{
         position: 'relative',
         padding: '24px 8px 6px',
-        zIndex: 1,
       }}>
         {children}
       </div>
