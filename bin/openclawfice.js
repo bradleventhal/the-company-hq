@@ -13,13 +13,36 @@ const statusDir = join(openclawDir, '.status');
 const portArg = process.argv.find(a => a.startsWith('--port='));
 const port = portArg ? portArg.split('=')[1] : (process.env.PORT || '3333');
 
+// ─── Dependency Checks (Early Validation) ──────────────────────────
+
+// Check Node.js version BEFORE anything else
+const nodeVersion = process.versions.node;
+const nodeMajor = parseInt(nodeVersion.split('.')[0], 10);
+if (nodeMajor < 18) {
+  console.error('\n❌ Node.js version too old!\n');
+  console.error(`You have: v${nodeVersion}`);
+  console.error('Required: v18.0.0 or newer\n');
+  console.error('Update Node.js:');
+  console.error('  macOS/Linux: https://nodejs.org/en/download/');
+  console.error('  Or use nvm: nvm install 22 && nvm use 22\n');
+  process.exit(1);
+}
+
 // ─── Preflight Checks ───────────────────────────────────────────────
 
 if (!fs.existsSync(openclawConfig)) {
-  console.error('\n❌ OpenClaw not found!\n');
-  console.error('OpenClawfice requires OpenClaw to be installed and configured.');
-  console.error('Expected config at:', openclawConfig);
-  console.error('\nVisit https://openclaw.ai to get started.\n');
+  console.error('\n❌ OpenClaw not installed!\n');
+  console.error('OpenClawfice needs OpenClaw running first.');
+  console.error('\n📍 Where I looked:');
+  console.error(`   ${openclawConfig}`);
+  console.error(`   (~ means "${homeDir}")\n`);
+  console.error('🔧 How to fix:');
+  console.error('   1. Install OpenClaw:');
+  console.error('      curl -fsSL https://openclaw.ai/install.sh | bash');
+  console.error('   2. Wait for it to finish');
+  console.error('   3. Open a NEW terminal window');
+  console.error('   4. Run this command again\n');
+  console.error('💡 Need help? https://docs.openclaw.ai/installation\n');
   process.exit(1);
 }
 

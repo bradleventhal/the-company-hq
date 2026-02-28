@@ -308,12 +308,7 @@ export default function HomePage() {
       if (archiveRes.status === 'fulfilled' && typeof archiveRes.value.archiveTotal === 'number') {
         setArchiveTotal(archiveRes.value.archiveTotal);
       }
-      if (autoworkRes.status === 'fulfilled') setAutoworkPolicies(autoworkRes.value.policies || {});
-      
-      // Trigger discovery animation if agents were loaded and this is first run
-      if (officeRes.status === 'fulfilled' && officeRes.value.agents?.length > 0) {
-        setShowDiscovery(true);
-      }
+      if (autoworkRes.status === 'fulfilled') setAutoworkPolicies(autoworkRes.value.policies || {})
       
       // Hide loading screen once data is loaded
       setIsInitialLoading(false);
