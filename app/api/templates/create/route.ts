@@ -46,6 +46,36 @@ function generateId(): string {
   return Math.random().toString(36).substring(2, 9);
 }
 
+function autoGenerateTags(config: any): string[] {
+  const tags: string[] = [];
+  
+  // Add agent count tag
+  const agentCount = config.agents?.list?.length || 0;
+  if (agentCount === 1) tags.push('single-agent');
+  else if (agentCount >= 2 && agentCount <= 3) tags.push('small-team');
+  else if (agentCount >= 4 && agentCount <= 6) tags.push('medium-team');
+  else if (agentCount > 6) tags.push('large-team');
+  
+  // Add role-based tags
+  const roles = config.agents?.list?.map((a: any) => a.role?.toLowerCase()) || [];
+  if (roles.some((r: string) => r?.includes('developer') || r?.includes('engineer'))) tags.push('development');
+  if (roles.some((r: string) => r?.includes('market') || r?.includes('social'))) tags.push('marketing');
+  if (roles.some((r: string) => r?.includes('research') || r?.includes('analyst'))) tags.push('research');
+  if (roles.some((r: string) => r?.includes('support') || r?.includes('customer'))) tags.push('support');
+  if (roles.some((r: string) => r?.includes('content') || r?.includes('writer'))) tags.push('content');
+  
+  // Add model tag if specified
+  const model = config.agents?.defaults?.model;
+  if (model?.includes('gpt')) tags.push('openai');
+  if (model?.includes('claude')) tags.push('anthropic');
+  if (model?.includes('gemini')) tags.push('google');
+  
+  // Add workspace tag
+  if (config.agents?.defaults?.workspace) tags.push('workspace-configured');
+  
+  return tags;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -76,7 +106,7 @@ export async function POST(req: NextRequest) {
       author: process.env.USER || 'anonymous',
       createdAt: Date.now(),
       downloads: 0,
-      tags: [], // TODO: Auto-generate tags from config
+      tags: autoGenerateTags(sanitized),
     };
 
     // Add to templates
