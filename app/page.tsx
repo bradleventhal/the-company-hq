@@ -2036,22 +2036,32 @@ export default function HomePage() {
                   })
                 ) : (
                   <div style={{
-                    padding: 12,
+                    padding: '24px',
                     textAlign: 'center',
+                    opacity: 0.5,
                   }}>
                     <div style={{
-                      fontSize: 24,
-                      marginBottom: 8,
+                      fontSize: '32px',
+                      marginBottom: '8px',
+                      filter: 'drop-shadow(0 0 8px #00ff41)',
                     }}>
-                      ✨
+                      ✅
                     </div>
                     <div style={{
-                      color: theme.text,
-                      fontSize: 10,
-                      marginBottom: 6,
-                      fontWeight: 600,
+                      fontFamily: '"Press Start 2P", monospace',
+                      fontSize: '10px',
+                      color: '#00ff41',
+                      textShadow: '0 0 8px rgba(0,255,65,0.4)',
+                      marginBottom: '4px',
                     }}>
-                      No pending decisions
+                      ALL CLEAR
+                    </div>
+                    <div style={{
+                      fontFamily: '"Courier New", monospace',
+                      fontSize: '9px',
+                      color: '#64748b',
+                    }}>
+                      No quests pending
                     </div>
                     <div style={{
                       color: theme.textDim,
