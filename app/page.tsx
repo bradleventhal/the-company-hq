@@ -990,8 +990,9 @@ export default function HomePage() {
           alignItems: 'center',
           justifyContent: 'center',
           zIndex: 9999,
+          transition: 'opacity 0.3s ease-out',
         }}>
-          {/* Scanlines */}
+          {/* CRT Scanlines */}
           <div style={{
             position: 'absolute',
             inset: 0,
@@ -999,13 +1000,14 @@ export default function HomePage() {
             pointerEvents: 'none',
           }} />
           
+          {/* Spinning gear icon */}
           <div style={{
             fontSize: 48,
             marginBottom: 24,
             filter: 'drop-shadow(0 0 12px #00ff41)',
-            animation: 'npcBob 2s ease-in-out infinite',
+            animation: 'spin 2s linear infinite',
           }}>
-            🏢
+            ⚙️
           </div>
           
           <div style={{
@@ -1027,7 +1029,7 @@ export default function HomePage() {
             letterSpacing: '2px',
             animation: 'pulse 1.5s ease-in-out infinite',
           }}>
-            INITIALIZING OFFICE...
+            LOADING AGENTS...
           </div>
           
           <div style={{
