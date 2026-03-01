@@ -1525,7 +1525,9 @@ export default function HomePage() {
               &gt; RUN DEMO
             </a>
             <a 
-              href="/install"
+              href="https://docs.openclaw.ai/configuration/agents"
+              target="_blank"
+              rel="noopener noreferrer"
               onClick={() => sfx.play('click')}
               style={{
                 background: 'transparent',
@@ -1548,6 +1550,35 @@ export default function HomePage() {
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.opacity = '0.7';
+                e.currentTarget.style.boxShadow = '0 0 10px rgba(0,255,65,0.2)';
+              }}
+            >
+              &gt; CONFIGURE AGENTS
+            </a>
+            <a 
+              href="/install"
+              onClick={() => sfx.play('click')}
+              style={{
+                background: 'transparent',
+                color: '#00ff41',
+                padding: '12px 24px',
+                border: '2px solid #00ff41',
+                borderRadius: 0,
+                fontSize: 11,
+                fontFamily: '"Courier New", monospace',
+                textDecoration: 'none',
+                boxShadow: '0 0 10px rgba(0,255,65,0.2)',
+                transition: 'all 0.2s',
+                letterSpacing: '1px',
+                opacity: 0.5,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.opacity = '0.7';
+                e.currentTarget.style.boxShadow = '0 0 15px rgba(0,255,65,0.3)';
+                sfx.play('hover');
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.opacity = '0.5';
                 e.currentTarget.style.boxShadow = '0 0 10px rgba(0,255,65,0.2)';
               }}
             >
