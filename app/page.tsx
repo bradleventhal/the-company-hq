@@ -34,6 +34,7 @@ import { AgentCard } from '../components/AgentCard';
 import { ChatBubble } from '../components/ChatBubble';
 import { AgentSearchFilter } from '../components/AgentSearchFilter';
 import { DiscoveryAnimation } from '../components/DiscoveryAnimation';
+import CompanyTabs from './components/CompanyTabs';
 
 
 function Clock({ color }: { color: string }) {
@@ -979,6 +980,9 @@ export default function HomePage() {
           50% { transform: translateY(-20px); }
         }
       `}</style>
+
+      {/* Company Tabs */}
+      <CompanyTabs />
 
       {/* Retro Boot Sequence */}
       {showBoot && <BootSequence onComplete={() => setShowBoot(false)} />}
