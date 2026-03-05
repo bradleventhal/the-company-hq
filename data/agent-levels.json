@@ -1,154 +1,159 @@
 {
-  "agents": {
-    "lebron": {
-      "grade": "B+",
-      "lastTask": "Day 2 operations — 16 tasks delegated, model crisis handled",
-      "reps": 2,
-      "trend": "stable",
-      "note": "Wade 8PM audit: 1 self-tasking violation, 3 lost handoffs, stale guardrails doc"
-    },
-    "wade": {
-      "grade": "A",
-      "lastTask": "8PM LeBron Hard Audit + Task State Enforcement",
-      "reps": 4,
-      "trend": "up",
-      "history": ["B+", "A", "A", "A"]
-    },
-    "elon": {
-      "grade": "A",
-      "lastTask": "Dashboard build + Territory Intel MVP in progress",
-      "reps": 3,
-      "trend": "stable"
-    },
-    "mcvay": {
-      "grade": "A+",
-      "lastTask": "WIN Deep Dive (27KB strategic analysis)",
-      "reps": 2,
-      "trend": "stable",
-      "note": "Brady QA: A- PASS, conditional on verifying pricing/market size claims with web search"
-    },
-    "jarvis": {
-      "grade": "A",
-      "lastTask": "Brad Brew Podcast Test Script",
-      "reps": 2,
-      "trend": "up",
-      "note": "Brady QA: B+ PASS conditional — must fix 2s10s spread math before recording"
-    },
-    "steward": {
-      "grade": "pending",
-      "lastTask": "No tasks assigned yet",
-      "reps": 0,
-      "trend": "new",
-      "note": "Needs bot token"
-    },
-    "saban": {
-      "grade": "A-",
-      "lastTask": "11 Agent Fixes + Wave 2 Onboarding Prep",
-      "reps": 5,
-      "trend": "up",
-      "history": ["D", "B+", "A-", "A-", "A-"]
-    },
-    "steph": {
-      "grade": "A+",
-      "lastTask": "Combined Dashboard Spec — 3rd consecutive A+",
-      "reps": 3,
-      "trend": "stable",
-      "note": "Benchmark agent. Brady QA: A+ PASS on both specs today."
-    },
-    "cp3": {
-      "grade": "pending",
-      "lastTask": "No tasks assigned yet",
-      "reps": 0,
-      "trend": "new",
-      "note": "Needs bot token"
-    },
-    "marino": {
-      "grade": "A",
-      "lastTask": "Meeting Prep Package (Night 1)",
-      "reps": 1,
-      "trend": "stable",
-      "note": "Zero tasks Day 2. JJettas territory data not routed to him — lost handoff."
-    },
-    "jokic": {
-      "grade": "pending",
-      "lastTask": "No tasks assigned yet",
-      "reps": 0,
-      "trend": "new",
-      "note": "Needs bot token"
-    },
-    "jjettas": {
-      "grade": "A",
-      "lastTask": "Territory Intel v2 + Expansion Analysis",
-      "reps": 2,
-      "trend": "up",
-      "note": "Brady QA: A PASS on both reports. Conditional: clarify territory boundary definition."
-    },
-    "mahomes": {
-      "grade": "pending",
-      "lastTask": "No tasks assigned yet",
-      "reps": 0,
-      "trend": "new",
-      "note": "Needs bot token"
-    },
-    "ai": {
-      "grade": "pending",
-      "lastTask": "No tasks assigned yet",
-      "reps": 0,
-      "trend": "new",
-      "note": "Needs bot token"
-    },
-    "ohtani": {
-      "grade": "A",
-      "lastTask": "FRED API + onboard-agent fix + backup script + QA auto-router",
-      "reps": 5,
-      "trend": "up",
-      "note": "4 tasks completed today. Workhorse output."
-    },
-    "giannis": {
-      "grade": "pending",
-      "lastTask": "No tasks assigned yet",
-      "reps": 0,
-      "trend": "new",
-      "note": "Needs bot token"
-    },
-    "achane": {
-      "grade": "A",
-      "lastTask": "Automation Audit v2 (resubmission after Brady rejection)",
-      "reps": 2,
-      "trend": "up",
-      "note": "Brady re-QA: A PASS. Fixed all 4 issues from v1. Also caught LeBron's codex model mistake twice."
-    },
-    "tyreek": {
-      "grade": "B+",
-      "lastTask": "AI Landscape Scout Report",
-      "reps": 1,
-      "trend": "new",
-      "note": "Brady QA: B+ FAIL. Fabricated benchmark data and Twitter handles. Must rebuild comparison table and resubmit."
-    },
-    "brady": {
-      "grade": "A+",
-      "lastTask": "QA Report Day 2 — 8 deliverables reviewed, detailed findings, verified claims via web search",
-      "reps": 1,
-      "trend": "new-star",
-      "note": "First rep was exceptional. Caught Tyreek's fabricated data, found Jarvis math error, verified benchmarks against live sources."
-    },
-    "magic": {
-      "grade": "pending",
-      "lastTask": "No tasks assigned yet",
-      "reps": 0,
-      "trend": "new",
-      "note": "Needs bot token"
-    },
-    "jimmy": {
-      "grade": "pending",
-      "lastTask": "No tasks assigned yet",
-      "reps": 0,
-      "trend": "new",
-      "note": "Needs bot token"
-    }
+  "lebron": {
+    "grade": "B+",
+    "lastTask": "Day 2 operations \u2014 16 tasks delegated, model crisis handled",
+    "reps": 2,
+    "trend": "stable",
+    "note": "Wade 8PM audit: 1 self-tasking violation, 3 lost handoffs, stale guardrails doc"
   },
-  "lastUpdated": "2026-03-04T20:40:00Z",
-  "updatedBy": "Wade — full 21-agent roster populated",
-  "gradeScale": "A+ (exceptional) → A (strong) → A- (good) → B+ (acceptable) → B (below) → C (unacceptable) → D (redo)",
-  "gradingBy": "Brady (QA) → LeBron (final review)"
+  "wade": {
+    "grade": "A",
+    "lastTask": "8PM LeBron Hard Audit + Task State Enforcement",
+    "reps": 4,
+    "trend": "up",
+    "history": [
+      "B+",
+      "A",
+      "A",
+      "A"
+    ]
+  },
+  "elon": {
+    "grade": "A",
+    "lastTask": "Dashboard build + Territory Intel MVP in progress",
+    "reps": 3,
+    "trend": "stable"
+  },
+  "mcvay": {
+    "grade": "A+",
+    "lastTask": "WIN Deep Dive (27KB strategic analysis)",
+    "reps": 2,
+    "trend": "stable",
+    "note": "Brady QA: A- PASS, conditional on verifying pricing/market size claims with web search"
+  },
+  "jarvis": {
+    "grade": "A",
+    "lastTask": "Brad Brew Podcast Test Script",
+    "reps": 2,
+    "trend": "up",
+    "note": "Brady QA: B+ PASS conditional \u2014 must fix 2s10s spread math before recording"
+  },
+  "steward": {
+    "grade": "pending",
+    "lastTask": "No tasks assigned yet",
+    "reps": 0,
+    "trend": "new",
+    "note": "Needs bot token"
+  },
+  "saban": {
+    "grade": "A-",
+    "lastTask": "11 Agent Fixes + Wave 2 Onboarding Prep",
+    "reps": 5,
+    "trend": "up",
+    "history": [
+      "D",
+      "B+",
+      "A-",
+      "A-",
+      "A-"
+    ]
+  },
+  "steph": {
+    "grade": "A+",
+    "lastTask": "Combined Dashboard Spec \u2014 3rd consecutive A+",
+    "reps": 3,
+    "trend": "stable",
+    "note": "Benchmark agent. Brady QA: A+ PASS on both specs today."
+  },
+  "cp3": {
+    "grade": "pending",
+    "lastTask": "No tasks assigned yet",
+    "reps": 0,
+    "trend": "new",
+    "note": "Needs bot token"
+  },
+  "marino": {
+    "grade": "A",
+    "lastTask": "Meeting Prep Package (Night 1)",
+    "reps": 1,
+    "trend": "stable",
+    "note": "Zero tasks Day 2. JJettas territory data not routed to him \u2014 lost handoff."
+  },
+  "jokic": {
+    "grade": "pending",
+    "lastTask": "No tasks assigned yet",
+    "reps": 0,
+    "trend": "new",
+    "note": "Needs bot token"
+  },
+  "jjettas": {
+    "grade": "A",
+    "lastTask": "Territory Intel v2 + Expansion Analysis",
+    "reps": 2,
+    "trend": "up",
+    "note": "Brady QA: A PASS on both reports. Conditional: clarify territory boundary definition."
+  },
+  "mahomes": {
+    "grade": "pending",
+    "lastTask": "No tasks assigned yet",
+    "reps": 0,
+    "trend": "new",
+    "note": "Needs bot token"
+  },
+  "ai": {
+    "grade": "pending",
+    "lastTask": "No tasks assigned yet",
+    "reps": 0,
+    "trend": "new",
+    "note": "Needs bot token"
+  },
+  "ohtani": {
+    "grade": "A",
+    "lastTask": "FRED API + onboard-agent fix + backup script + QA auto-router",
+    "reps": 5,
+    "trend": "up",
+    "note": "4 tasks completed today. Workhorse output."
+  },
+  "giannis": {
+    "grade": "pending",
+    "lastTask": "No tasks assigned yet",
+    "reps": 0,
+    "trend": "new",
+    "note": "Needs bot token"
+  },
+  "achane": {
+    "grade": "A",
+    "lastTask": "Automation Audit v2 (resubmission after Brady rejection)",
+    "reps": 2,
+    "trend": "up",
+    "note": "Brady re-QA: A PASS. Fixed all 4 issues from v1. Also caught LeBron's codex model mistake twice."
+  },
+  "tyreek": {
+    "grade": "B+",
+    "lastTask": "AI Landscape Scout Report",
+    "reps": 1,
+    "trend": "new",
+    "note": "Brady QA: B+ FAIL. Fabricated benchmark data and Twitter handles. Must rebuild comparison table and resubmit."
+  },
+  "brady": {
+    "grade": "A+",
+    "lastTask": "QA Report Day 2 \u2014 8 deliverables reviewed, detailed findings, verified claims via web search",
+    "reps": 1,
+    "trend": "new-star",
+    "note": "First rep was exceptional. Caught Tyreek's fabricated data, found Jarvis math error, verified benchmarks against live sources."
+  },
+  "magic": {
+    "grade": "pending",
+    "lastTask": "No tasks assigned yet",
+    "reps": 0,
+    "trend": "new",
+    "note": "Needs bot token"
+  },
+  "jimmy": {
+    "grade": "pending",
+    "lastTask": "No tasks assigned yet",
+    "reps": 0,
+    "trend": "new",
+    "note": "Needs bot token"
+  }
 }
